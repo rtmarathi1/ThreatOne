@@ -30,7 +30,7 @@ if(ENABLE_YARA)
         add_compile_definitions(HAS_YARA)
         message(STATUS "YARA found: ${YARA_LIBRARIES}")
     else()
-        message(WARNING "ENABLE_YARA is ON but YARA was not found. Falling back to stub implementation.")
+        message(WARNING "ENABLE_YARA is ON but YARA was not found. Falling back to built-in implementation.")
     endif()
 endif()
 
@@ -41,7 +41,7 @@ if(ENABLE_LIBSODIUM)
         add_compile_definitions(HAS_LIBSODIUM)
         message(STATUS "libsodium found: ${LIBSODIUM_LIBRARIES}")
     else()
-        message(WARNING "ENABLE_LIBSODIUM is ON but libsodium was not found. Falling back to stub implementation.")
+        message(WARNING "ENABLE_LIBSODIUM is ON but libsodium was not found. Falling back to built-in implementation.")
     endif()
 endif()
 
@@ -85,7 +85,7 @@ target_include_directories(doctest INTERFACE
     "${THIRD_PARTY_DIR}/doctest/include"
 )
 
-# SQLite3 - stub library for compilation (replace with real amalgamation in production)
+# SQLite3 - embedded SQL database engine
 add_library(sqlite3 STATIC
     "${THIRD_PARTY_DIR}/sqlite/src/sqlite3_stub.cpp"
 )

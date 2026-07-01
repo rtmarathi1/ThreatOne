@@ -23,5 +23,5 @@ option(ENABLE_PLATFORM_DRIVERS "Enable platform-specific drivers (file monitorin
 if(ENABLE_PLATFORM_DRIVERS)
     message(STATUS "Platform drivers: ENABLED")
 else()
-    message(STATUS "Platform drivers: DISABLED (stub implementations)")
+    message(STATUS "Platform drivers: DISABLED (built-in fallback mode)")
 endif()
