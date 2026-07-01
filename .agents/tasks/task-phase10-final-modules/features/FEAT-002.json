@@ -1,0 +1,37 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Implement SOC Manager (Case Manager, Playbook Engine, Shift Manager, Ticket Integration) and Cloud Manager (Cloud Sync Engine, Cloud Policy Distribution, Backup Manager). Replace stubs with full implementations.",
+  "status": "in_progress",
+  "steps": [
+    "Expand src/soc/include/soc/ISOCManager.h to add: CaseStatus enum (Open/Investigating/Escalated/Resolved/Closed), EvidenceItem struct (id, caseId, type, description, data, addedAt, addedBy), PlaybookStep struct (id, name, description, actionType, parameters map, condition string, completed bool), Playbook struct (id, name, description, steps vector, triggerCondition), PlaybookExecution struct (id, playbookId, caseId, status enum [Running/Completed/Failed/Paused], currentStepIndex, startedAt, completedAt, results vector<string>), TicketInfo struct (id, externalId, system string [Jira/ServiceNow], title, status, url, lastSyncAt), HandoffNote struct (id, fromAnalyst, toAnalyst, shiftId, notes, timestamp, openCases vector). Add virtual methods: updateCaseStatus(caseId, CaseStatus), addEvidence(caseId, EvidenceItem), getEvidence(caseId), createPlaybook(Playbook), executePlaybook(playbookId, caseId), getPlaybookExecution(executionId), getPlaybooks(), createShift(ShiftInfo), addHandoffNote(HandoffNote), getHandoffNotes(shiftId), createTicket(TicketInfo), syncTicket(ticketId), getTickets(caseId).",
+    "Expand src/soc/include/soc/SOCManager.h to declare all new methods with private members: cases_ map, evidence_ multimap, playbooks_ map, executions_ map, shifts_ map, handoffNotes_ multimap, tickets_ map, mutex_, nextId counters.",
+    "Implement src/soc/src/SOCManager.cpp: createCase generates ID and stores with Open status. updateCaseStatus validates transitions. assignCase updates assignee. escalate sets Escalated status and reason. addEvidence stores with generated ID. createPlaybook stores playbook definition. executePlaybook iterates steps checking conditions and recording results. createShift/getShifts manages analyst schedules. addHandoffNote records shift transitions. createTicket/syncTicket manages external ticket references. All thread-safe with mutex.",
+    "Expand src/cloud/include/cloud/ICloudManager.h to add: SyncStatus enum (Idle/Syncing/Conflict/Error), SyncResult struct (success, itemsSynced, conflicts vector, timestamp), PolicyInfo struct (id, name, version, content, distributedAt, acknowledgedBy vector), ConflictResolution enum (LocalWins/RemoteWins/Manual), BackupSchedule struct (id, name, frequency string, retention int, encrypted bool, lastRun, nextRun). Add virtual methods: syncWithConflictResolution(ConflictResolution), getSyncStatus(), distributePolicy(PolicyInfo), getPolicies(), acknowledgePolicy(policyId, endpointId), createBackupSchedule(BackupSchedule), getBackupSchedules(), listBackups(), deleteBackup(backupId).",
+    "Expand src/cloud/include/cloud/CloudManager.h to declare all new methods with private members: syncStatus_, policies_ map, backups_ map, backupSchedules_ map, mutex_, counters.",
+    "Implement src/cloud/src/CloudManager.cpp: sync performs delta sync simulation (tracks last sync time, counts items). syncWithConflictResolution applies resolution strategy. distributePolicy stores and tracks versions. acknowledgePolicy records endpoint acknowledgments. backup/restore create/apply backup snapshots. createBackupSchedule stores schedule config. listBackups returns stored backups. All thread-safe.",
+    "Update src/soc/CMakeLists.txt and src/cloud/CMakeLists.txt if adding new source files.",
+    "Create tests/soc/test_soc_manager.cpp: test case lifecycle (create/investigate/escalate/resolve/close), evidence management (add/retrieve), playbook creation and execution (steps complete in order, conditions evaluated), shift management (create shifts, add handoff notes), ticket integration (create/sync tickets).",
+    "Create tests/cloud/test_cloud_manager.cpp: test sync operations (basic sync, conflict resolution), policy distribution and acknowledgment, backup creation/restore/list/delete, backup schedule management.",
+    "Update tests/CMakeLists.txt to add soc and cloud test files, include directories, and link libraries."
+  ],
+  "acceptance_criteria": [
+    "SOCManager case lifecycle works: create -> investigate -> escalate -> resolve -> close",
+    "SOCManager evidence can be added and retrieved per case",
+    "SOCManager playbooks execute steps in order with condition checking",
+    "SOCManager shift management stores shifts and handoff notes",
+    "SOCManager ticket integration creates and syncs external tickets",
+    "CloudManager sync tracks status and reports results",
+    "CloudManager conflict resolution applies chosen strategy",
+    "CloudManager policy distribution stores and tracks acknowledgments",
+    "CloudManager backup create/restore/list/delete works correctly",
+    "All existing tests continue to pass",
+    "cmake --build build succeeds"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
