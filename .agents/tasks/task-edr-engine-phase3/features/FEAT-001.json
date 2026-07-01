@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Implement core monitoring components: ProcessMonitor, FileMonitor, RegistryMonitor, MemoryMonitor, and TelemetryCollector. These are the data-collection foundations that feed into the higher-level detection systems.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create src/edr/include/edr/ProcessMonitor.h - ProcessMonitor class in ThreatOne::EDR namespace with: enumerateProcesses() returning vector<ProcessInfo>, trackProcessCreation/Termination callbacks, detectSuspiciousProcessTree(pid) returning threat indicators, analyzeCommandLine(string) returning suspicion score/details. Use ModuleLogger. Support registering callbacks for process events. Internally read from /proc on Linux (simulated for testability).",
     "Create src/edr/src/ProcessMonitor.cpp - Implementation that: reads /proc filesystem to enumerate processes (with fallback to mock data for testing), analyzes command lines for suspicious patterns (base64 decode commands, powershell-like invocations, known malicious tool names), detects suspicious process trees (orphaned processes, deep nesting, unusual parent-child relationships).",
@@ -36,5 +36,5 @@
     "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All 5 core monitoring components implemented and tested. Build and all 80 tests pass cleanly. One test quirk discovered: doctest subcases sharing a parent-scope object with history can exhibit unexpected state accumulation between subcase re-entries; resolved by using a locally-scoped object within the affected subcase. The [[nodiscard]] attribute on collectSystemMetrics() generates warnings in tests where the return value is intentionally discarded - resolved with (void) casts."
 }
