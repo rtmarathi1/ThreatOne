@@ -22,8 +22,12 @@ public:
     bool enableRule(const std::string& ruleId);
     bool disableRule(const std::string& ruleId);
 
-    // Rule evaluation
-    Action evaluatePacket(const PacketDescriptor& packet) const;
+    // Rule evaluation - returns the action and the ID of the matched rule (empty if default)
+    struct EvalResult {
+        Action action;
+        std::string matchedRuleId;
+    };
+    EvalResult evaluatePacket(const PacketDescriptor& packet) const;
 
     // Configuration
     void setDefaultAction(Action action);

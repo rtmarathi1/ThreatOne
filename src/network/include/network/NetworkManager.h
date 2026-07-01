@@ -16,6 +16,24 @@
 
 namespace ThreatOne::Network {
 
+/// NetworkManager is a composition root that owns eight independent security
+/// sub-components and exposes them via typed accessors.
+///
+/// Design intent: This class provides a "bag of tools" architecture where each
+/// security component (IntrusionDetector, BandwidthMonitor, ApplicationControl,
+/// ConnectionLogger, etc.) is a standalone, independently testable library.
+///
+/// Only dnsLookup() and ping() integrate inline checks (DNSFilter, IPBlocklist,
+/// NetworkIsolation). The remaining sub-components are intentionally NOT consulted
+/// during sendRequest/openWebSocket. Application-layer code is responsible for
+/// wiring these into actual traffic paths by:
+///   - Calling getIntrusionDetector().evaluate() on incoming packets.
+///   - Calling getBandwidthMonitor().checkRateLimit() before transmitting data.
+///   - Calling getApplicationControl().isAllowed() before launching connections.
+///   - Calling getConnectionLogger().log() at connection open/close events.
+///
+/// This design keeps the library layer free from assumptions about the host's
+/// network stack and packet interception mechanism, which vary across platforms.
 class NetworkManager : public INetworkManager {
 public:
     NetworkManager();

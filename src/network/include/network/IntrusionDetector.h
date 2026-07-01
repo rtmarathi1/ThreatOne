@@ -55,6 +55,10 @@ struct IDSAlert {
 
 class IntrusionDetector {
 public:
+    /// Maximum number of alerts retained in memory. When this limit is reached,
+    /// the oldest alerts are evicted to make room for new ones.
+    static constexpr size_t kMaxAlerts = 10000;
+
     IntrusionDetector();
 
     void addRule(const IDSRule& rule);
@@ -62,8 +66,21 @@ public:
     std::vector<IDSRule> getRules() const;
 
     std::vector<IDSAlert> evaluate(const PacketInfo& packet);
+
+    /// Detect a port scan from the given source IP. The caller must invoke this
+    /// once per observed connection attempt (or batch of attempts via the ports
+    /// vector). The threshold is >10 unique destination ports within 60 seconds.
     bool detectPortScan(const std::string& sourceIP, const std::vector<uint16_t>& ports);
+
+    /// Detect a SYN flood targeting destIP. Each invocation registers one event.
+    /// Callers must invoke this method once per observed SYN packet for the
+    /// threshold semantics to be meaningful. The `count` parameter specifies how
+    /// many events within `windowSeconds` constitute a flood.
     bool detectSYNFlood(const std::string& destIP, int count, int windowSeconds);
+
+    /// Detect brute-force login attempts. Each invocation registers one failed
+    /// authentication event. Callers must invoke this once per failed attempt.
+    /// `failCount` specifies the threshold within `windowSeconds`.
     bool detectBruteForce(const std::string& destIP, uint16_t destPort, int failCount, int windowSeconds);
 
     std::vector<IDSAlert> getAlerts() const;
@@ -78,6 +95,7 @@ private:
 
     bool matchesRule(const IDSRule& rule, const PacketInfo& packet) const;
     void pruneOldEntries();
+    void appendAlert(const IDSAlert& alert);
 
     mutable std::mutex mutex_;
     std::vector<IDSRule> rules_;

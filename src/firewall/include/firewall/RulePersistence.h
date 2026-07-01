@@ -10,6 +10,19 @@
 
 namespace ThreatOne::Firewall {
 
+/// RulePersistence provides database CRUD operations for firewall rules.
+///
+/// Design intent: This is a standalone library component that is NOT automatically
+/// wired into FirewallManager. Rules added through the manager live in memory only.
+/// Application-layer code is responsible for:
+///   1. Obtaining a Database::IConnection (via ConnectionManager).
+///   2. Calling loadRules() at startup to hydrate the RuleEngine.
+///   3. Calling saveRule()/deleteRule()/updateRule() when the application wants
+///      durable persistence of rule changes.
+///
+/// This separation keeps the firewall engine testable without a database dependency
+/// and allows the application to choose its own persistence strategy (e.g., batched
+/// writes, write-through, periodic sync).
 class RulePersistence {
 public:
     RulePersistence();

@@ -68,7 +68,7 @@ void BandwidthMonitor::setRateLimit(const std::string& appPath, uint64_t bytesPe
     logger_.info("Set rate limit for {}: {} bytes/sec", appPath, bytesPerSecond);
 }
 
-bool BandwidthMonitor::checkRateLimit(const std::string& appPath, uint64_t bytes) const {
+bool BandwidthMonitor::checkRateLimit(const std::string& appPath, uint64_t bytes) {
     std::lock_guard<std::mutex> lock(mutex_);
     auto it = rateLimits_.find(appPath);
     if (it == rateLimits_.end()) {
@@ -92,7 +92,7 @@ void BandwidthMonitor::reset() {
     logger_.info("BandwidthMonitor reset");
 }
 
-uint64_t BandwidthMonitor::getCurrentWindowBytes(const RateWindow& window) const {
+uint64_t BandwidthMonitor::getCurrentWindowBytes(const RateWindow& window) {
     auto now = std::chrono::steady_clock::now();
     auto windowStart = now - std::chrono::seconds(1);
 

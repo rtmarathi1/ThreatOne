@@ -69,7 +69,7 @@ bool RuleEngine::disableRule(const std::string& ruleId) {
     return true;
 }
 
-Action RuleEngine::evaluatePacket(const PacketDescriptor& packet) const {
+RuleEngine::EvalResult RuleEngine::evaluatePacket(const PacketDescriptor& packet) const {
     std::lock_guard<std::mutex> lock(mutex_);
     for (const auto& rule : rules_) {
         if (!rule.enabled) {
@@ -78,10 +78,10 @@ Action RuleEngine::evaluatePacket(const PacketDescriptor& packet) const {
         if (matchesRule(rule, packet)) {
             logger_.debug("Packet matched rule: {} (action: {})",
                 rule.name, static_cast<int>(rule.action));
-            return rule.action;
+            return {rule.action, rule.id};
         }
     }
-    return defaultAction_;
+    return {defaultAction_, ""};
 }
 
 void RuleEngine::setDefaultAction(Action action) {

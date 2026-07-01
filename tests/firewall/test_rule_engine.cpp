@@ -99,7 +99,7 @@ TEST_CASE("RuleEngine - priority ordering (higher priority matches first)") {
     packet.direction = Direction::Inbound;
 
     // Allow rule has lower priority number, evaluated first
-    Action result = engine.evaluatePacket(packet);
+    Action result = engine.evaluatePacket(packet).action;
     CHECK(result == Action::Allow);
 }
 
@@ -142,7 +142,7 @@ TEST_CASE("RuleEngine - evaluatePacket with CIDR rule") {
     lanPacket.protocol = Protocol::TCP;
     lanPacket.direction = Direction::Inbound;
 
-    CHECK(engine.evaluatePacket(lanPacket) == Action::Allow);
+    CHECK(engine.evaluatePacket(lanPacket).action == Action::Allow);
 
     PacketDescriptor wanPacket;
     wanPacket.sourceIP = "8.8.8.8";
@@ -152,7 +152,7 @@ TEST_CASE("RuleEngine - evaluatePacket with CIDR rule") {
     wanPacket.protocol = Protocol::TCP;
     wanPacket.direction = Direction::Inbound;
 
-    CHECK(engine.evaluatePacket(wanPacket) == Action::Block);
+    CHECK(engine.evaluatePacket(wanPacket).action == Action::Block);
 }
 
 TEST_CASE("RuleEngine - disabled rules are not evaluated") {
@@ -174,10 +174,10 @@ TEST_CASE("RuleEngine - disabled rules are not evaluated") {
     packet.protocol = Protocol::TCP;
     packet.direction = Direction::Inbound;
 
-    CHECK(engine.evaluatePacket(packet) == Action::Allow);
+    CHECK(engine.evaluatePacket(packet).action == Action::Allow);
 
     engine.disableRule("allow_all");
-    CHECK(engine.evaluatePacket(packet) == Action::Block);
+    CHECK(engine.evaluatePacket(packet).action == Action::Block);
 }
 
 TEST_CASE("RuleEngine - default action when no rule matches") {
@@ -190,10 +190,10 @@ TEST_CASE("RuleEngine - default action when no rule matches") {
     packet.protocol = Protocol::TCP;
     packet.direction = Direction::Inbound;
 
-    CHECK(engine.evaluatePacket(packet) == Action::Allow);
+    CHECK(engine.evaluatePacket(packet).action == Action::Allow);
 
     engine.setDefaultAction(Action::Block);
-    CHECK(engine.evaluatePacket(packet) == Action::Block);
+    CHECK(engine.evaluatePacket(packet).action == Action::Block);
 }
 
 TEST_CASE("RuleEngine - protocol matching") {
@@ -220,8 +220,8 @@ TEST_CASE("RuleEngine - protocol matching") {
     tcpPacket.protocol = Protocol::TCP;
     tcpPacket.direction = Direction::Inbound;
 
-    CHECK(engine.evaluatePacket(udpPacket) == Action::Allow);
-    CHECK(engine.evaluatePacket(tcpPacket) == Action::Block);
+    CHECK(engine.evaluatePacket(udpPacket).action == Action::Allow);
+    CHECK(engine.evaluatePacket(tcpPacket).action == Action::Block);
 }
 
 TEST_CASE("RuleEngine - application path matching") {
@@ -252,8 +252,8 @@ TEST_CASE("RuleEngine - application path matching") {
     otherPacket.direction = Direction::Outbound;
     otherPacket.applicationPath = "/usr/bin/wget";
 
-    CHECK(engine.evaluatePacket(browserPacket) == Action::Allow);
-    CHECK(engine.evaluatePacket(otherPacket) == Action::Block);
+    CHECK(engine.evaluatePacket(browserPacket).action == Action::Allow);
+    CHECK(engine.evaluatePacket(otherPacket).action == Action::Block);
 }
 
 TEST_CASE("RuleEngine - parseIPv4") {

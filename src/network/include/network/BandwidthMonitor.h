@@ -38,7 +38,11 @@ public:
     TrafficStats getTotalStats() const;
 
     void setRateLimit(const std::string& appPath, uint64_t bytesPerSecond);
-    bool checkRateLimit(const std::string& appPath, uint64_t bytes) const;
+
+    /// Check whether transmitting the given number of bytes for an application
+    /// would exceed its rate limit. Note: this method has side effects (it prunes
+    /// expired sliding-window entries), so it is intentionally non-const.
+    bool checkRateLimit(const std::string& appPath, uint64_t bytes);
 
     void reset();
 
@@ -53,7 +57,7 @@ private:
     std::unordered_map<std::string, RateWindow> rateLimits_;
     Core::ModuleLogger logger_;
 
-    uint64_t getCurrentWindowBytes(const RateWindow& window) const;
+    uint64_t getCurrentWindowBytes(const RateWindow& window);
 };
 
 } // namespace ThreatOne::Network

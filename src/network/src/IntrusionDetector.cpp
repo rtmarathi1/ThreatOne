@@ -32,6 +32,9 @@ std::vector<IDSAlert> IntrusionDetector::evaluate(const PacketInfo& packet) {
     std::lock_guard<std::mutex> lock(mutex_);
     std::vector<IDSAlert> triggered;
 
+    // Periodically prune stale port scan tracker entries
+    pruneOldEntries();
+
     for (const auto& rule : rules_) {
         if (matchesRule(rule, packet)) {
             IDSAlert alert;
@@ -46,7 +49,7 @@ std::vector<IDSAlert> IntrusionDetector::evaluate(const PacketInfo& packet) {
             alert.timestamp = std::chrono::steady_clock::now();
 
             triggered.push_back(alert);
-            alerts_.push_back(alert);
+            appendAlert(alert);
 
             logger_.warn("IDS alert: rule={}, src={}:{}, dst={}:{}",
                          rule.name, packet.sourceIP, packet.sourcePort,
@@ -61,6 +64,9 @@ bool IntrusionDetector::detectPortScan(const std::string& sourceIP,
                                        const std::vector<uint16_t>& ports) {
     std::lock_guard<std::mutex> lock(mutex_);
     auto now = std::chrono::steady_clock::now();
+
+    // Prune stale entries from other IPs to prevent unbounded growth
+    pruneOldEntries();
 
     auto& attempts = portScanTracker_[sourceIP];
     for (uint16_t port : ports) {
@@ -93,7 +99,7 @@ bool IntrusionDetector::detectPortScan(const std::string& sourceIP,
         alert.description = "Port scan detected from " + sourceIP +
                            " (" + std::to_string(uniquePorts.size()) + " ports)";
         alert.timestamp = now;
-        alerts_.push_back(alert);
+        appendAlert(alert);
 
         logger_.warn("Port scan detected from {}: {} unique ports", sourceIP, uniquePorts.size());
     }
@@ -126,7 +132,7 @@ bool IntrusionDetector::detectSYNFlood(const std::string& destIP, int count, int
                            " (" + std::to_string(timestamps.size()) + " in " +
                            std::to_string(windowSeconds) + "s)";
         alert.timestamp = now;
-        alerts_.push_back(alert);
+        appendAlert(alert);
 
         logger_.warn("SYN flood detected targeting {}: {} attempts in {}s",
                      destIP, timestamps.size(), windowSeconds);
@@ -163,7 +169,7 @@ bool IntrusionDetector::detectBruteForce(const std::string& destIP, uint16_t des
                            " (" + std::to_string(timestamps.size()) + " in " +
                            std::to_string(windowSeconds) + "s)";
         alert.timestamp = now;
-        alerts_.push_back(alert);
+        appendAlert(alert);
 
         logger_.warn("Brute force detected on {}: {} attempts in {}s",
                      key, timestamps.size(), windowSeconds);
@@ -238,6 +244,14 @@ void IntrusionDetector::pruneOldEntries() {
             ++it;
         }
     }
+}
+
+void IntrusionDetector::appendAlert(const IDSAlert& alert) {
+    // Evict oldest alerts when at capacity
+    if (alerts_.size() >= kMaxAlerts) {
+        alerts_.erase(alerts_.begin());
+    }
+    alerts_.push_back(alert);
 }
 
 } // namespace ThreatOne::Network

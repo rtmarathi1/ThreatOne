@@ -10,32 +10,17 @@ PacketFilter::PacketFilter(RuleEngine& ruleEngine)
 
 FilterResult PacketFilter::filterPacket(const PacketDescriptor& packet) {
     FilterResult result;
-    result.action = ruleEngine_.evaluatePacket(packet);
 
-    // Find matched rule for the result
-    auto rules = ruleEngine_.getRules();
-    for (const auto& rule : rules) {
-        if (!rule.enabled) continue;
+    // Delegate full evaluation to RuleEngine which returns both action and matched rule ID
+    auto evalResult = ruleEngine_.evaluatePacket(packet);
+    result.action = evalResult.action;
+    result.matchedRuleId = evalResult.matchedRuleId;
 
-        // Check if this is the matching rule by re-evaluating
-        // We test by checking if a single-rule evaluation would produce the same action
-        bool sourceMatch = rule.sourceIP.empty() ||
-            RuleEngine::matchCIDR(packet.sourceIP, rule.sourceIP,
-                rule.sourceCidrPrefix > 0 ? rule.sourceCidrPrefix : 32);
-        bool destMatch = rule.destIP.empty() ||
-            RuleEngine::matchCIDR(packet.destIP, rule.destIP,
-                rule.destCidrPrefix > 0 ? rule.destCidrPrefix : 32);
-        bool protoMatch = rule.protocol == Protocol::Any || rule.protocol == packet.protocol;
-        bool dirMatch = rule.direction == packet.direction;
-
-        if (sourceMatch && destMatch && protoMatch && dirMatch) {
-            result.matchedRuleId = rule.id;
-            result.logMessage = "Packet " + packet.sourceIP + ":" +
-                std::to_string(packet.sourcePort) + " -> " +
-                packet.destIP + ":" + std::to_string(packet.destPort) +
-                " matched rule: " + rule.name;
-            break;
-        }
+    if (!result.matchedRuleId.empty()) {
+        result.logMessage = "Packet " + packet.sourceIP + ":" +
+            std::to_string(packet.sourcePort) + " -> " +
+            packet.destIP + ":" + std::to_string(packet.destPort) +
+            " matched rule: " + result.matchedRuleId;
     }
 
     // Update statistics
