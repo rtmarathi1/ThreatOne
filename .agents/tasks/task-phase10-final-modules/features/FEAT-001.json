@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Implement XDR Engine (Endpoint Correlation, Cross-Source Correlation, Automated Investigation, Response Actions) and SIEM Engine (Log Collector, Log Parser, Correlation Rules, Search Engine, Dashboard Metrics). Replace stubs with full implementations.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Expand src/xdr/include/xdr/IXDREngine.h to add structs/enums for: EndpointEvent (endpoint_id, event_type, timestamp, severity, details map), ResponseAction (id, type enum [IsolateEndpoint/BlockIP/DisableUser/KillProcess], target, status enum, timestamp), Investigation (id, correlationId, status enum [InProgress/Completed/Failed], findings vector, evidence vector, playbook string), CrossSourceAlert (id, source enum [Email/Cloud/Identity/Network/Endpoint], original_alert_id, normalized_severity). Add virtual methods: submitEndpointEvent, correlateAcrossSources, startAutomatedInvestigation(correlationId, playbook), getInvestigation(id), executeResponseAction(ResponseAction), getResponseActions, getActiveInvestigations.",
     "Expand src/xdr/include/xdr/XDREngine.h to declare all new methods plus private members: maps for events_, correlations_, investigations_, responseActions_, mutex_, atomic nextId counters.",
@@ -34,5 +34,5 @@
     "cd build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Build and all 860 tests pass. Raw string literal delimiters needed custom tags (R\"re(...)re\") to handle quotes inside regex patterns in SIEM parseJSON."
 }
