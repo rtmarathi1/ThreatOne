@@ -1,0 +1,34 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Real YARA/crypto library integration with graceful fallbacks - Replace stubs with real library code paths behind CMake options",
+  "status": "completed",
+  "steps": [
+    "Create cmake/FindYARA.cmake: find_path for yara.h, find_library for libyara. Set YARA_FOUND, YARA_INCLUDE_DIRS, YARA_LIBRARIES.",
+    "Create cmake/FindLibsodium.cmake: find_path for sodium.h, find_library for libsodium. Set LIBSODIUM_FOUND, LIBSODIUM_INCLUDE_DIRS, LIBSODIUM_LIBRARIES.",
+    "Update cmake/Dependencies.cmake: Add options ENABLE_OPENSSL, ENABLE_YARA, ENABLE_LIBSODIUM, ENABLE_ZSTD (all default OFF). Add find_package(OpenSSL) when ENABLE_OPENSSL=ON, find_package(YARA) when ENABLE_YARA=ON, find_package(Libsodium) when ENABLE_LIBSODIUM=ON, find_package(ZSTD) / find_package(zstd CONFIG) when ENABLE_ZSTD=ON. Define compile definitions HAS_OPENSSL, HAS_YARA, HAS_LIBSODIUM, HAS_ZSTD based on found status.",
+    "Update src/scanner/include/scanner/FileHasher.h: Add #ifdef HAS_OPENSSL path that uses OpenSSL EVP API for SHA256. Keep existing custom SHA256 as the fallback.",
+    "Update src/scanner/src/FileHasher.cpp: Add OpenSSL-based hashing when HAS_OPENSSL is defined (EVP_DigestInit_ex with EVP_sha256()). The existing FIPS 180-4 implementation remains as fallback.",
+    "Update src/scanner/include/scanner/YaraEngine.h and src/scanner/src/YaraEngine.cpp: Add #ifdef HAS_YARA code path using yr_initialize, yr_compiler_create, yr_compiler_add_string, yr_compiler_get_rules, yr_rules_scan_file, yr_rules_scan_mem. Keep existing stub as fallback when HAS_YARA is not defined.",
+    "Update src/scanner/CMakeLists.txt: conditionally link OpenSSL::Crypto and ${YARA_LIBRARIES} when available, add target_compile_definitions for HAS_OPENSSL, HAS_YARA.",
+    "Rewrite src/utils/include/utils/CryptoUtils.h: Replace placeholder with production implementation. When HAS_OPENSSL: use EVP_aes_256_gcm for AES-256-GCM encrypt/decrypt. When HAS_LIBSODIUM: use crypto_aead_xchacha20poly1305_ietf for authenticated encryption, crypto_pwhash for key derivation, sodium_memzero for secure memory. Keep simple XOR fallback (clearly marked) when neither is available. Add BLAKE3 option using a vendored C header-only reference implementation.",
+    "Create src/utils/include/utils/CompressionUtils.h and src/utils/src/CompressionUtils.cpp: When HAS_ZSTD: compress/decompress using ZSTD_compress/ZSTD_decompress. Fallback: no-op passthrough that returns the data unchanged (or a simple run-length encoding placeholder).",
+    "Update src/utils/CMakeLists.txt: add CompressionUtils.cpp source, conditionally link OpenSSL::Crypto, ${LIBSODIUM_LIBRARIES}, zstd when available, add target_compile_definitions.",
+    "Ensure entire build compiles and all existing tests pass with all ENABLE_* options OFF (default)."
+  ],
+  "acceptance_criteria": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build succeeds",
+    "All existing tests pass (FileHasher tests still validate SHA256 known vectors)",
+    "cmake/FindYARA.cmake and cmake/FindLibsodium.cmake exist with proper find logic",
+    "FileHasher.h has #ifdef HAS_OPENSSL code path",
+    "YaraEngine.cpp has #ifdef HAS_YARA code path with yr_* API calls",
+    "CryptoUtils.h has real AES-256-GCM encryption path behind HAS_OPENSSL",
+    "CompressionUtils.h exists with ZSTD interface and fallback"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": "All 1053 tests pass. Note: threatone_core already depends on threatone_utils so cannot have a circular dependency. Used direct include path for core/Error.h in utils CMakeLists instead of linking threatone_core. The BLAKE3 placeholder in FileHasher.cpp needed a local lambda for rotr since the static function is inside the #else block."
+}
