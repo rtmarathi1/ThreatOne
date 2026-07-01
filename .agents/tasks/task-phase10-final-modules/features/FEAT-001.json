@@ -1,0 +1,38 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Implement XDR Engine (Endpoint Correlation, Cross-Source Correlation, Automated Investigation, Response Actions) and SIEM Engine (Log Collector, Log Parser, Correlation Rules, Search Engine, Dashboard Metrics). Replace stubs with full implementations.",
+  "status": "in_progress",
+  "steps": [
+    "Expand src/xdr/include/xdr/IXDREngine.h to add structs/enums for: EndpointEvent (endpoint_id, event_type, timestamp, severity, details map), ResponseAction (id, type enum [IsolateEndpoint/BlockIP/DisableUser/KillProcess], target, status enum, timestamp), Investigation (id, correlationId, status enum [InProgress/Completed/Failed], findings vector, evidence vector, playbook string), CrossSourceAlert (id, source enum [Email/Cloud/Identity/Network/Endpoint], original_alert_id, normalized_severity). Add virtual methods: submitEndpointEvent, correlateAcrossSources, startAutomatedInvestigation(correlationId, playbook), getInvestigation(id), executeResponseAction(ResponseAction), getResponseActions, getActiveInvestigations.",
+    "Expand src/xdr/include/xdr/XDREngine.h to declare all new methods plus private members: maps for events_, correlations_, investigations_, responseActions_, mutex_, atomic nextId counters.",
+    "Implement src/xdr/src/XDREngine.cpp with full logic: correlateEvents groups events by endpoint and time window, detects multi-stage attacks (events from same endpoint within 5min window with escalating severity). correlateAcrossSources merges alerts from different sources into unified incidents. startAutomatedInvestigation creates Investigation with findings based on correlation severity. executeResponseAction validates and stores action with status tracking. All methods thread-safe.",
+    "Update src/xdr/CMakeLists.txt to add any new .cpp files (if splitting into multiple files like EndpointCorrelation.cpp, ResponseActions.cpp, etc.).",
+    "Expand src/siem/include/siem/ISIEMEngine.h to add: LogFormat enum (Syslog/WindowsEventLog/JSON/CEF/LEEF), ParsedField struct (name, value, type), CorrelationRule struct (id, name, condition, timeWindowSeconds, threshold, severity, enabled), SearchQuery struct (text, fields map, timeStart, timeEnd, limit), DashboardMetrics struct (eventsPerSecond, topSources vector, alertRate, storageUsedBytes, totalLogs). Add virtual methods: ingestBatch(vector<LogEntry>), parseLog(rawString, format) returning ParsedField vector, createCorrelationRule(CorrelationRule), evaluateRules() returning vector<SIEMAlert>, search(SearchQuery) returning vector<LogEntry>, getDashboardMetrics().",
+    "Expand src/siem/include/siem/SIEMEngine.h to declare all new methods plus private: logs_ vector/map, rules_ map, alerts_ map, metrics tracking members, mutex_.",
+    "Implement src/siem/src/SIEMEngine.cpp: ingestLog stores and evaluates rules. ingestBatch calls ingestLog for each. parseLog handles regex-based field extraction for each format (syslog pattern, JSON parsing, CEF pipe-delimited). createCorrelationRule stores rules. evaluateRules checks time windows and thresholds over stored logs. search does full-text substring match with field filtering and time range. getDashboardMetrics returns computed stats from stored data.",
+    "Update src/siem/CMakeLists.txt if needed.",
+    "Create tests/xdr/test_xdr_engine.cpp with doctest tests covering: correlateEvents with matching/non-matching events, cross-source correlation merging alerts, automated investigation lifecycle, response action execution and status tracking, edge cases (empty inputs, duplicate IDs).",
+    "Create tests/siem/test_siem_engine.cpp with doctest tests covering: log ingestion and retrieval, batch ingestion, log parsing for each format (syslog, JSON, CEF), correlation rule creation and evaluation (threshold breach triggers alert, under threshold does not), search with text/field/time filters, dashboard metrics calculation.",
+    "Update tests/CMakeLists.txt to add xdr and siem test files, include directories for xdr/ and siem/, and link threatone_xdr and threatone_siem libraries."
+  ],
+  "acceptance_criteria": [
+    "XDREngine correlateEvents returns correlations when events share endpoint and time proximity",
+    "XDREngine cross-source correlation merges alerts from different sources into unified incidents",
+    "XDREngine automated investigation creates Investigation objects with findings",
+    "XDREngine response actions are stored with proper status tracking",
+    "SIEMEngine ingests logs and stores them retrievably",
+    "SIEMEngine parses syslog, JSON, and CEF format strings into fields",
+    "SIEMEngine correlation rules fire alerts when thresholds are breached within time windows",
+    "SIEMEngine search returns matching logs by text, fields, and time range",
+    "SIEMEngine dashboard metrics reflect actual ingested data",
+    "All existing tests continue to pass",
+    "cmake --build build succeeds with no errors"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -89,6 +89,8 @@ set(TEST_SOURCES
     vulnerability/test_patch_manager.cpp
     vulnerability/test_asset_vulnerability_map.cpp
     vulnerability/test_vulnerability_trends.cpp
+    xdr/test_xdr_engine.cpp
+    siem/test_siem_engine.cpp
 )
 
 # Create the test executable
@@ -115,6 +117,8 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/reporting/include
         ${CMAKE_SOURCE_DIR}/src/compliance/include
         ${CMAKE_SOURCE_DIR}/src/vulnerability/include
+        ${CMAKE_SOURCE_DIR}/src/xdr/include
+        ${CMAKE_SOURCE_DIR}/src/siem/include
 )
 
 target_link_libraries(threatone_tests
@@ -139,6 +143,8 @@ target_link_libraries(threatone_tests
         threatone_reporting
         threatone_compliance
         threatone_vulnerability
+        threatone_xdr
+        threatone_siem
         spdlog
         nlohmann_json
         sqlite3
