@@ -2,7 +2,7 @@
   "id": "FEAT-005",
   "type": "fix",
   "description": "Fix review issues: incorrect variance formula in BehaviorAnalyticsEngine, regex compiled per call in NLPProcessor, global mutex in AIEngine, unbounded concatenation in summarizeLog",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Fix BehaviorAnalyticsEngine::updateBaseline to use proper Welford's algorithm with M2 tracking (store m2 in UserBaseline struct)",
     "Pre-compile regex patterns in NLPProcessor at construction time and cap input size in summarizeLog",
@@ -20,5 +20,5 @@
     "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build && cd build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": null
+  "findings": "All 4 concrete review issues fixed. Build and all tests pass. Welford's M2 is now tracked in UserBaseline struct alongside hourStdDev. NLPProcessor compiles 4 default regex patterns plus the IP regex at construction time. summarizeLog caps combined input at 1MB. AIEngine no longer holds a global mutex since FeatureExtractor/ThreatClassifier/RiskScoringEngine/NLPProcessor/RecommendationEngine/AutoInvestigation/PredictionEngine are stateless, and AnomalyDetector has its own internal mutex."
 }
