@@ -84,6 +84,11 @@ set(TEST_SOURCES
     compliance/test_compliance_scoring.cpp
     compliance/test_evidence_collector.cpp
     compliance/test_remediation_tracker.cpp
+    vulnerability/test_vulnerability_database.cpp
+    vulnerability/test_vulnerability_prioritizer.cpp
+    vulnerability/test_patch_manager.cpp
+    vulnerability/test_asset_vulnerability_map.cpp
+    vulnerability/test_vulnerability_trends.cpp
 )
 
 # Create the test executable
@@ -109,6 +114,7 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/api/include
         ${CMAKE_SOURCE_DIR}/src/reporting/include
         ${CMAKE_SOURCE_DIR}/src/compliance/include
+        ${CMAKE_SOURCE_DIR}/src/vulnerability/include
 )
 
 target_link_libraries(threatone_tests
@@ -132,6 +138,7 @@ target_link_libraries(threatone_tests
         threatone_api
         threatone_reporting
         threatone_compliance
+        threatone_vulnerability
         spdlog
         nlohmann_json
         sqlite3
