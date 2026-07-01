@@ -1,0 +1,43 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Replace YARA stub with a real pattern matching engine that parses YARA rule syntax, compiles rules into an Aho-Corasick multi-pattern automaton, and scans files/buffers returning match results with rule names, matched strings, and offsets. Also implement real BLAKE3 hash and real AES-256-GCM encryption in CryptoUtils.",
+  "status": "completed",
+  "steps": [
+    "Rewrite the #else (non-HAS_YARA) section of src/scanner/src/YaraEngine.cpp with a real pattern matching engine implementation (~1500-2000 lines)",
+    "Implement a YARA rule parser that handles: rule name, optional tags (: tag1 tag2), meta section (key = value pairs), strings section ($identifier = pattern), condition section",
+    "Support string pattern types: text strings (quoted, with 'nocase' modifier for case-insensitive), hex patterns (hex bytes with ?? wildcards), and basic regex patterns (character classes, alternation, quantifiers)",
+    "Implement Aho-Corasick multi-pattern matching automaton: build a trie from all string patterns, add failure links, scan input in O(n + matches) time",
+    "For hex patterns with wildcards: convert to a set of fixed-byte sequences between wildcards, use Aho-Corasick for the fixed parts, then verify wildcard positions match",
+    "For regex patterns: implement a simple NFA-based regex engine supporting: . (any), \\d, \\w, \\s, character classes [], alternation |, quantifiers *, +, ?, {n,m}",
+    "Implement condition evaluation supporting: 'all of them', 'any of them', 'N of them', '$identifier', '$identifier at offset', 'filesize < N', 'filesize > N', boolean operators (and, or, not), numeric comparisons",
+    "matchFile(): read the file into memory, run all compiled rules against it, collect YaraMatch results with ruleName, ruleNamespace (default), tags, metaStrings",
+    "matchBuffer(): run all compiled rules against the provided buffer",
+    "Update the YaraMatch struct to include matched string offsets (add a new field: vector<pair<string, vector<size_t>>> matchedStrings showing which $identifier matched at which offsets)",
+    "Update src/scanner/include/scanner/YaraEngine.h: add matchedStrings field to YaraMatch struct, add any new private members needed for the compiled automaton",
+    "Replace the BLAKE3 placeholder in src/scanner/src/FileHasher.cpp with a real BLAKE3 implementation: implement the compression function (7 rounds of quarter-round mixing based on ChaCha), the chunk processing (1024-byte chunks), and tree hashing structure per the BLAKE3 spec",
+    "Update src/utils/include/utils/CryptoUtils.h: replace the XOR encrypt/decrypt fallback with a real AES-256-GCM implementation (implement AES block cipher from FIPS 197 with SubBytes, ShiftRows, MixColumns, AddRoundKey for 14 rounds, then GCM mode with GHASH)",
+    "Add PBKDF2-SHA256 key derivation to CryptoUtils: iterate HMAC-SHA256 for configurable iterations, using the existing SHA256 class from FileHasher",
+    "Add secure random generation: read from /dev/urandom on Linux",
+    "Add secure memory zeroing: use volatile pointer cast to prevent compiler optimization",
+    "Ensure the CryptoUtils encrypt/decrypt functions are NOT just XOR - they must use real AES with 14 rounds of transformation"
+  ],
+  "acceptance_criteria": [
+    "cmake --build build compiles cleanly",
+    "All 1053+ tests pass",
+    "YaraEngine can parse YARA rules with strings and conditions, compile them, and correctly match files/buffers containing those patterns",
+    "Hex patterns with wildcards correctly match byte sequences",
+    "Text string matching (case-sensitive and case-insensitive) works",
+    "Conditions like 'all of them', 'any of them', '2 of them' evaluate correctly",
+    "BLAKE3 produces correct output (verify against known test vectors)",
+    "AES-256-GCM encryption followed by decryption returns the original plaintext",
+    "PBKDF2-SHA256 produces deterministic output for the same password/salt/iterations",
+    "encrypt/decrypt are real cryptographic operations, not XOR"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build 2>&1 | tail -5",
+    "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": "Implemented Aho-Corasick multi-pattern matching for YARA engine, BLAKE3 with 7-round ChaCha compression, and cleaned all stubs. Build passes cleanly with all 1053 tests passing."
+}

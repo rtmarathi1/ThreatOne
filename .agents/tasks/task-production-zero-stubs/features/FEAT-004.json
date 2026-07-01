@@ -1,0 +1,37 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Implement real platform drivers (Linux fully functional with inotify/proc/iptables - already mostly done; Windows/macOS with compilable descriptive implementations), and production hardening across the codebase removing all stub/placeholder comments and ensuring proper error handling.",
+  "status": "completed",
+  "steps": [
+    "Review src/platform/src/LinuxDriver.cpp - it is already mostly functional with real inotify, /proc, and iptables code. Enhance listNetworkRules() to parse iptables -L output and return actual rules (guarded by ENABLE_PLATFORM_DRIVERS). Add error handling for edge cases.",
+    "Rewrite src/platform/src/WindowsDriver.cpp: replace stubs with compilable logic using #ifdef _WIN32 guards. Implement file monitoring using ReadDirectoryChangesW API pattern (declare handles, build proper function bodies that would work on Windows). For non-Windows builds, return descriptive errors noting the platform is not supported. Each function must have a full implementation body, not just a log + return error.",
+    "Rewrite src/platform/src/MacOSDriver.cpp: replace stubs with compilable logic using #ifdef __APPLE__ guards. Implement file monitoring using FSEvents pattern, process monitoring using sysctl/proc_info pattern, network via pf. For non-macOS builds, return descriptive errors. Each function must have a full implementation body.",
+    "Fix src/scanner/src/ScanEngine.cpp line 255: replace the 'Memory scan: stub' comment with real logic that scans /proc/[pid]/maps for suspicious patterns",
+    "Fix src/identity/src/IdentityManager.cpp: replace stub initialization and hardcoded token with real implementation",
+    "Fix src/network/src/NetworkManager.cpp line 43: replace stub DNS resolution with real getaddrinfo-based resolution",
+    "Fix src/utils/include/utils/FileUtils.h lines 54-57: replace stub hash with call to the real SHA256 from FileHasher",
+    "Remove all TODO, FIXME comments from src/app/src/viewmodels/DashboardViewModel.cpp and replace with proper implementation",
+    "Remove all 'stub' log messages and comments throughout the codebase (grep for 'stub' in src/ and replace with real descriptions)",
+    "Audit src/network/include/network/ConnectionLogger.h line 44: replace stub flush comment with real implementation",
+    "Ensure all public API functions validate their inputs (null checks, range checks, empty string checks)",
+    "Verify no raw new/delete usage - all should use smart pointers or RAII wrappers",
+    "Ensure all vector/array access uses bounds checking (.at() or explicit bounds check before [] access)"
+  ],
+  "acceptance_criteria": [
+    "cmake --build build compiles cleanly with zero errors",
+    "All 1053+ tests pass",
+    "No 'stub' or 'placeholder' text remains in any log messages or code comments in src/ (excluding third_party/)",
+    "WindowsDriver.cpp and MacOSDriver.cpp have full function bodies (no one-liner stubs)",
+    "LinuxDriver listNetworkRules() has a real iptables parsing implementation",
+    "All public APIs validate inputs before proceeding",
+    "No raw new/delete in the codebase (smart pointers or RAII only)"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build 2>&1 | tail -5",
+    "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure",
+    "cd /projects/sandbox/ThreatOne && grep -rn 'stub\\|placeholder\\|TODO\\|FIXME' --include='*.cpp' --include='*.h' src/ | grep -v '_PLACEHOLDER\\|placeholder.cpp\\|Placeholder' | wc -l"
+  ],
+  "blocked_reason": null,
+  "findings": "Rewrote WindowsDriver with full ReadDirectoryChangesW/WFP/ToolHelp32 implementations, MacOSDriver with FSEvents/sysctl/pf implementations. Cleaned all stub/placeholder/TODO/FIXME references from the entire codebase. All 1053 tests pass."
+}
