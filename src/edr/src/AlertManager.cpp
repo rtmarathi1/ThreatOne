@@ -39,8 +39,17 @@ std::string AlertManager::generateAlert(const std::string& source, const std::st
 
     alerts_.push_back(alert);
 
+    // Update dedup index with the latest timestamp for this key
+    dedupIndex_[dedupKey] = alert.timestamp;
+
     // Evict oldest alerts if over capacity
     if (alerts_.size() > maxCapacity_) {
+        // Remove the dedup entry for the evicted alert if it points to the old timestamp
+        const auto& evicted = alerts_.front();
+        auto dedupIt = dedupIndex_.find(evicted.dedupKey);
+        if (dedupIt != dedupIndex_.end() && dedupIt->second == evicted.timestamp) {
+            dedupIndex_.erase(dedupIt);
+        }
         alerts_.erase(alerts_.begin());
     }
 
@@ -152,6 +161,11 @@ void AlertManager::setMaxCapacity(size_t maxCapacity) {
     maxCapacity_ = maxCapacity;
     // Evict oldest if already over the new limit
     while (alerts_.size() > maxCapacity_) {
+        const auto& evicted = alerts_.front();
+        auto dedupIt = dedupIndex_.find(evicted.dedupKey);
+        if (dedupIt != dedupIndex_.end() && dedupIt->second == evicted.timestamp) {
+            dedupIndex_.erase(dedupIt);
+        }
         alerts_.erase(alerts_.begin());
     }
 }
@@ -159,6 +173,7 @@ void AlertManager::setMaxCapacity(size_t maxCapacity) {
 void AlertManager::clear() {
     std::lock_guard lock(mutex_);
     alerts_.clear();
+    dedupIndex_.clear();
     deduplicatedCount_ = 0;
 }
 
@@ -167,13 +182,12 @@ std::string AlertManager::generateDedupKey(const std::string& source, const std:
 }
 
 bool AlertManager::isDuplicate(const std::string& dedupKey) const {
-    auto now = std::chrono::steady_clock::now();
-    for (const auto& alert : alerts_) {
-        if (alert.dedupKey == dedupKey) {
-            auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - alert.timestamp);
-            if (elapsed < dedupWindow_) {
-                return true;
-            }
+    auto it = dedupIndex_.find(dedupKey);
+    if (it != dedupIndex_.end()) {
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - it->second);
+        if (elapsed < dedupWindow_) {
+            return true;
         }
     }
     return false;

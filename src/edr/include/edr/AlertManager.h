@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <atomic>
 #include <functional>
+#include <unordered_map>
 
 #include "core/Logger.h"
 
@@ -89,6 +90,7 @@ private:
     mutable std::mutex mutex_;
     Core::ModuleLogger logger_;
     std::vector<Alert> alerts_;
+    std::unordered_map<std::string, std::chrono::steady_clock::time_point> dedupIndex_;
     std::chrono::seconds dedupWindow_{60};
     std::atomic<uint64_t> nextId_{1};
     size_t deduplicatedCount_ = 0;

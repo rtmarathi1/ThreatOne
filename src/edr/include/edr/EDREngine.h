@@ -69,6 +69,7 @@ private:
 
     ThreatOne::Core::ModuleLogger logger_;
     std::atomic<bool> collecting_{false};
+    size_t lastProcessedEventCount_ = 0;
 
     // Core monitoring components
     ProcessMonitor processMonitor_;

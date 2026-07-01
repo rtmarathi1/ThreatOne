@@ -36,6 +36,9 @@ public:
     // Get collected events
     [[nodiscard]] std::vector<FileEvent> getEvents() const;
 
+    // Get events added since the given cursor, and update the cursor
+    [[nodiscard]] std::vector<FileEvent> getEventsSince(size_t& cursor) const;
+
     // Register callback for real-time notification
     void setCallback(FileEventCallback callback);
 
@@ -70,6 +73,7 @@ private:
     size_t bufferHead_ = 0;
     size_t bufferCount_ = 0;
     size_t bufferCapacity_;
+    size_t totalEventsAdded_ = 0;  // Monotonically increasing counter for cursor-based reads
 };
 
 } // namespace ThreatOne::EDR

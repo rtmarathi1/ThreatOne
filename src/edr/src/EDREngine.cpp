@@ -273,8 +273,8 @@ std::vector<RuleEvaluationResult> EDREngine::evaluateRules(
 }
 
 void EDREngine::feedEventsToAnalysis() {
-    // Feed file events into behavior analyzer
-    auto fileEvents = fileMonitor_.getEvents();
+    // Feed only new (unprocessed) file events into behavior analyzer
+    auto fileEvents = fileMonitor_.getEventsSince(lastProcessedEventCount_);
     for (const auto& fe : fileEvents) {
         EDREvent event;
         event.type = "file_" + fe.action;

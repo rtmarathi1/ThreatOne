@@ -1,8 +1,23 @@
 #include "edr/LateralMovementDetection.h"
 
 #include <algorithm>
+#include <chrono>
+#include <sstream>
+#include <iomanip>
 
 namespace ThreatOne::EDR {
+
+namespace {
+
+std::string currentTimestamp() {
+    auto now = std::chrono::system_clock::now();
+    auto time = std::chrono::system_clock::to_time_t(now);
+    std::ostringstream oss;
+    oss << std::put_time(std::gmtime(&time), "%Y-%m-%dT%H:%M:%SZ");
+    return oss.str();
+}
+
+} // anonymous namespace
 
 LateralMovementDetection::LateralMovementDetection()
     : logger_(Core::Logger::instance().getModuleLogger("LateralMovementDetection"))
@@ -82,8 +97,9 @@ std::optional<LateralMovementIndicator> LateralMovementDetection::detectCredenti
             LateralMovementIndicator indicator;
             indicator.sourceHost = "local";
             indicator.destHost = "local";
-            indicator.technique = "credential_access";
-            indicator.timestamp = "Credential file access: " + filePath + " by " + processName;
+            indicator.technique = "Credential file access: " + filePath + " by " + processName;
+            indicator.timestamp = currentTimestamp();
+            indicator.severity = "high";
             logger_.warn("Credential access detected: {} accessed by {}", filePath, processName);
             return indicator;
         }
@@ -106,8 +122,9 @@ std::optional<LateralMovementIndicator> LateralMovementDetection::detectRemoteEx
             LateralMovementIndicator indicator;
             indicator.sourceHost = "local";
             indicator.destHost = "remote";
-            indicator.technique = "remote_execution";
-            indicator.timestamp = "Remote execution pattern: " + pattern + " in " + processName;
+            indicator.technique = "Remote execution pattern: " + pattern + " in " + processName;
+            indicator.timestamp = currentTimestamp();
+            indicator.severity = "critical";
             logger_.warn("Remote execution detected: {} in process {}", pattern, processName);
             return indicator;
         }

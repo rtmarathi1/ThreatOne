@@ -81,6 +81,41 @@ std::vector<FileEvent> FileMonitor::getEvents() const {
     return events;
 }
 
+std::vector<FileEvent> FileMonitor::getEventsSince(size_t& cursor) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    std::vector<FileEvent> events;
+
+    if (cursor >= totalEventsAdded_) {
+        // No new events
+        return events;
+    }
+
+    // How many new events since the cursor?
+    size_t newEvents = totalEventsAdded_ - cursor;
+
+    // If the cursor is too far behind (more new events than buffer holds),
+    // we can only return what's in the buffer
+    if (newEvents > bufferCount_) {
+        newEvents = bufferCount_;
+    }
+
+    events.reserve(newEvents);
+
+    // Read the most recent 'newEvents' from the ring buffer
+    // The buffer stores events oldest-first from position (bufferHead_ - bufferCount_) to bufferHead_
+    // We want only the last 'newEvents' entries
+    for (size_t i = bufferCount_ - newEvents; i < bufferCount_; ++i) {
+        size_t idx = (bufferHead_ + bufferCapacity_ - bufferCount_ + i) % bufferCapacity_;
+        events.push_back(eventBuffer_[idx]);
+    }
+
+    // Update cursor to current position
+    cursor = totalEventsAdded_;
+
+    return events;
+}
+
 void FileMonitor::setCallback(FileEventCallback callback) {
     std::lock_guard<std::mutex> lock(mutex_);
     callback_ = std::move(callback);
@@ -172,6 +207,7 @@ void FileMonitor::clearEvents() {
     std::lock_guard<std::mutex> lock(mutex_);
     bufferHead_ = 0;
     bufferCount_ = 0;
+    totalEventsAdded_ = 0;
 }
 
 void FileMonitor::scanDirectory(WatchEntry& entry) {
@@ -255,6 +291,7 @@ void FileMonitor::addEvent(FileEvent event) {
     if (bufferCount_ < bufferCapacity_) {
         bufferCount_++;
     }
+    totalEventsAdded_++;
 }
 
 } // namespace ThreatOne::EDR
