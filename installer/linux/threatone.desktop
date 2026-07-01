@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=ThreatOne Enterprise
+GenericName=Cybersecurity Platform
+Comment=Enterprise Cybersecurity Platform for threat detection and response
+Exec=threatone
+Icon=threatone
+Categories=Security;System;Network;
+Terminal=false
+StartupNotify=true
+Keywords=security;threat;antivirus;firewall;edr;
+MimeType=application/x-threatone;

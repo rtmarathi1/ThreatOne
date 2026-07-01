@@ -1,0 +1,51 @@
+{
+  "id": "FEAT-005",
+  "type": "feat",
+  "description": "QA testing and security audit infrastructure - Integration tests, security tests, performance benchmarks, audit scripts, static analysis config",
+  "status": "pending",
+  "steps": [
+    "Add ENABLE_INTEGRATION_TESTS and ENABLE_BENCHMARKS CMake options (default OFF) in root CMakeLists.txt. When enabled, add_subdirectory the respective test dirs.",
+    "Create tests/integration/ directory with CMakeLists.txt that builds integration test executable.",
+    "Create tests/integration/test_main.cpp with doctest main.",
+    "Create tests/integration/test_scan_pipeline.cpp: End-to-end scan test - create temp test files with known content, run ScanEngine scan, verify detection results via FileHasher and SignatureMatcher.",
+    "Create tests/integration/test_edr_pipeline.cpp: EDR event pipeline test - start FileMonitor watching a temp dir, create/modify/delete files, poll for events, verify events captured with correct types.",
+    "Create tests/integration/test_firewall_rules.cpp: Rule evaluation end-to-end - create RuleEngine, add rules with various match criteria, evaluate packets against rules, verify allow/block decisions.",
+    "Create tests/integration/test_database_lifecycle.cpp: Full DB lifecycle - create database, run migration, insert records via QueryBuilder, query them back, verify integrity.",
+    "Create tests/security/ directory with CMakeLists.txt.",
+    "Create tests/security/test_main.cpp with doctest main.",
+    "Create tests/security/test_crypto_operations.cpp: Verify SHA256 against NIST test vectors (already tested but add more vectors), test CryptoUtils encrypt/decrypt roundtrip, test key generation produces unique keys.",
+    "Create tests/security/test_input_validation.cpp: Fuzzing-style tests - extremely long strings, null bytes in strings, path traversal attempts (../../etc/passwd), SQL injection patterns in query builder inputs, buffer boundary values.",
+    "Create tests/security/test_authentication.cpp: Auth bypass attempts - test RBAC with invalid roles, expired tokens, tampered tokens, session fixation scenarios, privilege escalation attempts.",
+    "Create tests/security/test_secure_storage.cpp: Verify encrypted data differs from plaintext, verify key material is not stored in cleartext strings (basic check), verify decrypt(encrypt(x)) == x.",
+    "Create tests/performance/ directory with CMakeLists.txt.",
+    "Create tests/performance/bench_main.cpp with doctest main.",
+    "Create tests/performance/bench_scanner.cpp: File scanning throughput benchmark - create N temp files, measure time to hash all of them, report files/sec.",
+    "Create tests/performance/bench_hash.cpp: Hashing performance - benchmark SHA256 on 1KB, 1MB, 100MB buffers, report MB/sec.",
+    "Create tests/performance/bench_rule_matching.cpp: Firewall rule matching performance - create 10000 rules, evaluate 100000 packets, measure evaluations/sec.",
+    "Create .clang-tidy at project root with security-relevant checks: bugprone-*, cert-*, cppcoreguidelines-*, performance-*, readability-identifier-naming.",
+    "Create .cppcheck-suppressions at project root with common suppressions (missingIncludeSystem, unmatchedSuppression).",
+    "Create scripts/run_security_audit.sh: Runs cppcheck (if available) and clang-tidy (if available) on src/, then runs security tests.",
+    "Create scripts/run_integration_tests.sh: Builds with ENABLE_INTEGRATION_TESTS=ON and runs the integration test suite.",
+    "Create scripts/run_memory_check.sh: Builds with ENABLE_SANITIZERS=ON and runs tests under AddressSanitizer.",
+    "Update tests/CMakeLists.txt or root CMakeLists.txt to conditionally add integration and benchmark subdirectories.",
+    "Ensure default build (all options OFF) still compiles and all 1053 existing tests pass."
+  ],
+  "acceptance_criteria": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build succeeds (default, no new tests compiled)",
+    "All existing 1053 tests pass",
+    "cmake -B build -DENABLE_QT=OFF -DENABLE_INTEGRATION_TESTS=ON && cmake --build build succeeds",
+    "cmake -B build -DENABLE_QT=OFF -DENABLE_BENCHMARKS=ON && cmake --build build succeeds",
+    "Integration tests compile and run (at least test_scan_pipeline and test_edr_pipeline pass)",
+    "Security tests compile and run",
+    ".clang-tidy exists with meaningful checks enabled",
+    "All scripts are executable with correct shebangs"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ctest --output-on-failure",
+    "rm -rf build && cmake -B build -DENABLE_QT=OFF -DENABLE_INTEGRATION_TESTS=ON -DENABLE_BENCHMARKS=ON && cmake --build build -j$(nproc)",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

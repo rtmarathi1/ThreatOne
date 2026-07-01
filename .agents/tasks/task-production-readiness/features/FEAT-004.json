@@ -1,0 +1,35 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Code signing and secure update channel - Ed25519 signatures, HTTPS update checks, signed manifests, key generation scripts",
+  "status": "pending",
+  "steps": [
+    "Create src/updates/include/updates/CodeSigner.h: class CodeSigner with methods signData(data, privateKey) -> signature, verifySignature(data, signature, publicKey) -> bool. Ed25519 implementation: when HAS_OPENSSL use EVP_PKEY Ed25519 API, when HAS_LIBSODIUM use crypto_sign_ed25519, otherwise provide a stub that always returns true for verify (clearly marked NOT FOR PRODUCTION).",
+    "Create src/updates/src/CodeSigner.cpp: Implement all three code paths (#ifdef HAS_OPENSSL, #elif HAS_LIBSODIUM, #else stub).",
+    "Create src/updates/include/updates/UpdateManifest.h: struct UpdateManifest with version, downloadUrl, sha256Checksum, ed25519Signature, minimumVersion, releaseNotes, releaseDate. Methods: serialize() -> JSON string, static deserialize(json) -> Result<UpdateManifest>, verify(publicKey) -> bool.",
+    "Create src/updates/src/UpdateManifest.cpp: JSON serialization using nlohmann_json, signature verification delegates to CodeSigner.",
+    "Create src/updates/include/updates/SecureUpdateChannel.h: class SecureUpdateChannel with methods checkForUpdate(updateUrl) -> Result<UpdateManifest>, downloadUpdate(manifest, destPath) -> Result<void>, verifyAndApply(packagePath, manifest, publicKey) -> Result<void>. Certificate pinning interface (store expected SHA256 of server cert).",
+    "Create src/updates/src/SecureUpdateChannel.cpp: Implementation that verifies manifest signature before accepting, verifies package checksum before applying. Network calls are abstracted (interface-based) so they work without real HTTP.",
+    "Add embedded public key in src/updates/include/updates/EmbeddedKeys.h: constexpr array with placeholder Ed25519 public key (32 bytes of zeros as placeholder, with comment to replace).",
+    "Create scripts/sign_release.sh: Script that takes a file and private key path, produces Ed25519 signature. Uses openssl if available, otherwise prints instructions.",
+    "Create scripts/generate_keys.sh: Script to generate Ed25519 keypair using openssl genpkey.",
+    "Create cmake/CodeSigning.cmake: macOS codesign integration (codesign --sign), Windows signtool integration (signtool sign), both as CMake functions that are no-ops if tools not found.",
+    "Update src/updates/CMakeLists.txt: add new source files (CodeSigner.cpp, UpdateManifest.cpp, SecureUpdateChannel.cpp), link nlohmann_json, conditionally link OpenSSL::Crypto and libsodium.",
+    "Update root CMakeLists.txt to include(CodeSigning).",
+    "Ensure build compiles and all tests pass with default options."
+  ],
+  "acceptance_criteria": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build succeeds",
+    "All existing tests pass",
+    "CodeSigner has Ed25519 sign/verify with three backend options (OpenSSL, libsodium, stub)",
+    "UpdateManifest serializes/deserializes to JSON",
+    "SecureUpdateChannel verifies signatures before applying updates",
+    "scripts/sign_release.sh and scripts/generate_keys.sh exist and are executable"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

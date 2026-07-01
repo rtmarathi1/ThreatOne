@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Qt 6.8+ Integration and Platform-specific Drivers - Update build system for conditional Qt6 support and create platform abstraction layer",
+  "status": "completed",
+  "steps": [
+    "Update src/app/CMakeLists.txt to conditionally add Qt6 targets when ENABLE_QT=ON: link Qt6::Core, Qt6::Quick, Qt6::Widgets, add qt_add_qml_module for QML files from qml/ directory, register all ViewModels as QML types. When ENABLE_QT=OFF, keep current build unchanged.",
+    "Update src/app/src/main.cpp: Fill in the #ifdef ENABLE_QT_BUILD block with proper QGuiApplication, QQmlApplicationEngine, QML type registration (qmlRegisterType for all 10 ViewModels), engine.load for qrc:/qml/main.qml. Keep the non-Qt console loop as-is.",
+    "Create cmake/Platform.cmake to detect OS (Linux, Windows, macOS) and set platform-specific variables. Add option ENABLE_PLATFORM_DRIVERS (default OFF).",
+    "Create src/platform/ module with CMakeLists.txt, include/platform/IPlatformDriver.h (abstract interface with virtual methods for file monitoring, network filtering, process monitoring), include/platform/PlatformFactory.h (factory to create platform-appropriate driver).",
+    "Create src/platform/src/LinuxDriver.h/.cpp: real inotify-based file monitoring (inotify_init, inotify_add_watch, read events), netfilter interface (iptables rule management via system() calls to /sbin/iptables), /proc-based process enumeration. All behind #ifdef __linux__.",
+    "Create src/platform/src/WindowsDriver.h/.cpp: WFP (Windows Filtering Platform) interface stubs, ETW (Event Tracing for Windows) interface stubs, Windows Service registration stubs. Behind #ifdef _WIN32.",
+    "Create src/platform/src/MacOSDriver.h/.cpp: EndpointSecurity framework interface stubs, Network Extension interface stubs. Behind #ifdef __APPLE__.",
+    "Create src/platform/src/PlatformFactory.cpp: returns appropriate driver based on compile-time OS detection.",
+    "Update root CMakeLists.txt: add add_subdirectory(src/platform) (unconditionally), include(Platform) cmake module.",
+    "Ensure entire build still compiles with ENABLE_QT=OFF and all existing tests pass."
+  ],
+  "acceptance_criteria": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build succeeds without errors",
+    "cd build && ctest --output-on-failure passes all existing tests",
+    "src/platform/ module compiles as part of the build",
+    "IPlatformDriver.h defines a clean abstract interface",
+    "LinuxDriver compiles on Linux with inotify and /proc implementations",
+    "main.cpp has a complete Qt initialization path in #ifdef ENABLE_QT_BUILD"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": "All implemented successfully. The platform module compiles with LinuxDriver on Linux. Result<void, Error> uses ::ok() (no args) and ::err(Error). The Error class is defined in core/Error.h (not a separate Result.h). The build with ENABLE_QT=OFF produces the threatone_platform static library and all 1053 tests pass."
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>ThreatOne Core</DisplayName>
+    <Description>Core components of the ThreatOne Enterprise Cybersecurity Platform including the main application, threat detection engine, and essential security modules.</Description>
+    <Version>1.0.0</Version>
+    <ReleaseDate>2024-01-01</ReleaseDate>
+    <Name>com.threatone.core</Name>
+    <Default>true</Default>
+    <Required>true</Required>
+    <Script>installscript.qs</Script>
+    <Licenses>
+        <License name="Apache License 2.0" file="license.txt" />
+    </Licenses>
+    <ForcedInstallation>true</ForcedInstallation>
+</Package>

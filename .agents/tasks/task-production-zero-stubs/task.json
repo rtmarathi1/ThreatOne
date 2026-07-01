@@ -1,0 +1,7 @@
+{
+  "task_id": "task-production-zero-stubs",
+  "task_description": "Replace all stubs, placeholders, and dummy code in ThreatOne with real, functional implementations. Covers: SQLite3 embedded database engine, spdlog logging library, YARA pattern matching engine, AES-256-GCM/BLAKE3 cryptography, platform drivers, and production hardening.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
+  "blocked_reason": null
+}

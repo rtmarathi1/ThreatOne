@@ -1,0 +1,35 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Installer packaging infrastructure - Qt IFW config, CPack, build scripts, platform metadata files",
+  "status": "in_progress",
+  "steps": [
+    "Create installer/ directory structure: config/, packages/com.threatone.core/meta/, packages/com.threatone.core/data/, packages/com.threatone.plugins/meta/, packages/com.threatone.plugins/data/",
+    "Create installer/config/config.xml: Qt IFW config with Title 'ThreatOne Enterprise', Version 1.0.0, Publisher 'ThreatOne Security Inc', TargetDir '@HomeDir@/ThreatOne', StartMenuDir 'ThreatOne Enterprise'.",
+    "Create installer/config/controller.js: IFW UI customization script (IntroductionPageCallback, TargetDirectoryPageCallback, ComponentSelectionPageCallback).",
+    "Create installer/packages/com.threatone.core/meta/package.xml: DisplayName, Description, Version, ReleaseDate, Default (true), Required (true).",
+    "Create installer/packages/com.threatone.core/meta/installscript.qs: Component.prototype.createOperations with CreateShortcut, RegisterFileType. Linux: create .desktop file, set permissions. Windows: create Start Menu shortcut.",
+    "Create installer/packages/com.threatone.core/meta/license.txt: Apache 2.0 placeholder license text.",
+    "Create installer/packages/com.threatone.plugins/meta/package.xml: Optional plugins package (Default false).",
+    "Create scripts/build_installer.sh: bash script that runs cmake build then binarycreator to package installer (check for binarycreator availability).",
+    "Create scripts/build_installer.bat: Windows equivalent batch script.",
+    "Add CPack configuration to root CMakeLists.txt (behind option ENABLE_PACKAGING default OFF): include(CPack), set CPACK_GENERATOR to DEB;RPM;NSIS;DragNDrop based on platform, set CPACK_PACKAGE_* variables.",
+    "Create installer/linux/threatone.desktop: Linux .desktop file with Exec, Icon, Categories, Comment.",
+    "Create installer/macos/Info.plist.in: macOS Info.plist template with CFBundleIdentifier com.threatone.enterprise, CFBundleVersion @PROJECT_VERSION@.",
+    "Ensure build still compiles with ENABLE_QT=OFF (CPack section should be conditional or always-available metadata)."
+  ],
+  "acceptance_criteria": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build succeeds",
+    "All existing tests pass",
+    "installer/config/config.xml is valid XML",
+    "installer/packages/com.threatone.core/meta/package.xml is valid XML",
+    "scripts/build_installer.sh is executable and has correct shebang",
+    "CPack variables are set in CMakeLists.txt behind ENABLE_PACKAGING option"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
