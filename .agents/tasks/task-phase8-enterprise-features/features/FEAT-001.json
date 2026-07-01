@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Implement Identity module: RBAC, Authentication Manager, SSO Interface, LDAP/AD Connector, Azure AD/Google Workspace providers, Audit Logger. Expand the existing stub in src/identity/.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create src/identity/include/identity/RBACManager.h - RBAC system with Role enum (Admin, Analyst, Viewer, Custom), Permission struct (read/write/execute per module), role-permission mapping, user-role assignment. Namespace ThreatOne::Identity.",
     "Create src/identity/src/RBACManager.cpp - Implementation with in-memory role store, addRole, removeRole, assignRole, checkPermission, getPermissionsForRole methods.",
@@ -37,5 +37,5 @@
     "cd build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "The project uses a simplified doctest implementation where SUBCASEs all execute sequentially within a single TEST_CASE run (no re-entry isolation). Tests must use separate TEST_CASE blocks for each test scenario rather than relying on SUBCASE isolation. SHA256 implementation is a full FIPS 180-4 implementation verified against known test vectors."
 }
