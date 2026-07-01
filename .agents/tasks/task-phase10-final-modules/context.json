@@ -1,0 +1,32 @@
+{
+  "project_type": "C++20 desktop cybersecurity platform with static libraries",
+  "language": "C++20",
+  "build_system": "CMake 3.22 with static library modules. Each src/<module>/ has CMakeLists.txt defining a static lib, include/ for public headers, src/ for implementation.",
+  "test_framework": "doctest (header-only). All tests in tests/ directory organized by module. Single test_main.cpp with DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN. Tests registered in tests/CMakeLists.txt.",
+  "build_command": "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+  "test_command": "cd build && ctest --output-on-failure",
+  "verification_instructions": "1. Run cmake -B build -DENABLE_QT=OFF. 2. Run cmake --build build. 3. cd build && ctest --output-on-failure. All 824+ existing tests must pass plus new tests.",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "Build already works. cmake -B build -DENABLE_QT=OFF && cmake --build build",
+  "environment_constraints": "INTEGRATIONS_ONLY network - no external downloads. CMake 3.22, GCC 11.5, Clang 15 pre-installed. Third-party libs vendored in third_party/ (spdlog, nlohmann_json, doctest, sqlite3 stub). Do NOT push - just commit locally.",
+  "contribution_requirements": "Follow existing patterns: interface header I*.h, implementation header *.h, implementation *.cpp. Use ThreatOne::Core::ModuleLogger for logging. Use Core::Result<T> for error handling. Thread-safe with std::mutex. Use [[nodiscard]] on getters.",
+  "key_patterns": "Each module follows: IFoo.h (pure virtual interface + structs), Foo.h (class declaration with mutex_, logger_, internal maps), Foo.cpp (implementation with lock_guard, generateId, timestamps). Tests use doctest TEST_CASE/SUBCASE with direct instantiation. CMakeLists.txt adds static lib linked to threatone_compiler_options and threatone_core. Tests link to module libs via tests/CMakeLists.txt.",
+  "relevant_files": [
+    "src/xdr/include/xdr/IXDREngine.h",
+    "src/siem/include/siem/ISIEMEngine.h",
+    "src/soc/include/soc/ISOCManager.h",
+    "src/cloud/include/cloud/ICloudManager.h",
+    "src/plugin/include/plugin/IPluginManager.h",
+    "src/updates/include/updates/IUpdateManager.h",
+    "src/sandbox/include/sandbox/ISandboxEngine.h",
+    "src/hids/include/hids/IHIDSEngine.h",
+    "src/telemetry/include/telemetry/ITelemetryManager.h",
+    "src/reporting/src/ReportGenerator.cpp",
+    "src/fleet/include/fleet/FleetManager.h",
+    "tests/fleet/test_fleet_manager.cpp",
+    "tests/CMakeLists.txt",
+    "src/core/include/core/Error.h",
+    "src/core/include/core/Logger.h"
+  ],
+  "directory_structure": "src/<module>/include/<module>/ for headers, src/<module>/src/ for .cpp files, tests/<module>/ for test files. cmake/ for build helpers. third_party/ for vendored deps."
+}

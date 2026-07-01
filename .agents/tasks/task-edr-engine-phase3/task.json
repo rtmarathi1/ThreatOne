@@ -9,6 +9,6 @@
     "tests": "pass",
     "test_quality": "pass",
     "docker_build": "skipped",
-    "summary": "156 test cases pass (80+ new EDR tests). Build completes successfully. All 12 EDR components implemented with full integration via EDREngine orchestrator and MonitorEngine delegation. Review-fix pass 1 addressed 7 issues: wired feedEventsToAnalysis and detectLateralMovement, added capacity limits to AlertManager/RegistryMonitor/IncidentTimeline, pre-compiled regex in DetectionRulesEngine, removed redundant proc read. Review-fix pass 2 addressed 4 issues: cursor-based event processing in feedEventsToAnalysis to prevent duplicate re-processing, LateralMovementIndicator.severity field now set (high/critical), timestamp field stores ISO 8601 time with descriptions moved to technique field, AlertManager dedup uses unordered_map for O(1) lookups."
+    "summary": "156 test cases pass (80+ new EDR tests across 11 test files). Build completes with no errors. All 12 EDR components implemented. Two review passes completed: v1 findings (7 issues) all addressed, v2 findings (4 issues including 3 blocking) all addressed."
   }
 }

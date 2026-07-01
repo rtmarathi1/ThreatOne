@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "fix",
   "description": "Address code review findings: fix data race on findings vector by adding per-scan mutex, wire YARA engine into processFile, strip file permissions after quarantine move, and make Quick scan paths configurable instead of hard-coded.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Add a std::mutex findingsMutex to the ActiveScan struct in ScanEngine.h to guard the findings vector separately from scansMutex_",
     "Add a defaultQuickScanPaths_ field and a setter method to ScanEngine so Quick scan paths are configurable",
@@ -27,5 +27,5 @@
     "cd build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": null
+  "findings": "All four priority review issues addressed: (1) Per-scan findingsMutex added to ActiveScan struct, used in processFile and getScanStatus/getScanResults instead of scansMutex_. (2) YARA engine now invoked via yaraEngine_.matchFile() in processFile when engine status is Ready and rules are loaded. (3) Quarantine permissions stripped to owner_read after move using std::filesystem::permissions with perm_options::replace. (4) Quick/Full scan paths made configurable via setQuickScanPaths/setFullScanPaths setters with platform-aware defaults as fallback. Build passes cleanly, all tests pass."
 }

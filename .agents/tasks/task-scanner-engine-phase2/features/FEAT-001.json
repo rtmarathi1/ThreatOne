@@ -1,0 +1,25 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Fix the broken build by creating missing placeholder.cpp files for modules that reference them in CMakeLists.txt but do not have them, then verify cmake configures and the project compiles. Several modules (monitor, firewall, hids, edr, xdr, siem, soc, cloud, reporting, analytics, updates) reference src/placeholder.cpp in their CMakeLists.txt but only have actual named .cpp files. Fix each CMakeLists.txt to reference the correct source file that already exists.",
+  "status": "completed",
+  "steps": [
+    "For each module listed below, update its CMakeLists.txt to reference the actual existing .cpp file instead of placeholder.cpp: src/monitor/CMakeLists.txt -> src/MonitorEngine.cpp, src/firewall/CMakeLists.txt -> src/FirewallManager.cpp, src/hids/CMakeLists.txt -> src/HIDSEngine.cpp, src/edr/CMakeLists.txt -> src/EDREngine.cpp, src/xdr/CMakeLists.txt -> src/XDREngine.cpp, src/siem/CMakeLists.txt -> src/SIEMEngine.cpp, src/soc/CMakeLists.txt -> src/SOCManager.cpp, src/cloud/CMakeLists.txt -> src/CloudManager.cpp, src/reporting/CMakeLists.txt -> src/ReportEngine.cpp, src/analytics/CMakeLists.txt -> src/AnalyticsEngine.cpp, src/updates/CMakeLists.txt -> src/UpdateManager.cpp",
+    "Also fix these modules which reference placeholder.cpp but ALSO have proper source files that may need adding: src/core/CMakeLists.txt should list all its .cpp files (Application.cpp, Config.cpp, EventBus.cpp, Logger.cpp, PluginLoader.cpp, ServiceLocator.cpp), src/database/CMakeLists.txt should list all its .cpp files (ConnectionManager.cpp, Migration.cpp, Model.cpp, QueryBuilder.cpp, Schema.cpp, models/Scan.cpp, models/Threat.cpp, models/User.cpp, models/Alert.cpp, models/Asset.cpp, models/FirewallRule.cpp, models/Incident.cpp, models/License.cpp, models/Policy.cpp, models/Setting.cpp, models/Vulnerability.cpp), src/security/CMakeLists.txt should list SecurityEngine.cpp, src/network/CMakeLists.txt should list NetworkManager.cpp",
+    "Fix remaining modules that may have similar issues: src/compliance, src/identity, src/licensing, src/telemetry, src/plugin, src/vulnerability, src/sandbox, src/ai, src/app. Check each CMakeLists.txt and ensure it references the correct source files.",
+    "Also ensure src/database/CMakeLists.txt links sqlite3 and nlohmann_json since it uses them in its headers.",
+    "Run cmake -B build -DENABLE_QT=OFF && cmake --build build to verify everything compiles successfully.",
+    "Run cd build && ctest --output-on-failure to verify existing tests still pass."
+  ],
+  "acceptance_criteria": [
+    "cmake -B build -DENABLE_QT=OFF configures without errors",
+    "cmake --build build compiles all libraries and executables without errors",
+    "ctest --output-on-failure passes all existing tests"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": "Fixed 15 CMakeLists.txt placeholder.cpp references, fixed Logger::toSpdlogLevel access level (made public), fixed const-correctness in MigrationManager::rollback, added TEST_CASE_FIXTURE macro to doctest stub, fixed tests that relied on doctest subcase re-invocation. Build and all 46 tests pass cleanly."
+}

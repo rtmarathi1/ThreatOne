@@ -1,0 +1,42 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Implement the full Scanner Engine with all 10 components: File Hashing (SHA256/BLAKE3), Signature Database, Signature Matching, YARA Rule Engine (stubbed interface), Scan Scheduler (thread pool), Scan Types (Quick/Full/Custom/Memory/IOC), File Enumeration, Progress Tracking, Quarantine Manager, and Scan History. Replace the existing ScanEngine stub with a fully functional scan orchestrator. Add comprehensive unit tests.",
+  "status": "completed",
+  "steps": [
+    "Create src/scanner/include/scanner/FileHasher.h and src/scanner/src/FileHasher.cpp - Implement SHA256 from the FIPS 180-4 specification (no external library needed, ~100 lines of bit manipulation). Also implement BLAKE3 as a simplified version or alternative hash. The FileHasher should read files in chunks and compute hashes. Use Result<std::string, Core::Error> return type. Support hashing from file path and from raw byte buffer.",
+    "Create src/scanner/include/scanner/SignatureDatabase.h and src/scanner/src/SignatureDatabase.cpp - In-memory store of threat signatures. Each signature has: id, name, hash (SHA256), threat_level (enum: Low/Medium/High/Critical), category (string), description, date_added. Support CRUD operations, loading from JSON file (using nlohmann/json), and lookup by hash (unordered_map for O(1) lookup). Use the existing Result type pattern.",
+    "Create src/scanner/include/scanner/SignatureMatcher.h and src/scanner/src/SignatureMatcher.cpp - Takes a FileHasher and SignatureDatabase, computes hash of a file, looks up in signature DB. Returns match result with threat details or no-match. Should support multiple hash algorithms.",
+    "Create src/scanner/include/scanner/YaraEngine.h and src/scanner/src/YaraEngine.cpp - Full integration interface for YARA rules: loadRules(path), compileRules(), matchFile(path), matchBuffer(data). Since we cannot link real libyara, implement the interface with a stub backend that stores rules as text, parses basic rule names, and always returns no-match on scan but can report loaded rule count. The interface must be ready for real YARA library swap-in.",
+    "Create src/scanner/include/scanner/ScanScheduler.h and src/scanner/src/ScanScheduler.cpp - Thread pool using std::jthread/std::thread with a work queue. Accept scan jobs (file paths to scan), distribute across worker threads. Configurable thread count (default: std::thread::hardware_concurrency()). Support job submission, cancellation, and status query. Use std::mutex + std::condition_variable for synchronization.",
+    "Create src/scanner/include/scanner/FileEnumerator.h and src/scanner/src/FileEnumerator.cpp - Recursively enumerate files using std::filesystem. Support exclusion patterns (glob-style converted to regex or simple string matching). Support max depth. Return a vector of paths or provide an iterator/callback interface for memory efficiency on large directories. Skip symlinks, handle permission errors gracefully with logging.",
+    "Create src/scanner/include/scanner/ScanProgress.h and src/scanner/src/ScanProgress.cpp - Thread-safe progress tracker. Track: total files to scan, files scanned, threats found, bytes scanned, start time, current file being scanned. Provide percentage calculation and ETA. Publish SecurityEvent on threat detection via EventBus. Use atomic variables where possible for lock-free reads.",
+    "Create src/scanner/include/scanner/QuarantineManager.h and src/scanner/src/QuarantineManager.cpp - Move detected threats to a quarantine directory. Store metadata JSON alongside each quarantined file (original path, detection reason, timestamp, hash). Support restore (move back to original location) and permanent delete. Create quarantine directory if it doesn't exist. Use Result types.",
+    "Create src/scanner/include/scanner/ScanHistory.h and src/scanner/src/ScanHistory.cpp - Store scan results in the database using the existing Database::Models::Scan model. Record: scan ID, type, status, start/end time, files scanned, threats found, target paths. Use the existing ConnectionManager and Model<Scan> CRTP pattern. Also store individual threat findings using Database::Models::Threat.",
+    "Rewrite src/scanner/include/scanner/ScanEngine.h and src/scanner/src/ScanEngine.cpp - The ScanEngine becomes the orchestrator that ties all components together. It owns instances of FileHasher, SignatureDatabase, SignatureMatcher, YaraEngine, ScanScheduler, FileEnumerator, ScanProgress, QuarantineManager, ScanHistory. Implement startScan() to: enumerate files based on ScanType (Quick=critical paths like /usr/bin /usr/sbin /home, Full=all, Custom=user paths, Memory=stub /proc scan, IOC=indicator matching), schedule scan jobs, track progress, record results. Implement stopScan/pauseScan with proper state management. Store active scans in a map by scan ID. Generate UUIDs for scan IDs using CryptoUtils::generateUUID().",
+    "Update src/scanner/CMakeLists.txt to include all new source files and link against required libraries (threatone_database, nlohmann_json, sqlite3, and add pthread).",
+    "Create tests/scanner/test_file_hasher.cpp - Test SHA256 computation against known test vectors (empty string, 'abc', etc.).",
+    "Create tests/scanner/test_signature_database.cpp - Test CRUD operations, JSON loading, hash lookup.",
+    "Create tests/scanner/test_signature_matcher.cpp - Test matching files against signature database.",
+    "Create tests/scanner/test_file_enumerator.cpp - Test recursive enumeration with temp directories, exclusion patterns.",
+    "Create tests/scanner/test_quarantine_manager.cpp - Test quarantine/restore/delete operations with temp files.",
+    "Create tests/scanner/test_scan_engine.cpp - Integration test of the full ScanEngine: start a scan on a temp directory with known files, verify progress and results.",
+    "Update tests/CMakeLists.txt to add scanner test files and link against threatone_scanner."
+  ],
+  "acceptance_criteria": [
+    "cmake -B build -DENABLE_QT=OFF configures without errors",
+    "cmake --build build compiles all scanner components without errors or warnings",
+    "All new scanner tests pass via ctest",
+    "SHA256 hash of empty string matches known value e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "SignatureDatabase can load signatures from JSON and look up by hash",
+    "FileEnumerator recursively lists files and respects exclusion patterns",
+    "QuarantineManager moves files and stores metadata",
+    "ScanEngine.startScan returns a valid scan ID and getScanStatus returns progress"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": "All 10 scanner components implemented and tested. Key findings: (1) The vendored nlohmann/json stub required adding get_array() method for array iteration since begin/end only works for objects. (2) The doctest stub always enters all SUBCASEs sequentially without re-invoking the test case, so tests must create fresh state within each SUBCASE rather than relying on subcase isolation. (3) The json stub get<T>() only supports int, int64_t, double, float, bool, string - not uint64_t - so JSON parsing uses int64_t with static_cast. (4) SHA256 implementation passes all FIPS 180-4 test vectors correctly. Build is clean with zero warnings."
+}
