@@ -21,6 +21,11 @@ set(TEST_SOURCES
     edr/test_file_monitor.cpp
     edr/test_memory_monitor.cpp
     edr/test_telemetry_collector.cpp
+    edr/test_behavior_analyzer.cpp
+    edr/test_detection_rules.cpp
+    edr/test_alert_manager.cpp
+    edr/test_ransomware_detection.cpp
+    edr/test_incident_timeline.cpp
 )
 
 # Create the test executable

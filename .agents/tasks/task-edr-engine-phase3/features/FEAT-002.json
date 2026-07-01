@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Implement detection and analysis components: BehaviorAnalyzer, DetectionRulesEngine, AlertManager, PersistenceDetection, RansomwareDetection, LateralMovementDetection, and IncidentTimeline. These consume events from the monitors (FEAT-001) and produce alerts/incidents.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create src/edr/include/edr/BehaviorAnalyzer.h - BehaviorAnalyzer class with: addEvent(EDREvent), analyzePatterns() returning vector<BehaviorAlert>, detectRansomwareBehavior(), detectPrivilegeEscalation(), detectDataExfiltration(). Maintain a sliding window of events. Pattern matching: file encryption sequences (high entropy writes + renames), mass deletion, rapid file access patterns, process injection chains.",
     "Create src/edr/src/BehaviorAnalyzer.cpp - Implementation with event window (configurable size, default 1000 events). Pattern detection logic: (1) ransomware = many file renames to crypto extensions + high entropy writes in short time, (2) privilege escalation = suid changes, sudo/su invocations from unexpected processes, (3) data exfiltration = large outbound data + archive creation + suspicious destination.",

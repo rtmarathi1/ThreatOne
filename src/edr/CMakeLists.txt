@@ -7,6 +7,13 @@ add_library(threatone_edr STATIC
     src/RegistryMonitor.cpp
     src/MemoryMonitor.cpp
     src/TelemetryCollector.cpp
+    src/BehaviorAnalyzer.cpp
+    src/DetectionRulesEngine.cpp
+    src/AlertManager.cpp
+    src/PersistenceDetection.cpp
+    src/RansomwareDetection.cpp
+    src/LateralMovementDetection.cpp
+    src/IncidentTimeline.cpp
 )
 
 target_include_directories(threatone_edr
