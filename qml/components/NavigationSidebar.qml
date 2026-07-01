@@ -33,7 +33,7 @@ Rectangle {
             title: "Analysis",
             items: [
                 { title: "Incidents", icon: "\u26A0", page: "pages/incidents/IncidentsPage.qml", badge: 3 },
-                { title: "Threat Intel", icon: "\u2604", page: "pages/threatintel/ThreatIntelPage.qml", badge: 0 },
+                { title: "Threat Intel", icon: "\u2604", page: "pages/threat_intel/ThreatIntelPage.qml", badge: 0 },
                 { title: "Reports", icon: "\u2637", page: "pages/reports/ReportsPage.qml", badge: 0 }
             ]
         },

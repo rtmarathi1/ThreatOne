@@ -18,6 +18,9 @@ ApplicationWindow {
     title: qsTr("ThreatOne Enterprise Cybersecurity Platform")
     color: ThemeManager.backgroundColor
 
+    // Track the current page path for duplicate-navigation guard
+    property string currentPagePath: "pages/dashboard/DashboardPage.qml"
+
     // Responsive breakpoint: collapse sidebar when narrow
     property bool narrowMode: width < 1200
 
@@ -44,9 +47,10 @@ ApplicationWindow {
                 Layout.preferredWidth: sidebar.collapsed ? ThemeManager.sidebarCollapsedWidth : ThemeManager.sidebarExpandedWidth
 
                 onPageSelected: function(page) {
-                    if (contentStack.currentItem && contentStack.currentItem.objectName === page)
+                    if (mainWindow.currentPagePath === page)
                         return
                     contentStack.replace(page, {}, StackView.Transition)
+                    mainWindow.currentPagePath = page
                     var idx = sidebar.currentIndex
                     if (idx >= 0 && idx < sidebar.flatItems.length) {
                         topBar.currentPageTitle = sidebar.flatItems[idx].title
