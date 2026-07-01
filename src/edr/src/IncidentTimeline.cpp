@@ -124,7 +124,16 @@ bool IncidentTimeline::resolveIncident(const std::string& incidentId) {
     it->second.status = "resolved";
     it->second.updatedAt = std::chrono::steady_clock::now();
     logger_.info("Incident resolved: {}", incidentId);
+
+    // Prune old resolved incidents if over retention limit
+    pruneResolvedIncidents();
     return true;
+}
+
+void IncidentTimeline::setMaxResolvedIncidents(size_t maxResolved) {
+    std::lock_guard lock(mutex_);
+    maxResolvedIncidents_ = maxResolved;
+    pruneResolvedIncidents();
 }
 
 void IncidentTimeline::clear() {
@@ -185,6 +194,32 @@ bool IncidentTimeline::entitiesOverlap(const std::vector<std::string>& a,
         }
     }
     return false;
+}
+
+void IncidentTimeline::pruneResolvedIncidents() {
+    // Count resolved incidents
+    std::vector<std::pair<std::string, std::chrono::steady_clock::time_point>> resolved;
+    for (const auto& [id, incident] : incidents_) {
+        if (incident.status == "resolved") {
+            resolved.emplace_back(id, incident.updatedAt);
+        }
+    }
+
+    if (resolved.size() <= maxResolvedIncidents_) {
+        return;
+    }
+
+    // Sort by updatedAt (oldest first)
+    std::sort(resolved.begin(), resolved.end(),
+              [](const auto& a, const auto& b) {
+                  return a.second < b.second;
+              });
+
+    // Remove oldest resolved incidents to get back under the limit
+    size_t toRemove = resolved.size() - maxResolvedIncidents_;
+    for (size_t i = 0; i < toRemove; ++i) {
+        incidents_.erase(resolved[i].first);
+    }
 }
 
 } // namespace ThreatOne::EDR

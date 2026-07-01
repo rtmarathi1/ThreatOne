@@ -308,24 +308,17 @@ ProcessInfo ProcessMonitor::readProcessInfo(uint64_t pid) const {
 
     // Read command line from /proc/[pid]/cmdline
     {
-        std::ifstream f(procPath + "/cmdline");
+        std::ifstream f(procPath + "/cmdline", std::ios::binary);
         if (f.is_open()) {
-            std::string content;
-            std::getline(f, content, '\0');
-            // cmdline is null-separated; join with spaces
-            std::string fullCmdLine;
-            std::ifstream f2(procPath + "/cmdline", std::ios::binary);
-            if (f2.is_open()) {
-                std::ostringstream ss;
-                char c;
-                while (f2.get(c)) {
-                    ss << (c == '\0' ? ' ' : c);
-                }
-                fullCmdLine = ss.str();
-                // Trim trailing space
-                if (!fullCmdLine.empty() && fullCmdLine.back() == ' ') {
-                    fullCmdLine.pop_back();
-                }
+            std::ostringstream ss;
+            char c;
+            while (f.get(c)) {
+                ss << (c == '\0' ? ' ' : c);
+            }
+            std::string fullCmdLine = ss.str();
+            // Trim trailing space
+            if (!fullCmdLine.empty() && fullCmdLine.back() == ' ') {
+                fullCmdLine.pop_back();
             }
             info.commandLine = fullCmdLine;
         }

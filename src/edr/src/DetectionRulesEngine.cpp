@@ -63,6 +63,7 @@ bool DetectionRulesEngine::loadRules(const std::string& jsonString) {
             }
 
             rules_.push_back(rule);
+            compileRegexPatterns(rule);
         }
 
         logger_.info("Loaded {} rules from JSON", ruleArray.size());
@@ -76,6 +77,7 @@ bool DetectionRulesEngine::loadRules(const std::string& jsonString) {
 void DetectionRulesEngine::addRule(const DetectionRule& rule) {
     std::lock_guard lock(mutex_);
     rules_.push_back(rule);
+    compileRegexPatterns(rule);
     logger_.debug("Added rule: {} ({})", rule.name, rule.id);
 }
 
@@ -148,6 +150,7 @@ void DetectionRulesEngine::removeRule(const std::string& ruleId) {
 void DetectionRulesEngine::clearRules() {
     std::lock_guard lock(mutex_);
     rules_.clear();
+    compiledRegexCache_.clear();
 }
 
 bool DetectionRulesEngine::evaluateCondition(const RuleCondition& condition, const EDREvent& event) const {
@@ -159,6 +162,11 @@ bool DetectionRulesEngine::evaluateCondition(const RuleCondition& condition, con
         return fieldValue.find(condition.value) != std::string::npos;
     } else if (condition.op == "regex") {
         try {
+            auto it = compiledRegexCache_.find(condition.value);
+            if (it != compiledRegexCache_.end()) {
+                return std::regex_search(fieldValue, it->second);
+            }
+            // Fallback: compile on the fly if not cached (shouldn't happen normally)
             std::regex re(condition.value);
             return std::regex_search(fieldValue, re);
         } catch (...) {
@@ -210,6 +218,20 @@ std::string DetectionRulesEngine::getEventField(const EDREvent& event, const std
     if (field == "entropy") return std::to_string(event.entropy);
     if (field == "dataSize") return std::to_string(event.dataSize);
     return "";
+}
+
+void DetectionRulesEngine::compileRegexPatterns(const DetectionRule& rule) {
+    for (const auto& condition : rule.conditions) {
+        if (condition.op == "regex" && !condition.value.empty()) {
+            if (compiledRegexCache_.find(condition.value) == compiledRegexCache_.end()) {
+                try {
+                    compiledRegexCache_.emplace(condition.value, std::regex(condition.value));
+                } catch (const std::regex_error& e) {
+                    logger_.warn("Failed to compile regex pattern '{}': {}", condition.value, e.what());
+                }
+            }
+        }
+    }
 }
 
 } // namespace ThreatOne::EDR

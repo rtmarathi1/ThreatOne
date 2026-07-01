@@ -74,6 +74,9 @@ public:
     // Configure deduplication window
     void setDeduplicationWindow(std::chrono::seconds window);
 
+    // Configure max capacity (oldest alerts evicted when full)
+    void setMaxCapacity(size_t maxCapacity);
+
     // Clear all alerts
     void clear();
 
@@ -89,6 +92,7 @@ private:
     std::chrono::seconds dedupWindow_{60};
     std::atomic<uint64_t> nextId_{1};
     size_t deduplicatedCount_ = 0;
+    size_t maxCapacity_ = 10000;
 };
 
 } // namespace ThreatOne::EDR

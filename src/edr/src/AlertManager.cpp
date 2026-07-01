@@ -39,6 +39,11 @@ std::string AlertManager::generateAlert(const std::string& source, const std::st
 
     alerts_.push_back(alert);
 
+    // Evict oldest alerts if over capacity
+    if (alerts_.size() > maxCapacity_) {
+        alerts_.erase(alerts_.begin());
+    }
+
     logger_.info("Alert generated: [{}] {} - {}", severity, source, description);
 
     // Publish SecurityEvent to EventBus
@@ -140,6 +145,15 @@ AlertStats AlertManager::getAlertStats() const {
 
 void AlertManager::setDeduplicationWindow(std::chrono::seconds window) {
     dedupWindow_ = window;
+}
+
+void AlertManager::setMaxCapacity(size_t maxCapacity) {
+    std::lock_guard lock(mutex_);
+    maxCapacity_ = maxCapacity;
+    // Evict oldest if already over the new limit
+    while (alerts_.size() > maxCapacity_) {
+        alerts_.erase(alerts_.begin());
+    }
 }
 
 void AlertManager::clear() {

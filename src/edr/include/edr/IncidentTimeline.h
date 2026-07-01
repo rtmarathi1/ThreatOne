@@ -58,6 +58,9 @@ public:
     // Resolve an incident
     bool resolveIncident(const std::string& incidentId);
 
+    // Set maximum number of resolved incidents to retain (oldest evicted when full)
+    void setMaxResolvedIncidents(size_t maxResolved);
+
     // Clear all incidents
     void clear();
 
@@ -66,6 +69,7 @@ private:
     [[nodiscard]] int severityToInt(const std::string& severity) const;
     [[nodiscard]] std::string intToSeverity(int level) const;
     void escalateSeverity(Incident& incident, const std::string& eventSeverity);
+    void pruneResolvedIncidents();
     [[nodiscard]] bool entitiesOverlap(const std::vector<std::string>& a,
                                        const std::vector<std::string>& b) const;
 
@@ -73,6 +77,7 @@ private:
     Core::ModuleLogger logger_;
     std::unordered_map<std::string, Incident> incidents_;
     uint64_t nextId_ = 1;
+    size_t maxResolvedIncidents_ = 1000;
 };
 
 } // namespace ThreatOne::EDR

@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <mutex>
+#include <regex>
 
 #include "edr/BehaviorAnalyzer.h"
 #include "core/Logger.h"
@@ -61,10 +62,14 @@ public:
 private:
     [[nodiscard]] bool evaluateCondition(const RuleCondition& condition, const EDREvent& event) const;
     [[nodiscard]] std::string getEventField(const EDREvent& event, const std::string& field) const;
+    void compileRegexPatterns(const DetectionRule& rule);
 
     mutable std::mutex mutex_;
     Core::ModuleLogger logger_;
     std::vector<DetectionRule> rules_;
+
+    // Pre-compiled regex patterns: key is the pattern string, value is the compiled regex
+    std::unordered_map<std::string, std::regex> compiledRegexCache_;
 };
 
 } // namespace ThreatOne::EDR

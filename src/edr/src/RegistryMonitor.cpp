@@ -8,9 +8,11 @@
 
 namespace ThreatOne::EDR {
 
-RegistryMonitor::RegistryMonitor()
-    : logger_(Core::Logger::instance().getModuleLogger("RegistryMonitor")) {
-    logger_.info("RegistryMonitor initialized");
+RegistryMonitor::RegistryMonitor(size_t ringBufferSize)
+    : logger_(Core::Logger::instance().getModuleLogger("RegistryMonitor"))
+    , bufferCapacity_(ringBufferSize) {
+    eventBuffer_.resize(bufferCapacity_);
+    logger_.info("RegistryMonitor initialized with buffer size {}", ringBufferSize);
 }
 
 void RegistryMonitor::watchConfigPath(const std::filesystem::path& path) {
@@ -39,7 +41,16 @@ void RegistryMonitor::watchConfigPath(const std::filesystem::path& path) {
 
 std::vector<RegistryEvent> RegistryMonitor::getEvents() const {
     std::lock_guard<std::mutex> lock(mutex_);
-    return events_;
+
+    std::vector<RegistryEvent> events;
+    events.reserve(bufferCount_);
+
+    for (size_t i = 0; i < bufferCount_; ++i) {
+        size_t idx = (bufferHead_ + bufferCapacity_ - bufferCount_ + i) % bufferCapacity_;
+        events.push_back(eventBuffer_[idx]);
+    }
+
+    return events;
 }
 
 std::vector<PersistenceMechanism> RegistryMonitor::detectPersistenceMechanisms() const {
@@ -47,7 +58,10 @@ std::vector<PersistenceMechanism> RegistryMonitor::detectPersistenceMechanisms()
 
     std::vector<PersistenceMechanism> mechanisms;
 
-    for (const auto& event : events_) {
+    // Read events from ring buffer
+    for (size_t i = 0; i < bufferCount_; ++i) {
+        size_t idx = (bufferHead_ + bufferCapacity_ - bufferCount_ + i) % bufferCapacity_;
+        const auto& event = eventBuffer_[idx];
         // Detect cron persistence
         if (event.key.find("crontab") != std::string::npos ||
             event.key.find("cron.d") != std::string::npos) {
@@ -132,7 +146,8 @@ void RegistryMonitor::watchDefaultPaths() {
 
 void RegistryMonitor::clearEvents() {
     std::lock_guard<std::mutex> lock(mutex_);
-    events_.clear();
+    bufferHead_ = 0;
+    bufferCount_ = 0;
 }
 
 void RegistryMonitor::checkFile(ConfigFileState& state) {
@@ -157,7 +172,7 @@ void RegistryMonitor::checkFile(ConfigFileState& state) {
             evt.action = "create";
             evt.value = "";
             evt.timestamp = timeStr;
-            events_.push_back(std::move(evt));
+            addEvent(std::move(evt));
         } else if (state.exists && !currentlyExists) {
             // File was deleted
             state.exists = false;
@@ -167,7 +182,7 @@ void RegistryMonitor::checkFile(ConfigFileState& state) {
             evt.action = "delete";
             evt.value = "";
             evt.timestamp = timeStr;
-            events_.push_back(std::move(evt));
+            addEvent(std::move(evt));
         } else if (state.exists && currentlyExists) {
             // Check for modification
             auto currentModTime = fs::last_write_time(state.path);
@@ -182,7 +197,7 @@ void RegistryMonitor::checkFile(ConfigFileState& state) {
                     evt.action = "modify";
                     evt.value = "";
                     evt.timestamp = timeStr;
-                    events_.push_back(std::move(evt));
+                    addEvent(std::move(evt));
                 }
             }
         }
@@ -203,6 +218,15 @@ std::string RegistryMonitor::computeSimpleHash(const std::filesystem::path& path
     }
 
     return std::to_string(hash);
+}
+
+void RegistryMonitor::addEvent(RegistryEvent event) {
+    // Add to ring buffer
+    eventBuffer_[bufferHead_] = std::move(event);
+    bufferHead_ = (bufferHead_ + 1) % bufferCapacity_;
+    if (bufferCount_ < bufferCapacity_) {
+        bufferCount_++;
+    }
 }
 
 } // namespace ThreatOne::EDR

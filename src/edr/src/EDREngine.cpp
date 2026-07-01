@@ -75,6 +75,10 @@ std::vector<FileEvent> EDREngine::getFileEvents() {
     if (collecting_.load()) {
         fileMonitor_.poll();
     }
+
+    // Feed events through behavior analysis and rule evaluation
+    feedEventsToAnalysis();
+
     return fileMonitor_.getEvents();
 }
 
@@ -104,9 +108,43 @@ std::vector<PersistenceIndicator> EDREngine::detectPersistence() {
 }
 
 std::vector<LateralMovementIndicator> EDREngine::detectLateralMovement() {
-    // Lateral movement detection uses connection events
-    // Return indicators from any previously analyzed connections
-    return {};
+    std::vector<LateralMovementIndicator> indicators;
+
+    // Check file events for credential file access
+    auto fileEvents = fileMonitor_.getEvents();
+    for (const auto& event : fileEvents) {
+        auto result = lateralMovementDetection_.detectCredentialAccess(event.path, event.processName);
+        if (result.has_value()) {
+            indicators.push_back(result.value());
+
+            alertManager_.generateAlert(
+                "LateralMovementDetection",
+                "high",
+                "Credential file access detected: " + event.path,
+                "Process: " + event.processName
+            );
+        }
+    }
+
+    // Check process command lines for remote execution patterns
+    auto processes = processMonitor_.enumerateProcesses();
+    for (const auto& proc : processes) {
+        if (!proc.commandLine.empty()) {
+            auto result = lateralMovementDetection_.detectRemoteExecution(proc.commandLine, proc.name);
+            if (result.has_value()) {
+                indicators.push_back(result.value());
+
+                alertManager_.generateAlert(
+                    "LateralMovementDetection",
+                    "high",
+                    "Remote execution pattern detected in process: " + proc.name,
+                    "Command: " + proc.commandLine
+                );
+            }
+        }
+    }
+
+    return indicators;
 }
 
 std::vector<RansomwareIndicator> EDREngine::detectRansomware() {

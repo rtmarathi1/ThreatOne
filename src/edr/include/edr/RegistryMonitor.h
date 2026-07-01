@@ -22,7 +22,7 @@ struct PersistenceMechanism {
 
 class RegistryMonitor {
 public:
-    RegistryMonitor();
+    explicit RegistryMonitor(size_t ringBufferSize = 1024);
     ~RegistryMonitor() = default;
 
     // Watch a specific config path for changes
@@ -52,13 +52,19 @@ private:
     };
 
     void checkFile(ConfigFileState& state);
+    void addEvent(RegistryEvent event);
     [[nodiscard]] std::string computeSimpleHash(const std::filesystem::path& path) const;
 
     mutable std::mutex mutex_;
     Core::ModuleLogger logger_;
 
     std::vector<ConfigFileState> watchedFiles_;
-    std::vector<RegistryEvent> events_;
+
+    // Ring buffer for events
+    std::vector<RegistryEvent> eventBuffer_;
+    size_t bufferHead_ = 0;
+    size_t bufferCount_ = 0;
+    size_t bufferCapacity_;
 };
 
 } // namespace ThreatOne::EDR
