@@ -1,5 +1,5 @@
 add_library(threatone_analytics STATIC
-    src/placeholder.cpp
+    src/AnalyticsEngine.cpp
 )
 
 target_include_directories(threatone_analytics

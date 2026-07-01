@@ -1,5 +1,5 @@
 add_library(threatone_security STATIC
-    src/placeholder.cpp
+    src/SecurityEngine.cpp
 )
 
 target_include_directories(threatone_security

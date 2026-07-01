@@ -34,38 +34,40 @@ private:
     std::string name_;
 };
 
-TEST_CASE("MigrationManager registration") {
+TEST_CASE("MigrationManager registration - single migration") {
     MigrationManager manager;
 
-    SUBCASE("Register a single migration") {
-        manager.registerMigration(std::make_unique<MockMigration>(1, "create_users"));
-        CHECK(manager.migrations().size() == 1);
-        CHECK(manager.migrations()[0]->version() == 1);
-        CHECK(manager.migrations()[0]->name() == "create_users");
-    }
+    manager.registerMigration(std::make_unique<MockMigration>(1, "create_users"));
+    CHECK(manager.migrations().size() == 1);
+    CHECK(manager.migrations()[0]->version() == 1);
+    CHECK(manager.migrations()[0]->name() == "create_users");
+}
 
-    SUBCASE("Register multiple migrations") {
-        manager.registerMigration(std::make_unique<MockMigration>(1, "create_users"));
-        manager.registerMigration(std::make_unique<MockMigration>(2, "add_email"));
-        manager.registerMigration(std::make_unique<MockMigration>(3, "create_roles"));
+TEST_CASE("MigrationManager registration - multiple migrations") {
+    MigrationManager manager;
 
-        CHECK(manager.migrations().size() == 3);
-    }
+    manager.registerMigration(std::make_unique<MockMigration>(1, "create_users"));
+    manager.registerMigration(std::make_unique<MockMigration>(2, "add_email"));
+    manager.registerMigration(std::make_unique<MockMigration>(3, "create_roles"));
 
-    SUBCASE("Migrations are sorted by version") {
-        // Register out of order
-        manager.registerMigration(std::make_unique<MockMigration>(3, "third"));
-        manager.registerMigration(std::make_unique<MockMigration>(1, "first"));
-        manager.registerMigration(std::make_unique<MockMigration>(2, "second"));
+    CHECK(manager.migrations().size() == 3);
+}
 
-        REQUIRE(manager.migrations().size() == 3);
-        CHECK(manager.migrations()[0]->version() == 1);
-        CHECK(manager.migrations()[0]->name() == "first");
-        CHECK(manager.migrations()[1]->version() == 2);
-        CHECK(manager.migrations()[1]->name() == "second");
-        CHECK(manager.migrations()[2]->version() == 3);
-        CHECK(manager.migrations()[2]->name() == "third");
-    }
+TEST_CASE("MigrationManager registration - sorted by version") {
+    MigrationManager manager;
+
+    // Register out of order
+    manager.registerMigration(std::make_unique<MockMigration>(3, "third"));
+    manager.registerMigration(std::make_unique<MockMigration>(1, "first"));
+    manager.registerMigration(std::make_unique<MockMigration>(2, "second"));
+
+    REQUIRE(manager.migrations().size() == 3);
+    CHECK(manager.migrations()[0]->version() == 1);
+    CHECK(manager.migrations()[0]->name() == "first");
+    CHECK(manager.migrations()[1]->version() == 2);
+    CHECK(manager.migrations()[1]->name() == "second");
+    CHECK(manager.migrations()[2]->version() == 3);
+    CHECK(manager.migrations()[2]->name() == "third");
 }
 
 TEST_CASE("MigrationManager addMigration template") {

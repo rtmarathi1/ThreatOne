@@ -139,7 +139,7 @@ TEST_CASE_FIXTURE(EventBusFixture, "EventBus subscriber count") {
     CHECK(bus.subscriberCount<TestEvent>() == 0);
 }
 
-TEST_CASE_FIXTURE(EventBusFixture, "EventBus event priority filtering") {
+TEST_CASE_FIXTURE(EventBusFixture, "EventBus event priority filtering - high priority reaches both") {
     auto& bus = EventBus::instance();
 
     bool lowCalled = false;
@@ -159,19 +159,36 @@ TEST_CASE_FIXTURE(EventBusFixture, "EventBus event priority filtering") {
         lowCalled = true;
     }, allOpts);
 
-    SUBCASE("High priority event reaches both subscribers") {
-        TestEvent highEvent("high", EventPriority::High);
-        bus.publish(highEvent);
-        CHECK(highCalled);
-        CHECK(lowCalled);
-    }
+    TestEvent highEvent("high", EventPriority::High);
+    bus.publish(highEvent);
+    CHECK(highCalled);
+    CHECK(lowCalled);
+}
 
-    SUBCASE("Low priority event only reaches low-threshold subscriber") {
-        TestEvent lowEvent("low", EventPriority::Low);
-        bus.publish(lowEvent);
-        CHECK_FALSE(highCalled);
-        CHECK(lowCalled);
-    }
+TEST_CASE_FIXTURE(EventBusFixture, "EventBus event priority filtering - low priority only reaches low threshold") {
+    auto& bus = EventBus::instance();
+
+    bool lowCalled = false;
+    bool highCalled = false;
+
+    // Subscribe with minPriority High - should only receive High and Critical events
+    SubscribeOptions highOnlyOpts;
+    highOnlyOpts.minPriority = EventPriority::High;
+    bus.subscribe<TestEvent>([&](const TestEvent&) {
+        highCalled = true;
+    }, highOnlyOpts);
+
+    // Subscribe with minPriority Low - should receive all events
+    SubscribeOptions allOpts;
+    allOpts.minPriority = EventPriority::Low;
+    bus.subscribe<TestEvent>([&](const TestEvent&) {
+        lowCalled = true;
+    }, allOpts);
+
+    TestEvent lowEvent("low", EventPriority::Low);
+    bus.publish(lowEvent);
+    CHECK_FALSE(highCalled);
+    CHECK(lowCalled);
 }
 
 TEST_CASE_FIXTURE(EventBusFixture, "EventBus propagation stop") {

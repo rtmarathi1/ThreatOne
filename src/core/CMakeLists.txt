@@ -1,5 +1,10 @@
 add_library(threatone_core STATIC
-    src/placeholder.cpp
+    src/Application.cpp
+    src/Config.cpp
+    src/EventBus.cpp
+    src/Logger.cpp
+    src/PluginLoader.cpp
+    src/ServiceLocator.cpp
 )
 
 target_include_directories(threatone_core

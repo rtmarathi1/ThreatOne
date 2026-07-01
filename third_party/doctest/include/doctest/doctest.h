@@ -211,6 +211,22 @@ inline bool check_throws_as_impl(F&& func) {
 #define SUBCASE(name) if (doctest::Subcase DOCTEST_UNIQUE_NAME(doctest_subcase_) = \
     doctest::Subcase(name, __FILE__, __LINE__))
 
+// TEST_CASE_FIXTURE: inherits from the fixture so that the test body
+// has direct access to its members. The fixture ctor/dtor provide
+// setup/teardown.
+#define TEST_CASE_FIXTURE(fixture, name)                                                      \
+    class DOCTEST_UNIQUE_NAME(doctest_fixture_test_) : public fixture {                       \
+    public:                                                                                   \
+        void doctest_test_body();                                                             \
+    };                                                                                        \
+    static void DOCTEST_UNIQUE_NAME(doctest_fixture_wrapper_)() {                             \
+        DOCTEST_UNIQUE_NAME(doctest_fixture_test_) instance;                                  \
+        instance.doctest_test_body();                                                         \
+    }                                                                                         \
+    static doctest::TestRegistrar DOCTEST_UNIQUE_NAME(doctest_registrar_)(                    \
+        name, __FILE__, __LINE__, DOCTEST_UNIQUE_NAME(doctest_fixture_wrapper_));              \
+    void DOCTEST_UNIQUE_NAME(doctest_fixture_test_)::doctest_test_body()
+
 #define CHECK(expr) \
     doctest::detail::check_impl(static_cast<bool>(expr), #expr, __FILE__, __LINE__, false)
 

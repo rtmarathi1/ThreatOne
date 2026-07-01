@@ -1,5 +1,5 @@
 add_library(threatone_xdr STATIC
-    src/placeholder.cpp
+    src/XDREngine.cpp
 )
 
 target_include_directories(threatone_xdr

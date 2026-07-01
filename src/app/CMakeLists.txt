@@ -1,5 +1,6 @@
 add_executable(threatone_app
     src/main.cpp
+    src/AppController.cpp
 )
 
 target_include_directories(threatone_app

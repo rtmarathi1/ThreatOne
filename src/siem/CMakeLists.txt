@@ -1,5 +1,5 @@
 add_library(threatone_siem STATIC
-    src/placeholder.cpp
+    src/SIEMEngine.cpp
 )
 
 target_include_directories(threatone_siem

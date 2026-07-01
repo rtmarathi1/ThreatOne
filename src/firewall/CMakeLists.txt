@@ -1,5 +1,5 @@
 add_library(threatone_firewall STATIC
-    src/placeholder.cpp
+    src/FirewallManager.cpp
 )
 
 target_include_directories(threatone_firewall

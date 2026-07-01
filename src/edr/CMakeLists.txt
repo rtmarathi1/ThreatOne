@@ -1,5 +1,5 @@
 add_library(threatone_edr STATIC
-    src/placeholder.cpp
+    src/EDREngine.cpp
 )
 
 target_include_directories(threatone_edr

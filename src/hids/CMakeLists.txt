@@ -1,5 +1,5 @@
 add_library(threatone_hids STATIC
-    src/placeholder.cpp
+    src/HIDSEngine.cpp
 )
 
 target_include_directories(threatone_hids

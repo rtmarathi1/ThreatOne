@@ -156,6 +156,9 @@ public:
         }
     }
 
+    // Log level conversion utility
+    static spdlog::level toSpdlogLevel(LogLevel level);
+
     // Non-copyable, non-movable
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
@@ -165,8 +168,6 @@ public:
 private:
     Logger() = default;
     ~Logger() = default;
-
-    static spdlog::level toSpdlogLevel(LogLevel level);
 
     mutable std::mutex mutex_;
     std::shared_ptr<spdlog::logger> defaultLogger_;

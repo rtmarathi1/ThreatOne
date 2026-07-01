@@ -1,5 +1,5 @@
 add_library(threatone_soc STATIC
-    src/placeholder.cpp
+    src/SOCManager.cpp
 )
 
 target_include_directories(threatone_soc

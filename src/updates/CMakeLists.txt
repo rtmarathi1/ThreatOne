@@ -1,5 +1,5 @@
 add_library(threatone_updates STATIC
-    src/placeholder.cpp
+    src/UpdateManager.cpp
 )
 
 target_include_directories(threatone_updates

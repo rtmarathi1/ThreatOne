@@ -1,5 +1,5 @@
 add_library(threatone_monitor STATIC
-    src/placeholder.cpp
+    src/MonitorEngine.cpp
 )
 
 target_include_directories(threatone_monitor

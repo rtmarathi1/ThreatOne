@@ -1,5 +1,5 @@
 add_library(threatone_network STATIC
-    src/placeholder.cpp
+    src/NetworkManager.cpp
 )
 
 target_include_directories(threatone_network

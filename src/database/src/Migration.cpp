@@ -90,7 +90,7 @@ Core::Result<int, Core::Error> MigrationManager::rollback(IConnection& conn, int
         int version = applied[static_cast<std::size_t>(i)].version;
 
         // Find the migration object
-        const IMigration* migration = nullptr;
+        IMigration* migration = nullptr;
         for (const auto& m : migrations_) {
             if (m->version() == version) {
                 migration = m.get();
