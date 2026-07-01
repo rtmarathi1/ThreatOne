@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Implement SOC Manager (Case Manager, Playbook Engine, Shift Manager, Ticket Integration) and Cloud Manager (Cloud Sync Engine, Cloud Policy Distribution, Backup Manager). Replace stubs with full implementations.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Expand src/soc/include/soc/ISOCManager.h to add: CaseStatus enum (Open/Investigating/Escalated/Resolved/Closed), EvidenceItem struct (id, caseId, type, description, data, addedAt, addedBy), PlaybookStep struct (id, name, description, actionType, parameters map, condition string, completed bool), Playbook struct (id, name, description, steps vector, triggerCondition), PlaybookExecution struct (id, playbookId, caseId, status enum [Running/Completed/Failed/Paused], currentStepIndex, startedAt, completedAt, results vector<string>), TicketInfo struct (id, externalId, system string [Jira/ServiceNow], title, status, url, lastSyncAt), HandoffNote struct (id, fromAnalyst, toAnalyst, shiftId, notes, timestamp, openCases vector). Add virtual methods: updateCaseStatus(caseId, CaseStatus), addEvidence(caseId, EvidenceItem), getEvidence(caseId), createPlaybook(Playbook), executePlaybook(playbookId, caseId), getPlaybookExecution(executionId), getPlaybooks(), createShift(ShiftInfo), addHandoffNote(HandoffNote), getHandoffNotes(shiftId), createTicket(TicketInfo), syncTicket(ticketId), getTickets(caseId).",
     "Expand src/soc/include/soc/SOCManager.h to declare all new methods with private members: cases_ map, evidence_ multimap, playbooks_ map, executions_ map, shifts_ map, handoffNotes_ multimap, tickets_ map, mutex_, nextId counters.",
@@ -33,5 +33,5 @@
     "cd build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Doctest SUBCASEs with atomic<int> members in class caused test failures - atomic re-initialization across subcase re-entries appears problematic. Used separate TEST_CASEs instead. All 908 tests pass."
 }
