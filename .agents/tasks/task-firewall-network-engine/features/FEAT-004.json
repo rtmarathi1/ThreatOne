@@ -2,7 +2,7 @@
   "id": "FEAT-004",
   "type": "feat",
   "description": "Add comprehensive unit tests for all firewall and network security components. Follow the existing doctest pattern from tests/edr/ and tests/scanner/. Add tests in tests/firewall/ and tests/network/ directories.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Step 1 - Create tests/firewall/test_rule_engine.cpp: Test RuleEngine with cases for: add/remove rules, priority ordering (higher priority rules match first), CIDR IP matching (192.168.1.0/24 matches 192.168.1.5), port range matching, protocol matching, application path matching, enable/disable rules, default action when no rule matches, evaluatePacket returns correct action.",
     "Step 2 - Create tests/firewall/test_connection_tracker.cpp: Test ConnectionTracker with cases for: parsing /proc/net/tcp format strings (hex IP/port to readable format), connection state mapping (hex state codes to TCP states), handling malformed input, getConnections returns parsed results.",
@@ -28,5 +28,5 @@
     "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All 257 tests pass (including pre-existing and new). Key implementation details: (1) RuleEngine sorts by priority with lower number = evaluated first. (2) ConnectionTracker::stateToString returns ALL CAPS strings (NEW, ESTABLISHED, CLOSING, CLOSED). (3) DNSFilter wildcard *.domain.com also matches domain.com itself. (4) IntrusionDetector::detectSYNFlood/detectBruteForce add one timestamp per call and check size >= threshold. (5) IntrusionDetector content matching uses string::find (literal), not regex. (6) RuleEngine::matchesRule checks direction field, so rules must have matching direction set."
 }
