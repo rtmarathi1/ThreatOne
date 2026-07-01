@@ -2,7 +2,7 @@
   "id": "FEAT-004",
   "type": "feat",
   "description": "Add comprehensive unit tests for all AI/ML and Analytics components",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create tests/ai/ directory and test files: test_feature_extractor.cpp, test_decision_tree.cpp, test_anomaly_detector.cpp, test_risk_scoring.cpp, test_threat_classifier.cpp, test_model_manager.cpp, test_nlp_processor.cpp, test_recommendation_engine.cpp, test_auto_investigation.cpp, test_prediction_engine.cpp",
     "Implement test_feature_extractor.cpp - Test Shannon entropy calculation (all zeros = 0 entropy, random data = ~8.0, known patterns). Test file feature extraction (known PE-like data). Test behavior feature extraction (event frequency, timing).",

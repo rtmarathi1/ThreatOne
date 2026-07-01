@@ -38,6 +38,17 @@ set(TEST_SOURCES
     network/test_network_isolation.cpp
     network/test_application_control.cpp
     network/test_geo_blocking.cpp
+    ai/test_feature_extractor.cpp
+    ai/test_decision_tree.cpp
+    ai/test_anomaly_detector.cpp
+    ai/test_risk_scoring.cpp
+    ai/test_threat_classifier.cpp
+    ai/test_model_manager.cpp
+    ai/test_nlp_processor.cpp
+    ai/test_recommendation_engine.cpp
+    ai/test_auto_investigation.cpp
+    ai/test_prediction_engine.cpp
+    analytics/test_behavior_analytics.cpp
 )
 
 # Create the test executable
@@ -53,6 +64,8 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/monitor/include
         ${CMAKE_SOURCE_DIR}/src/firewall/include
         ${CMAKE_SOURCE_DIR}/src/network/include
+        ${CMAKE_SOURCE_DIR}/src/ai/include
+        ${CMAKE_SOURCE_DIR}/src/analytics/include
 )
 
 target_link_libraries(threatone_tests
@@ -66,6 +79,8 @@ target_link_libraries(threatone_tests
         threatone_monitor
         threatone_firewall
         threatone_network
+        threatone_ai
+        threatone_analytics
         spdlog
         nlohmann_json
         sqlite3
