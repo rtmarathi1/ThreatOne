@@ -61,7 +61,7 @@ ThreatOne::Core::Result<std::string> ExportEngine::exportReport(const Report& re
 }
 
 ThreatOne::Core::Result<std::string> ExportEngine::exportToPDF(const Report& report) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    // No mutex needed: this method only reads from its parameter and has no member state to protect
 
     // PDF export produces structured document metadata (since we cannot produce actual binary PDF)
     std::ostringstream oss;
@@ -123,7 +123,7 @@ ThreatOne::Core::Result<std::string> ExportEngine::exportToPDF(const Report& rep
 }
 
 ThreatOne::Core::Result<std::string> ExportEngine::exportToHTML(const Report& report) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    // No mutex needed: this method only reads from its parameter and has no member state to protect
 
     std::ostringstream oss;
     oss << "<!DOCTYPE html>\n";
@@ -173,7 +173,7 @@ ThreatOne::Core::Result<std::string> ExportEngine::exportToHTML(const Report& re
 }
 
 ThreatOne::Core::Result<std::string> ExportEngine::exportToJSON(const Report& report) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    // No mutex needed: this method only reads from its parameter and has no member state to protect
 
     nlohmann::json j;
     j["id"] = report.id;
@@ -228,7 +228,7 @@ ThreatOne::Core::Result<std::string> ExportEngine::exportToJSON(const Report& re
 }
 
 ThreatOne::Core::Result<std::string> ExportEngine::exportToCSV(const Report& report) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    // No mutex needed: this method only reads from its parameter and has no member state to protect
 
     std::ostringstream oss;
 

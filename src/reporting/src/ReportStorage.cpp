@@ -1,6 +1,7 @@
 #include "reporting/ReportStorage.h"
 
 #include <algorithm>
+#include <chrono>
 #include <sstream>
 
 namespace ThreatOne::Reporting {
@@ -27,6 +28,7 @@ ThreatOne::Core::Result<std::string> ReportStorage::storeReport(const Report& re
     meta.title = report.title;
     meta.type = report.type;
     meta.generatedAt = report.generatedAt;
+    meta.generatedAtTimePoint = std::chrono::system_clock::now();
     meta.sizeBytes = report.sizeBytes;
     meta.format = report.format;
     meta.downloadCount = 0;
@@ -93,13 +95,11 @@ std::vector<ReportMetadata> ReportStorage::searchReports(const ReportFilter& fil
             }
         }
 
-        // Filter by date range (using generatedAt string comparison)
+        // Filter by date range
         if (filter.hasDateFilter) {
-            // For in-memory store, we check using the report's stored time_point
-            auto reportIt = reports_.find(id);
-            if (reportIt != reports_.end()) {
-                // Date filtering relies on the generatedAt string; for simplicity,
-                // we allow all if we cannot parse. In production, use proper timestamps.
+            if (meta.generatedAtTimePoint < filter.dateRange.start ||
+                meta.generatedAtTimePoint > filter.dateRange.end) {
+                matches = false;
             }
         }
 

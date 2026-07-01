@@ -130,6 +130,7 @@ struct ReportMetadata {
     std::string title;
     ReportType type = ReportType::Technical;
     std::string generatedAt;
+    std::chrono::system_clock::time_point generatedAtTimePoint;
     size_t sizeBytes = 0;
     ExportFormat format = ExportFormat::JSON;
     int downloadCount = 0;

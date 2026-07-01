@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <mutex>
 
 #include "reporting/IReportEngine.h"
 #include "core/Logger.h"
@@ -27,7 +26,6 @@ private:
     [[nodiscard]] static std::string escapeHtml(const std::string& text);
     [[nodiscard]] static std::string escapeCsv(const std::string& text);
 
-    mutable std::mutex mutex_;
     ThreatOne::Core::ModuleLogger logger_;
 };
 

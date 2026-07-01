@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <reporting/ReportStorage.h>
+#include <chrono>
 
 using namespace ThreatOne::Reporting;
 
@@ -206,4 +207,36 @@ TEST_CASE("ReportStorage - get all metadata") {
 
     auto all = storage.getAllMetadata();
     CHECK(all.size() == 2);
+}
+
+TEST_CASE("ReportStorage - date filter excludes reports outside range") {
+    ReportStorage storage;
+
+    // Store first report
+    storage.storeReport(makeStorageTestReport("rpt-early", "Early Report", ReportType::Scan));
+
+    // Use a date range that starts in the future to exclude all current reports
+    ReportFilter filter;
+    filter.hasDateFilter = true;
+    filter.dateRange.start = std::chrono::system_clock::now() + std::chrono::hours(24);
+    filter.dateRange.end = std::chrono::system_clock::now() + std::chrono::hours(48);
+
+    auto results = storage.searchReports(filter);
+    CHECK(results.empty());
+}
+
+TEST_CASE("ReportStorage - date filter includes reports within range") {
+    ReportStorage storage;
+
+    storage.storeReport(makeStorageTestReport("rpt-now", "Current Report", ReportType::Scan));
+
+    // Use a date range that includes now
+    ReportFilter filter;
+    filter.hasDateFilter = true;
+    filter.dateRange.start = std::chrono::system_clock::now() - std::chrono::hours(1);
+    filter.dateRange.end = std::chrono::system_clock::now() + std::chrono::hours(1);
+
+    auto results = storage.searchReports(filter);
+    CHECK(results.size() == 1);
+    CHECK(results[0].id == "rpt-now");
 }

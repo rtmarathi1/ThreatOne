@@ -29,7 +29,7 @@ double ComplianceScoring::calculateCategoryScore(
     const std::vector<ComplianceFinding>& findings) const {
 
     int total = 0;
-    int passing = 0;
+    double passing = 0.0;
 
     for (const auto& finding : findings) {
         // Match findings to category by checking if controlId starts with category prefix
@@ -38,17 +38,17 @@ double ComplianceScoring::calculateCategoryScore(
             if (finding.status != FindingStatus::NotApplicable) {
                 total++;
                 if (finding.status == FindingStatus::Pass) {
-                    passing++;
+                    passing += 1.0;
                 } else if (finding.status == FindingStatus::Warning) {
-                    // Warnings count as partial compliance
-                    passing++;  // Count as half in the weighted version below
+                    // Warnings count as partial compliance (half credit)
+                    passing += 0.5;
                 }
             }
         }
     }
 
     if (total == 0) return 100.0;
-    return (static_cast<double>(passing) / static_cast<double>(total)) * 100.0;
+    return (passing / static_cast<double>(total)) * 100.0;
 }
 
 FrameworkScore ComplianceScoring::calculateScore(
