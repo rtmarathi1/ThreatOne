@@ -1,0 +1,42 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Replace SQLite3 stub with a real functional embedded SQL database engine implementing the sqlite3 C API. The implementation must support CREATE TABLE, INSERT, SELECT (WHERE, ORDER BY, LIMIT), UPDATE, DELETE, DROP TABLE with B-tree storage, transactions, prepared statements, parameter binding, thread-safety, and file persistence.",
+  "status": "in_progress",
+  "steps": [
+    "Replace third_party/sqlite/src/sqlite3_stub.cpp with a real implementation (~2000-3000 lines) that implements the sqlite3 C API defined in third_party/sqlite/include/sqlite3.h",
+    "Implement an in-memory B-tree index structure for table storage with nodes containing keys and row pointers",
+    "Implement a SQL tokenizer/lexer that breaks SQL strings into tokens (keywords, identifiers, operators, literals, punctuation)",
+    "Implement a SQL parser that handles: CREATE TABLE (column name, type, PRIMARY KEY, NOT NULL constraints), INSERT INTO...VALUES, SELECT...FROM...WHERE...ORDER BY...LIMIT, UPDATE...SET...WHERE, DELETE FROM...WHERE, DROP TABLE, BEGIN/COMMIT/ROLLBACK, PRAGMA statements",
+    "Implement a query executor that: creates tables with schema metadata, inserts rows validating constraints, selects rows with WHERE filtering (=, !=, <, >, <=, >=, IS NULL, IS NOT NULL, LIKE, AND, OR), ORDER BY (ASC/DESC), LIMIT, evaluates expressions",
+    "Implement the sqlite3 connection object (struct sqlite3) containing: database tables map, error message, last insert rowid, changes count, open state, mutex for thread-safety",
+    "Implement sqlite3_open/sqlite3_open_v2 to create database state, optionally loading from a file",
+    "Implement sqlite3_close/sqlite3_close_v2 to persist to file and clean up",
+    "Implement sqlite3_exec to parse SQL, execute, and call the callback with results",
+    "Implement sqlite3_prepare_v2 to parse SQL into a prepared statement (struct sqlite3_stmt) holding parsed AST, bound parameters array, result cursor",
+    "Implement sqlite3_step to execute the prepared statement one row at a time (returning SQLITE_ROW for each result row, SQLITE_DONE when complete)",
+    "Implement sqlite3_bind_* functions to set parameter values on prepared statements",
+    "Implement sqlite3_column_* functions to read result values from the current row",
+    "Implement transactions: BEGIN creates a snapshot, COMMIT applies changes, ROLLBACK reverts to snapshot",
+    "Implement file persistence: binary format with header magic bytes, table schemas, and row data. Load on open, save on close or COMMIT",
+    "Implement PRAGMA handling: journal_mode=WAL (accept but no-op for compatibility), foreign_keys=ON (store flag)",
+    "Ensure thread-safety with a mutex protecting all database operations",
+    "Ensure existing tests pass - the ConnectionManager.cpp uses sqlite3_open_v2, sqlite3_prepare_v2, sqlite3_step, sqlite3_column_*, sqlite3_bind_*, sqlite3_finalize, sqlite3_exec, sqlite3_errmsg, sqlite3_last_insert_rowid, sqlite3_changes, sqlite3_close_v2"
+  ],
+  "acceptance_criteria": [
+    "cmake --build build compiles cleanly with zero errors",
+    "All existing 1053+ tests pass (ctest --output-on-failure)",
+    "ConnectionManager can open a database, create tables, insert rows, and query them back",
+    "Transactions work: BEGIN/COMMIT persists data, BEGIN/ROLLBACK reverts",
+    "Prepared statements with parameter binding work correctly",
+    "Multiple data types supported: INTEGER, TEXT, REAL, BLOB, NULL",
+    "PRIMARY KEY and NOT NULL constraints are enforced",
+    "Thread-safe access from multiple threads does not cause data corruption"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build 2>&1 | tail -5",
+    "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
