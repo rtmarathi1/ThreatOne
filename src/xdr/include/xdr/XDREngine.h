@@ -4,7 +4,6 @@
 #include "core/Logger.h"
 
 #include <mutex>
-#include <atomic>
 #include <map>
 
 namespace ThreatOne::XDR {
@@ -40,11 +39,11 @@ private:
     int severityToInt(const std::string& severity) const;
 
     mutable std::mutex mutex_;
-    std::atomic<int> nextEventId_{1};
-    std::atomic<int> nextCorrelationId_{1};
-    std::atomic<int> nextInvestigationId_{1};
-    std::atomic<int> nextActionId_{1};
-    std::atomic<int> nextIncidentId_{1};
+    int nextEventId_ = 1;
+    int nextCorrelationId_ = 1;
+    int nextInvestigationId_ = 1;
+    int nextActionId_ = 1;
+    int nextIncidentId_ = 1;
 
     std::map<std::string, EndpointEvent> events_;
     std::map<std::string, Correlation> correlations_;

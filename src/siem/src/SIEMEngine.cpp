@@ -5,6 +5,7 @@
 #include <ctime>
 #include <iomanip>
 #include <regex>
+#include <cmath>
 
 namespace ThreatOne::SIEM {
 
@@ -216,19 +217,69 @@ std::vector<SIEMAlert> SIEMEngine::evaluateRules() {
     for (const auto& [ruleId, rule] : correlationRules_) {
         if (!rule.enabled) continue;
 
-        // Count matching logs within time window
+        // Find all logs that match the condition
+        std::vector<const LogEntry*> matchingLogs;
+        for (const auto& log : logs_) {
+            if (matchesCondition(log, rule.condition)) {
+                matchingLogs.push_back(&log);
+            }
+        }
+
+        // Apply time window filter: only count logs within timeWindowSeconds
+        // of the most recent matching log
         std::vector<std::string> matchedIds;
 
-        // Simple time window: check logs from end (most recent)
-        for (auto it = logs_.rbegin(); it != logs_.rend(); ++it) {
-            if (matchesCondition(*it, rule.condition)) {
-                matchedIds.push_back(it->id);
+        if (!matchingLogs.empty()) {
+            // Find the most recent timestamp among matching logs
+            std::string mostRecent;
+            for (const auto* log : matchingLogs) {
+                if (log->timestamp > mostRecent) {
+                    mostRecent = log->timestamp;
+                }
             }
 
-            // Simple window check: if we have timestamps, compare them
-            if (!logs_.empty() && !it->timestamp.empty()) {
-                // We use the approach of checking all logs with matching timestamps
-                // within the time window relative to the most recent matching log
+            if (mostRecent.empty()) {
+                // No timestamps available, include all matches (backward compatible)
+                for (const auto* log : matchingLogs) {
+                    matchedIds.push_back(log->id);
+                }
+            } else {
+                // Parse the most recent timestamp and filter by time window
+                auto parseTimestamp = [](const std::string& ts) -> std::time_t {
+                    std::tm tm = {};
+                    std::istringstream ss(ts);
+                    ss >> std::get_time(&tm, "%Y-%m-%dT%H:%M:%S");
+                    if (ss.fail()) {
+                        return 0;
+                    }
+                    // Use timegm for thread-safe UTC conversion (avoids locale issues)
+                    return timegm(&tm);
+                };
+
+                std::time_t recentTime = parseTimestamp(mostRecent);
+                if (recentTime == 0) {
+                    // Cannot parse timestamps, include all matches
+                    for (const auto* log : matchingLogs) {
+                        matchedIds.push_back(log->id);
+                    }
+                } else {
+                    for (const auto* log : matchingLogs) {
+                        if (log->timestamp.empty()) {
+                            // No timestamp on this log, include it
+                            matchedIds.push_back(log->id);
+                        } else {
+                            std::time_t logTime = parseTimestamp(log->timestamp);
+                            if (logTime == 0) {
+                                matchedIds.push_back(log->id);
+                            } else {
+                                double diff = std::abs(std::difftime(recentTime, logTime));
+                                if (diff <= static_cast<double>(rule.timeWindowSeconds)) {
+                                    matchedIds.push_back(log->id);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 

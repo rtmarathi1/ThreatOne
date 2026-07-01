@@ -5,7 +5,6 @@
 
 #include <mutex>
 #include <map>
-#include <atomic>
 
 namespace ThreatOne::SOC {
 
@@ -53,13 +52,13 @@ private:
     std::map<std::string, std::vector<HandoffNote>> handoffNotes_;
     std::map<std::string, TicketInfo> tickets_;
 
-    std::atomic<int> nextCaseId_{1};
-    std::atomic<int> nextEvidenceId_{1};
-    std::atomic<int> nextPlaybookId_{1};
-    std::atomic<int> nextExecutionId_{1};
-    std::atomic<int> nextShiftId_{1};
-    std::atomic<int> nextHandoffId_{1};
-    std::atomic<int> nextTicketId_{1};
+    int nextCaseId_ = 1;
+    int nextEvidenceId_ = 1;
+    int nextPlaybookId_ = 1;
+    int nextExecutionId_ = 1;
+    int nextShiftId_ = 1;
+    int nextHandoffId_ = 1;
+    int nextTicketId_ = 1;
 
     ThreatOne::Core::ModuleLogger logger_;
 };

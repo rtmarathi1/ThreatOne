@@ -42,14 +42,12 @@ int XDREngine::severityToInt(const std::string& severity) const {
 
 bool XDREngine::eventsWithinTimeWindow(const EndpointEvent& a, const EndpointEvent& b, int windowSeconds) const {
     // Parse ISO timestamps and compare
-    // For simplicity, compare lexicographically (ISO 8601 format is sortable)
-    // If timestamps are within the window, we consider them correlated
-    // In production this would do proper time math; here we use a simplified approach
     if (a.timestamp.empty() || b.timestamp.empty()) {
         return true; // If no timestamp, assume within window
     }
 
     // Parse timestamps: expected format "YYYY-MM-DDTHH:MM:SS"
+    // Use timegm instead of std::mktime for thread safety and UTC correctness
     auto parseTimestamp = [](const std::string& ts) -> std::time_t {
         std::tm tm = {};
         std::istringstream ss(ts);
@@ -57,7 +55,7 @@ bool XDREngine::eventsWithinTimeWindow(const EndpointEvent& a, const EndpointEve
         if (ss.fail()) {
             return 0;
         }
-        return std::mktime(&tm);
+        return timegm(&tm);
     };
 
     std::time_t timeA = parseTimestamp(a.timestamp);

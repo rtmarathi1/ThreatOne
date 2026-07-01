@@ -131,28 +131,95 @@ bool PluginManager::unloadPlugin(const std::string& pluginId) {
 }
 
 bool PluginManager::reloadPlugin(const std::string& pluginId) {
-    // Need to get path before unloading - use pluginId as path surrogate
-    std::string path;
-    {
-        std::lock_guard<std::mutex> lock(mutex_);
-        auto it = plugins_.find(pluginId);
-        if (it == plugins_.end()) {
-            logger_.error("Cannot reload plugin: {} not found", pluginId);
-            return false;
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    auto it = plugins_.find(pluginId);
+    if (it == plugins_.end()) {
+        logger_.error("Cannot reload plugin: {} not found", pluginId);
+        return false;
+    }
+
+    std::string path = pluginId;
+
+    // Unload inline (same logic as unloadPlugin but without acquiring mutex)
+    if (it->second.state == PluginState::Unloaded) {
+        logger_.warn("Plugin already unloaded: {}", pluginId);
+        return false;
+    }
+
+    // Check if other loaded plugins depend on this one
+    for (const auto& [id, manifest] : manifests_) {
+        if (id == pluginId) continue;
+        auto plugIt = plugins_.find(id);
+        if (plugIt == plugins_.end() || plugIt->second.state == PluginState::Unloaded) continue;
+
+        for (const auto& dep : manifest.dependencies) {
+            if (dep.pluginId == pluginId && dep.required) {
+                logger_.error("Cannot reload plugin {}: required by {}", pluginId, id);
+                return false;
+            }
         }
-        path = pluginId;
     }
 
-    if (!unloadPlugin(pluginId)) {
-        logger_.error("Failed to unload plugin for reload: {}", pluginId);
-        return false;
+    // Remove hooks associated with this plugin
+    if (manifests_.count(pluginId)) {
+        for (const auto& hook : manifests_[pluginId].hooks) {
+            auto range = hooks_.equal_range(hook.eventType);
+            for (auto hookIt = range.first; hookIt != range.second;) {
+                if (hookIt->second.name == hook.name) {
+                    hookIt = hooks_.erase(hookIt);
+                } else {
+                    ++hookIt;
+                }
+            }
+        }
     }
 
-    if (!loadPlugin(path)) {
-        logger_.error("Failed to load plugin for reload: {}", pluginId);
-        return false;
+    it->second.state = PluginState::Unloaded;
+    it->second.loaded = false;
+    it->second.enabled = false;
+    logger_.info("Unloaded plugin for reload: {}", pluginId);
+
+    // Load inline (same logic as loadPlugin but without acquiring mutex)
+    std::string loadPluginId;
+    auto lastSlash = path.rfind('/');
+    auto lastDot = path.rfind('.');
+    if (lastSlash != std::string::npos) {
+        loadPluginId = path.substr(lastSlash + 1);
+    } else {
+        loadPluginId = path;
+    }
+    if (lastDot != std::string::npos && lastDot > (lastSlash != std::string::npos ? lastSlash : 0)) {
+        loadPluginId = loadPluginId.substr(0, loadPluginId.rfind('.'));
     }
 
+    auto manifestIt = manifests_.find(loadPluginId);
+    if (manifestIt != manifests_.end()) {
+        loadPluginId = manifestIt->second.id;
+    }
+
+    // Create plugin info
+    PluginInfo info;
+    info.id = loadPluginId;
+    info.loaded = true;
+    info.enabled = false;
+    info.state = PluginState::Loaded;
+
+    if (manifestIt != manifests_.end()) {
+        info.name = manifestIt->second.name;
+        info.version = manifestIt->second.version;
+        info.author = manifestIt->second.author;
+        info.description = manifestIt->second.description;
+
+        for (const auto& hook : manifestIt->second.hooks) {
+            hooks_.emplace(hook.eventType, hook);
+        }
+    } else {
+        info.name = loadPluginId;
+        info.version = "1.0.0";
+    }
+
+    plugins_[loadPluginId] = info;
     logger_.info("Reloaded plugin: {}", pluginId);
     return true;
 }

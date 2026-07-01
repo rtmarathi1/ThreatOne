@@ -4,7 +4,6 @@
 #include "core/Logger.h"
 
 #include <mutex>
-#include <atomic>
 #include <map>
 #include <chrono>
 
@@ -46,10 +45,10 @@ private:
     bool isWithinTimeRange(const std::string& timestamp, const std::string& start, const std::string& end) const;
 
     mutable std::mutex mutex_;
-    std::atomic<int> nextLogId_{1};
-    std::atomic<int> nextAlertId_{1};
-    std::atomic<int> nextRuleId_{1};
-    std::atomic<int> nextCorrelationRuleId_{1};
+    int nextLogId_ = 1;
+    int nextAlertId_ = 1;
+    int nextRuleId_ = 1;
+    int nextCorrelationRuleId_ = 1;
 
     std::vector<LogEntry> logs_;
     std::map<std::string, SIEMAlert> alerts_;

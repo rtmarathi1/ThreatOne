@@ -1,6 +1,7 @@
 #include "cloud/CloudManager.h"
 
 #include <algorithm>
+#include <nlohmann/json.hpp>
 
 namespace ThreatOne::Cloud {
 
@@ -212,18 +213,18 @@ bool CloudManager::uploadThreatIntel(const std::string& data) {
 std::string CloudManager::downloadPolicies() {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    // Return policies as a simple string representation
-    std::string result = "{\"policies\":[";
-    bool first = true;
+    // Use nlohmann_json for proper JSON construction with escaping
+    nlohmann::json j;
+    j["policies"] = nlohmann::json::array();
     for (const auto& [id, policy] : policies_) {
-        if (!first) result += ",";
-        result += "{\"id\":\"" + id + "\",\"name\":\"" + policy.name + "\"}";
-        first = false;
+        nlohmann::json policyObj;
+        policyObj["id"] = id;
+        policyObj["name"] = policy.name;
+        j["policies"].push_back(policyObj);
     }
-    result += "]}";
 
     logger_.info("downloadPolicies: {} policies", policies_.size());
-    return result;
+    return j.dump();
 }
 
 } // namespace ThreatOne::Cloud

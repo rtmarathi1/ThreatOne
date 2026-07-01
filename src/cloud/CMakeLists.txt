@@ -13,4 +13,5 @@ target_link_libraries(threatone_cloud
     PUBLIC
         threatone_compiler_options
         threatone_core
+        nlohmann_json
 )

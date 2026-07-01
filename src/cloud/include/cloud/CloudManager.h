@@ -5,7 +5,6 @@
 
 #include <mutex>
 #include <map>
-#include <atomic>
 
 namespace ThreatOne::Cloud {
 
@@ -49,9 +48,9 @@ private:
     std::map<std::string, PolicyInfo> policies_;
     std::map<std::string, BackupSchedule> backupSchedules_;
 
-    std::atomic<int> nextBackupId_{1};
-    std::atomic<int> nextPolicyId_{1};
-    std::atomic<int> nextScheduleId_{1};
+    int nextBackupId_ = 1;
+    int nextPolicyId_ = 1;
+    int nextScheduleId_ = 1;
 
     ThreatOne::Core::ModuleLogger logger_;
 };
