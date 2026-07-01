@@ -2,7 +2,7 @@
   "id": "FEAT-004",
   "type": "feat",
   "description": "Add comprehensive unit tests for all AI/ML and Analytics components",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create tests/ai/ directory and test files: test_feature_extractor.cpp, test_decision_tree.cpp, test_anomaly_detector.cpp, test_risk_scoring.cpp, test_threat_classifier.cpp, test_model_manager.cpp, test_nlp_processor.cpp, test_recommendation_engine.cpp, test_auto_investigation.cpp, test_prediction_engine.cpp",
     "Implement test_feature_extractor.cpp - Test Shannon entropy calculation (all zeros = 0 entropy, random data = ~8.0, known patterns). Test file feature extraction (known PE-like data). Test behavior feature extraction (event frequency, timing).",
@@ -30,5 +30,5 @@
     "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build && cd build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "The project uses a simplified doctest implementation where SUBCASE blocks ALL run sequentially (always enter) rather than doctest's standard re-entry behavior. Tests that depend on isolated state must use separate TEST_CASE blocks rather than SUBCASEs within the same TEST_CASE. Also, time-based tests require fixed base times (from_time_t epoch-based) rather than now() to avoid timezone/current-time dependency in hour extraction."
 }
