@@ -74,6 +74,11 @@ set(TEST_SOURCES
     api/test_controllers.cpp
     api/test_api_auth.cpp
     api/test_webhook_manager.cpp
+    reporting/test_report_generator.cpp
+    reporting/test_report_template.cpp
+    reporting/test_export_engine.cpp
+    reporting/test_report_scheduler.cpp
+    reporting/test_report_storage.cpp
 )
 
 # Create the test executable
@@ -97,6 +102,7 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/licensing/include
         ${CMAKE_SOURCE_DIR}/src/fleet/include
         ${CMAKE_SOURCE_DIR}/src/api/include
+        ${CMAKE_SOURCE_DIR}/src/reporting/include
 )
 
 target_link_libraries(threatone_tests
@@ -118,6 +124,7 @@ target_link_libraries(threatone_tests
         threatone_licensing
         threatone_fleet
         threatone_api
+        threatone_reporting
         spdlog
         nlohmann_json
         sqlite3
