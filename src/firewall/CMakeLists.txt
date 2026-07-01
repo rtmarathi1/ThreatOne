@@ -1,5 +1,9 @@
 add_library(threatone_firewall STATIC
     src/FirewallManager.cpp
+    src/RuleEngine.cpp
+    src/RulePersistence.cpp
+    src/ConnectionTracker.cpp
+    src/PacketFilter.cpp
 )
 
 target_include_directories(threatone_firewall
@@ -13,4 +17,6 @@ target_link_libraries(threatone_firewall
     PUBLIC
         threatone_compiler_options
         threatone_core
+        threatone_database
+        nlohmann_json
 )

@@ -1,7 +1,13 @@
 #pragma once
 
 #include "firewall/IFirewallManager.h"
+#include "firewall/RuleEngine.h"
+#include "firewall/ConnectionTracker.h"
+#include "firewall/PacketFilter.h"
 #include "core/Logger.h"
+
+#include <memory>
+#include <mutex>
 
 namespace ThreatOne::Firewall {
 
@@ -18,9 +24,20 @@ public:
     std::vector<ConnectionInfo> getConnections() override;
     bool blockIP(const std::string& ip) override;
     bool allowIP(const std::string& ip) override;
+    FilterResult filterPacket(const PacketDescriptor& packet) override;
+
+    // Access to sub-components
+    RuleEngine& ruleEngine() { return ruleEngine_; }
+    ConnectionTracker& connectionTracker() { return connectionTracker_; }
+    PacketFilter& packetFilter() { return *packetFilter_; }
 
 private:
-    ThreatOne::Core::ModuleLogger logger_;
+    RuleEngine ruleEngine_;
+    ConnectionTracker connectionTracker_;
+    std::unique_ptr<PacketFilter> packetFilter_;
+    Core::ModuleLogger logger_;
+    mutable std::mutex mutex_;
+    int nextRuleId_ = 1;
 };
 
 } // namespace ThreatOne::Firewall

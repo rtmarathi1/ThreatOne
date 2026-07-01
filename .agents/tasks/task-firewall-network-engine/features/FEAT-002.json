@@ -1,0 +1,33 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Implement the core Firewall Engine: Rule Engine with match conditions and priority ordering, Rule Persistence via the database layer, Connection Tracker parsing /proc/net/tcp and /proc/net/udp, and Packet Filter logic layer that matches packets against rules. Update the existing FirewallManager stub to be fully functional using these components.",
+  "status": "in_progress",
+  "steps": [
+    "Step 1 - Create src/firewall/include/firewall/RuleEngine.h: Define a RuleEngine class that stores FirewallRule objects (from the existing IFirewallManager.h), supports match conditions (source/dest IP with CIDR, port ranges, protocol, application path), actions (allow/deny/log), priority-based ordering, enable/disable per rule. Use a sorted container (std::vector sorted by priority). Add methods: addRule, removeRule, evaluatePacket (returns Action for a given packet descriptor), getRules, enableRule, disableRule.",
+    "Step 2 - Create src/firewall/src/RuleEngine.cpp: Implement RuleEngine with IP matching supporting CIDR notation (parse IP/prefix), port range matching, protocol matching, application path matching. evaluatePacket iterates rules in priority order and returns first match's action (default deny if no match, configurable).",
+    "Step 3 - Create src/firewall/include/firewall/RulePersistence.h: Define RulePersistence class that wraps the existing Database::Models::FirewallRule model. Methods: loadRules(IConnection&) -> Result<vector<FirewallRule>>, saveRule(IConnection&, FirewallRule) -> Result<>, deleteRule(IConnection&, string id) -> Result<>, updateRule(IConnection&, FirewallRule) -> Result<>. Maps between the firewall::FirewallRule struct and the database model.",
+    "Step 4 - Create src/firewall/src/RulePersistence.cpp: Implement CRUD operations using the existing Model<FirewallRule> CRTP pattern (create, findAll, destroyById, update). Convert between the Firewall::FirewallRule struct fields and Database::Models::FirewallRule fields.",
+    "Step 5 - Create src/firewall/include/firewall/ConnectionTracker.h: Define ConnectionTracker class that parses /proc/net/tcp and /proc/net/udp to get active connections. Store connection state (ESTABLISHED, LISTEN, TIME_WAIT, etc.). Provide getConnections() -> vector<ConnectionInfo>, getConnectionByPort(), connection count stats. Use a state machine: NEW -> ESTABLISHED -> CLOSING -> CLOSED.",
+    "Step 6 - Create src/firewall/src/ConnectionTracker.cpp: Implement parsing of /proc/net/tcp format (hex IP:port, state code mapping). Provide a refresh() method that re-reads proc files. For testability, also accept a string input (parseProcNet method) rather than only reading the filesystem.",
+    "Step 7 - Create src/firewall/include/firewall/PacketFilter.h: Define PacketFilter class that represents the application-level packet inspection framework. PacketDescriptor struct with: sourceIP, destIP, sourcePort, destPort, protocol, applicationPath, payload (optional). PacketFilter holds a reference to RuleEngine and evaluates packets. Methods: filterPacket(PacketDescriptor) -> FilterResult (action + matched rule ID + log message).",
+    "Step 8 - Create src/firewall/src/PacketFilter.cpp: Implement PacketFilter that delegates to RuleEngine::evaluatePacket, adding logging and statistics tracking (packets allowed/denied/logged counts).",
+    "Step 9 - Update src/firewall/include/firewall/IFirewallManager.h: Extend the FirewallRule struct to include: priority (int), applicationPath (string), sourcePortRange (pair<uint16_t,uint16_t>), destPortRange (pair<uint16_t,uint16_t>), cidrPrefix (int for source/dest). Keep backward compatibility. Add a PacketDescriptor struct or reference the one from PacketFilter.",
+    "Step 10 - Update src/firewall/include/firewall/FirewallManager.h and src/firewall/src/FirewallManager.cpp: Replace the stub implementation with a fully functional one that owns a RuleEngine, ConnectionTracker, and PacketFilter. The addRule/removeRule/getRules methods delegate to RuleEngine. getConnections() delegates to ConnectionTracker. Add a filterPacket method.",
+    "Step 11 - Update src/firewall/CMakeLists.txt: Add the new .cpp source files (RuleEngine.cpp, RulePersistence.cpp, ConnectionTracker.cpp, PacketFilter.cpp). Link against threatone_database and nlohmann_json in addition to threatone_core."
+  ],
+  "acceptance_criteria": [
+    "src/firewall/ contains RuleEngine, RulePersistence, ConnectionTracker, PacketFilter headers and source files",
+    "FirewallManager is no longer a stub - it uses RuleEngine for rule evaluation",
+    "RuleEngine supports CIDR IP matching, port ranges, protocol, application path, priority ordering",
+    "ConnectionTracker can parse /proc/net/tcp format strings",
+    "PacketFilter evaluates packets against rules and returns allow/deny/log decisions",
+    "The project builds successfully with cmake -B build -DENABLE_QT=OFF && cmake --build build"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

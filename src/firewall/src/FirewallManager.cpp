@@ -1,50 +1,84 @@
 #include "firewall/FirewallManager.h"
 
+#include <algorithm>
+
 namespace ThreatOne::Firewall {
 
 FirewallManager::FirewallManager()
-    : logger_(ThreatOne::Core::Logger::instance().getModuleLogger("FirewallManager")) {
-    logger_.info("FirewallManager initialized (stub)");
+    : packetFilter_(std::make_unique<PacketFilter>(ruleEngine_))
+    , logger_(Core::Logger::instance().getModuleLogger("FirewallManager")) {
+    logger_.info("FirewallManager initialized");
 }
 
 bool FirewallManager::addRule(const FirewallRule& rule) {
-    logger_.info("addRule called: {}", rule.name);
-    return true;
+    std::lock_guard<std::mutex> lock(mutex_);
+    FirewallRule ruleToAdd = rule;
+    if (ruleToAdd.id.empty()) {
+        ruleToAdd.id = std::to_string(nextRuleId_++);
+    }
+    bool result = ruleEngine_.addRule(ruleToAdd);
+    if (result) {
+        logger_.info("Added rule: {} (id: {})", ruleToAdd.name, ruleToAdd.id);
+    }
+    return result;
 }
 
 bool FirewallManager::removeRule(const std::string& ruleId) {
-    logger_.info("removeRule called: {}", ruleId);
-    return true;
+    std::lock_guard<std::mutex> lock(mutex_);
+    bool result = ruleEngine_.removeRule(ruleId);
+    if (result) {
+        logger_.info("Removed rule: {}", ruleId);
+    }
+    return result;
 }
 
 std::vector<FirewallRule> FirewallManager::getRules() {
-    logger_.info("getRules called");
-    return {};
+    return ruleEngine_.getRules();
 }
 
 bool FirewallManager::enableRule(const std::string& ruleId) {
-    logger_.info("enableRule called: {}", ruleId);
-    return true;
+    return ruleEngine_.enableRule(ruleId);
 }
 
 bool FirewallManager::disableRule(const std::string& ruleId) {
-    logger_.info("disableRule called: {}", ruleId);
-    return true;
+    return ruleEngine_.disableRule(ruleId);
 }
 
 std::vector<ConnectionInfo> FirewallManager::getConnections() {
-    logger_.info("getConnections called");
-    return {};
+    connectionTracker_.refresh();
+    return connectionTracker_.getConnections();
 }
 
 bool FirewallManager::blockIP(const std::string& ip) {
-    logger_.info("blockIP called: {}", ip);
-    return true;
+    std::lock_guard<std::mutex> lock(mutex_);
+    FirewallRule rule;
+    rule.id = std::to_string(nextRuleId_++);
+    rule.name = "Block " + ip;
+    rule.sourceIP = ip;
+    rule.action = Action::Block;
+    rule.direction = Direction::Inbound;
+    rule.protocol = Protocol::Any;
+    rule.priority = 0; // Highest priority
+    rule.enabled = true;
+    return ruleEngine_.addRule(rule);
 }
 
 bool FirewallManager::allowIP(const std::string& ip) {
-    logger_.info("allowIP called: {}", ip);
-    return true;
+    std::lock_guard<std::mutex> lock(mutex_);
+    FirewallRule rule;
+    rule.id = std::to_string(nextRuleId_++);
+    rule.name = "Allow " + ip;
+    rule.sourceIP = ip;
+    rule.action = Action::Allow;
+    rule.direction = Direction::Inbound;
+    rule.protocol = Protocol::Any;
+    rule.priority = 0; // Highest priority
+    rule.enabled = true;
+    return ruleEngine_.addRule(rule);
+}
+
+FilterResult FirewallManager::filterPacket(const PacketDescriptor& packet) {
+    return packetFilter_->filterPacket(packet);
 }
 
 } // namespace ThreatOne::Firewall
