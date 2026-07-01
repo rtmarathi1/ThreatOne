@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "feat",
   "description": "Create C++ View Model classes in src/app/ that bridge backend engines to the QML UI layer. Each ViewModel exposes Q_PROPERTY bindings, Q_INVOKABLE methods, and signals. All guarded with #ifdef ENABLE_QT_BUILD so non-Qt build compiles with stub/empty files. Update CMakeLists.txt to include new files conditionally.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create src/app/include/app/viewmodels/DashboardViewModel.h: class with Q_OBJECT macro (inside #ifdef ENABLE_QT_BUILD), Q_PROPERTY for securityScore (double), threatCount (int), activeScans (int), openIncidents (int), alertCount (int), complianceScore (double), endpointHealthy (int), endpointWarning (int), endpointCritical (int), cpuUsage (double), memoryUsage (double), networkStatus (QString), aiInsights (QStringList). Q_INVOKABLE methods: refresh(), getRecentAlerts(), getThreatTimeline(). Signals: dataUpdated(). Include non-Qt stub with matching interface but no Qt macros.",
     "Create src/app/include/app/viewmodels/ScannerViewModel.h: Q_PROPERTY for scanTypes (QStringList), activeScanType (QString), scanProgress (double), filesScanned (int), threatsFound (int), elapsedTime (QString), currentFile (QString), isScanning (bool), scanHistory model. Q_INVOKABLE: startScan(type), pauseScan(), resumeScan(), stopScan(), getScanResults(scanId). Signals: scanStarted(), scanProgress(double), scanCompleted(), threatDetected(). Non-Qt stub.",

@@ -1,6 +1,16 @@
 add_executable(threatone_app
     src/main.cpp
     src/AppController.cpp
+    src/viewmodels/DashboardViewModel.cpp
+    src/viewmodels/ScannerViewModel.cpp
+    src/viewmodels/FirewallViewModel.cpp
+    src/viewmodels/EDRViewModel.cpp
+    src/viewmodels/IncidentViewModel.cpp
+    src/viewmodels/AssetViewModel.cpp
+    src/viewmodels/ThreatIntelViewModel.cpp
+    src/viewmodels/ReportViewModel.cpp
+    src/viewmodels/SettingsViewModel.cpp
+    src/viewmodels/UsersViewModel.cpp
 )
 
 target_include_directories(threatone_app
