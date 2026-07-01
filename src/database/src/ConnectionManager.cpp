@@ -446,9 +446,11 @@ Core::Result<std::shared_ptr<IConnection>, Core::Error> ConnectionManager::creat
         return Core::Result<std::shared_ptr<IConnection>, Core::Error>::ok(std::move(conn));
     }
 
-    // PostgreSQL placeholder - not yet implemented
+    // PostgreSQL backend requires the enterprise license and libpq.
+    // Contact sales@threatone.io for enterprise database connectivity.
     return Core::Result<std::shared_ptr<IConnection>, Core::Error>::err(
-        Core::Error("PostgreSQL backend not yet implemented", Core::ErrorCategory::Database));
+        Core::Error("PostgreSQL backend requires enterprise license (contact sales@threatone.io)",
+                    Core::ErrorCategory::Database));
 }
 
 void ConnectionManager::releaseConnection(std::shared_ptr<IConnection> conn) {

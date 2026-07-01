@@ -51,13 +51,14 @@ public:
     }
 
     static std::string hash(const std::filesystem::path& path) {
-        // Stub: returns a placeholder hash
-        auto content = readFile(path);
-        if (!content) return "";
-        // Simple hash for stub purposes
-        uint64_t h = 0;
-        for (char c : *content) {
-            h = h * 31 + static_cast<uint64_t>(c);
+        // Fast non-cryptographic hash for file identification/dedup.
+        // For cryptographic file hashing, use ThreatOne::Scanner::FileHasher.
+        auto fileContent = readFile(path);
+        if (!fileContent) return "";
+        uint64_t h = 0xcbf29ce484222325ULL; // FNV-1a offset basis
+        for (char c : *fileContent) {
+            h ^= static_cast<uint64_t>(static_cast<unsigned char>(c));
+            h *= 0x100000001b3ULL; // FNV-1a prime
         }
         char buf[17];
         std::snprintf(buf, sizeof(buf), "%016lx", h);

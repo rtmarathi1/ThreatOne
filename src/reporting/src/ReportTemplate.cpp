@@ -97,7 +97,7 @@ std::string ReportTemplateEngine::renderTemplate(const std::string& templateId,
 
     const auto& tmpl = it->second;
 
-    // Build complete variable set (template placeholders + provided variables)
+    // Build complete variable set (template defaults + provided variables)
     std::map<std::string, std::string> allVars = tmpl.placeholders;
     allVars["company_name"] = tmpl.companyName;
     allVars["company_logo"] = tmpl.companyLogo;

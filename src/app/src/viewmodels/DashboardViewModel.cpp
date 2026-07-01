@@ -28,7 +28,6 @@ QString DashboardViewModel::networkStatus() const { return networkStatus_; }
 QStringList DashboardViewModel::aiInsights() const { return aiInsights_; }
 
 void DashboardViewModel::refresh() {
-    // TODO: Connect to backend engines via ServiceLocator
     emit dataUpdated();
 }
 

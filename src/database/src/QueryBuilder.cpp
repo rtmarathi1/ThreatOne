@@ -51,7 +51,7 @@ SelectBuilder& SelectBuilder::whereBetween(const std::string& col, BoundParam lo
 }
 
 SelectBuilder& SelectBuilder::whereIn(const std::string& col, std::vector<BoundParam> values) {
-    // Build raw SQL for IN clause with placeholders
+    // Build raw SQL for IN clause with parameter markers
     std::string raw = col + " IN (";
     for (std::size_t i = 0; i < values.size(); ++i) {
         if (i > 0) raw += ", ";

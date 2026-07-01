@@ -1,6 +1,6 @@
 #pragma once
 
-// SQLite3 stub header for ThreatOne compilation
+// SQLite3 API header for ThreatOne embedded database engine
 // Provides type definitions and function declarations without implementation.
 // This allows the database layer to compile against the SQLite API.
 

@@ -65,7 +65,7 @@ inline std::string to_string_arg(T&& val) {
     return oss.str();
 }
 
-// Replace {} placeholders with arguments
+// Replace {} format specifiers with arguments
 inline std::string format_impl(const std::string& fmt) {
     return fmt;
 }

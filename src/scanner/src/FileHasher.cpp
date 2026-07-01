@@ -238,38 +238,257 @@ std::array<uint8_t, 32> SHA256::hash(const std::string& data) {
 
 #endif // HAS_OPENSSL
 
-// BLAKE3 placeholder - uses a simple mixing function (not real BLAKE3)
-std::array<uint8_t, 32> FileHasher::blake3Placeholder(const uint8_t* data, size_t length) {
-    // This is a placeholder that produces deterministic output
-    // but does NOT implement the real BLAKE3 algorithm
-    std::array<uint8_t, 32> result{};
-    std::array<uint32_t, 8> state = {
-        0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
-        0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
+// BLAKE3 implementation using 7-round ChaCha-based compression and tree hashing.
+// Per the BLAKE3 specification: 1024-byte chunks, 64-byte blocks, tree structure.
+
+namespace {
+
+// BLAKE3 IV (same as SHA-256 initial values)
+constexpr std::array<uint32_t, 8> BLAKE3_IV = {
+    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+    0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
+};
+
+// BLAKE3 message schedule permutations
+constexpr std::array<std::array<uint8_t, 16>, 7> BLAKE3_MSG_SCHEDULE = {{
+    {{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 }},
+    {{ 2, 6, 3, 10, 7, 0, 4, 13, 1, 11, 12, 5, 9, 14, 15, 8 }},
+    {{ 3, 4, 10, 12, 13, 2, 7, 14, 6, 5, 9, 0, 11, 15, 8, 1 }},
+    {{ 10, 7, 12, 9, 14, 3, 13, 15, 4, 0, 11, 2, 5, 8, 1, 6 }},
+    {{ 12, 13, 9, 11, 15, 10, 14, 8, 7, 2, 5, 3, 0, 1, 6, 4 }},
+    {{ 9, 14, 11, 5, 8, 12, 15, 1, 13, 3, 0, 10, 2, 6, 4, 7 }},
+    {{ 11, 15, 5, 0, 1, 9, 8, 6, 14, 10, 2, 12, 3, 4, 7, 13 }}
+}};
+
+// Domain flags
+constexpr uint32_t BLAKE3_CHUNK_START = 1;
+constexpr uint32_t BLAKE3_CHUNK_END = 2;
+constexpr uint32_t BLAKE3_ROOT = 8;
+
+inline uint32_t blake3_rotr(uint32_t x, unsigned int n) {
+    return (x >> n) | (x << (32u - n));
+}
+
+// Quarter round (G function) using ChaCha-style mixing
+inline void blake3_g(uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d,
+                     uint32_t mx, uint32_t my) {
+    a = a + b + mx;
+    d = blake3_rotr(d ^ a, 16);
+    c = c + d;
+    b = blake3_rotr(b ^ c, 12);
+    a = a + b + my;
+    d = blake3_rotr(d ^ a, 8);
+    c = c + d;
+    b = blake3_rotr(b ^ c, 7);
+}
+
+// 7-round compression function
+void blake3_compress(const uint32_t cv[8], const uint32_t block[16],
+                     uint64_t counter, uint32_t blockLen, uint32_t flags,
+                     uint32_t out[16]) {
+    uint32_t state[16] = {
+        cv[0], cv[1], cv[2], cv[3],
+        cv[4], cv[5], cv[6], cv[7],
+        BLAKE3_IV[0], BLAKE3_IV[1], BLAKE3_IV[2], BLAKE3_IV[3],
+        static_cast<uint32_t>(counter & 0xFFFFFFFF),
+        static_cast<uint32_t>((counter >> 32) & 0xFFFFFFFF),
+        blockLen,
+        flags
     };
 
-    auto rotr_local = [](uint32_t x, unsigned int n) -> uint32_t {
-        return (x >> n) | (x << (32u - n));
-    };
+    uint32_t msg[16];
+    for (int i = 0; i < 16; ++i) msg[i] = block[i];
 
-    for (size_t i = 0; i < length; ++i) {
-        size_t idx = i % 8;
-        state[idx] ^= static_cast<uint32_t>(data[i]) << ((i % 4) * 8);
-        state[idx] = rotr_local(state[idx], 7) ^ state[(idx + 1) % 8];
+    for (int round = 0; round < 7; ++round) {
+        const auto& schedule = BLAKE3_MSG_SCHEDULE[static_cast<size_t>(round)];
+        // Column rounds
+        blake3_g(state[0], state[4], state[8],  state[12], msg[schedule[0]],  msg[schedule[1]]);
+        blake3_g(state[1], state[5], state[9],  state[13], msg[schedule[2]],  msg[schedule[3]]);
+        blake3_g(state[2], state[6], state[10], state[14], msg[schedule[4]],  msg[schedule[5]]);
+        blake3_g(state[3], state[7], state[11], state[15], msg[schedule[6]],  msg[schedule[7]]);
+        // Diagonal rounds
+        blake3_g(state[0], state[5], state[10], state[15], msg[schedule[8]],  msg[schedule[9]]);
+        blake3_g(state[1], state[6], state[11], state[12], msg[schedule[10]], msg[schedule[11]]);
+        blake3_g(state[2], state[7], state[8],  state[13], msg[schedule[12]], msg[schedule[13]]);
+        blake3_g(state[3], state[4], state[9],  state[14], msg[schedule[14]], msg[schedule[15]]);
     }
-
-    // Mix length into state
-    state[0] ^= static_cast<uint32_t>(length & 0xFFFFFFFF);
-    state[1] ^= static_cast<uint32_t>((length >> 32) & 0xFFFFFFFF);
 
     for (int i = 0; i < 8; ++i) {
-        auto idx = static_cast<size_t>(i);
-        result[idx * 4]     = static_cast<uint8_t>(state[idx] >> 24);
-        result[idx * 4 + 1] = static_cast<uint8_t>(state[idx] >> 16);
-        result[idx * 4 + 2] = static_cast<uint8_t>(state[idx] >> 8);
-        result[idx * 4 + 3] = static_cast<uint8_t>(state[idx]);
+        out[i] = state[i] ^ state[i + 8];
+        out[i + 8] = state[i + 8] ^ cv[i];
+    }
+}
+
+// Compress a single 64-byte block, returning the new chaining value (first 8 words)
+void blake3_compress_cv(const uint32_t cv[8], const uint32_t block[16],
+                        uint64_t counter, uint32_t blockLen, uint32_t flags,
+                        uint32_t newCv[8]) {
+    uint32_t full[16];
+    blake3_compress(cv, block, counter, blockLen, flags, full);
+    for (int i = 0; i < 8; ++i) {
+        newCv[i] = full[i];
+    }
+}
+
+// Load a 32-bit word from bytes (little-endian)
+inline uint32_t blake3_load32(const uint8_t* p) {
+    return static_cast<uint32_t>(p[0])
+         | (static_cast<uint32_t>(p[1]) << 8)
+         | (static_cast<uint32_t>(p[2]) << 16)
+         | (static_cast<uint32_t>(p[3]) << 24);
+}
+
+// Process a single chunk (up to 1024 bytes) and return its chaining value
+void blake3_chunk_cv(const uint8_t* chunkData, size_t chunkLen,
+                     const uint32_t key[8], uint64_t chunkCounter,
+                     uint32_t cvOut[8]) {
+    uint32_t cv[8];
+    for (int i = 0; i < 8; ++i) cv[i] = key[i];
+
+    size_t blocksInChunk = (chunkLen + 63) / 64;
+    if (blocksInChunk == 0) blocksInChunk = 1;
+
+    for (size_t bi = 0; bi < blocksInChunk; ++bi) {
+        uint32_t block[16] = {};
+        size_t blockStart = bi * 64;
+        size_t blockBytes = std::min(size_t{64}, chunkLen > blockStart ? chunkLen - blockStart : 0);
+
+        // Load block as little-endian words
+        uint8_t blockBuf[64] = {};
+        if (blockBytes > 0) {
+            std::memcpy(blockBuf, chunkData + blockStart, blockBytes);
+        }
+        for (int w = 0; w < 16; ++w) {
+            block[w] = blake3_load32(blockBuf + w * 4);
+        }
+
+        uint32_t flags = 0;
+        if (bi == 0) flags |= BLAKE3_CHUNK_START;
+        if (bi == blocksInChunk - 1) flags |= BLAKE3_CHUNK_END;
+
+        blake3_compress_cv(cv, block, chunkCounter, static_cast<uint32_t>(blockBytes), flags, cv);
     }
 
+    for (int i = 0; i < 8; ++i) cvOut[i] = cv[i];
+}
+
+// Parent compression: merges two child chaining values
+void blake3_parent_cv(const uint32_t left[8], const uint32_t right[8],
+                      const uint32_t key[8], uint32_t flags,
+                      uint32_t cvOut[8]) {
+    uint32_t block[16];
+    for (int i = 0; i < 8; ++i) block[i] = left[i];
+    for (int i = 0; i < 8; ++i) block[i + 8] = right[i];
+
+    // Parent node flag = 4
+    blake3_compress_cv(key, block, 0, 64, flags | 4, cvOut);
+}
+
+} // anonymous namespace
+
+std::array<uint8_t, 32> FileHasher::blake3Hash(const uint8_t* data, size_t length) {
+    constexpr size_t CHUNK_SIZE = 1024;
+
+    uint32_t key[8];
+    for (int i = 0; i < 8; ++i) key[i] = BLAKE3_IV[i];
+
+    if (length == 0) {
+        // Hash empty input: single empty chunk
+        uint32_t cv[8];
+        uint32_t block[16] = {};
+        uint32_t flags = BLAKE3_CHUNK_START | BLAKE3_CHUNK_END | BLAKE3_ROOT;
+        uint32_t full[16];
+        blake3_compress(key, block, 0, 0, flags, full);
+        std::array<uint8_t, 32> result{};
+        for (int i = 0; i < 8; ++i) {
+            result[static_cast<size_t>(i) * 4]     = static_cast<uint8_t>(full[i]);
+            result[static_cast<size_t>(i) * 4 + 1] = static_cast<uint8_t>(full[i] >> 8);
+            result[static_cast<size_t>(i) * 4 + 2] = static_cast<uint8_t>(full[i] >> 16);
+            result[static_cast<size_t>(i) * 4 + 3] = static_cast<uint8_t>(full[i] >> 24);
+        }
+        return result;
+    }
+
+    // Compute chaining values for each chunk
+    size_t numChunks = (length + CHUNK_SIZE - 1) / CHUNK_SIZE;
+    std::vector<std::array<uint32_t, 8>> chunkCvs(numChunks);
+
+    for (size_t ci = 0; ci < numChunks; ++ci) {
+        size_t chunkStart = ci * CHUNK_SIZE;
+        size_t chunkLen = std::min(CHUNK_SIZE, length - chunkStart);
+        blake3_chunk_cv(data + chunkStart, chunkLen, key, ci, chunkCvs[ci].data());
+    }
+
+    // Tree hashing: merge pairs until one root remains
+    if (numChunks == 1) {
+        // Single chunk: re-compress with ROOT flag
+        size_t chunkLen = std::min(CHUNK_SIZE, length);
+        size_t blocksInChunk = (chunkLen + 63) / 64;
+        if (blocksInChunk == 0) blocksInChunk = 1;
+
+        uint32_t cv[8];
+        for (int i = 0; i < 8; ++i) cv[i] = key[i];
+
+        for (size_t bi = 0; bi < blocksInChunk; ++bi) {
+            uint32_t block[16] = {};
+            size_t blockStart = bi * 64;
+            size_t blockBytes = std::min(size_t{64}, chunkLen > blockStart ? chunkLen - blockStart : 0);
+
+            uint8_t blockBuf[64] = {};
+            if (blockBytes > 0) {
+                std::memcpy(blockBuf, data + blockStart, blockBytes);
+            }
+            for (int w = 0; w < 16; ++w) {
+                block[w] = blake3_load32(blockBuf + w * 4);
+            }
+
+            uint32_t flags = 0;
+            if (bi == 0) flags |= BLAKE3_CHUNK_START;
+            if (bi == blocksInChunk - 1) flags |= BLAKE3_CHUNK_END | BLAKE3_ROOT;
+
+            if (bi < blocksInChunk - 1) {
+                blake3_compress_cv(cv, block, 0, static_cast<uint32_t>(blockBytes), flags, cv);
+            } else {
+                // Final block: output full 32 bytes
+                uint32_t full[16];
+                blake3_compress(cv, block, 0, static_cast<uint32_t>(blockBytes), flags, full);
+                std::array<uint8_t, 32> result{};
+                for (int i = 0; i < 8; ++i) {
+                    result[static_cast<size_t>(i) * 4]     = static_cast<uint8_t>(full[i]);
+                    result[static_cast<size_t>(i) * 4 + 1] = static_cast<uint8_t>(full[i] >> 8);
+                    result[static_cast<size_t>(i) * 4 + 2] = static_cast<uint8_t>(full[i] >> 16);
+                    result[static_cast<size_t>(i) * 4 + 3] = static_cast<uint8_t>(full[i] >> 24);
+                }
+                return result;
+            }
+        }
+    }
+
+    // Multi-chunk: binary tree merge
+    while (chunkCvs.size() > 1) {
+        std::vector<std::array<uint32_t, 8>> parentCvs;
+        for (size_t i = 0; i < chunkCvs.size(); i += 2) {
+            if (i + 1 < chunkCvs.size()) {
+                std::array<uint32_t, 8> parentCv{};
+                uint32_t flags = (chunkCvs.size() <= 2) ? BLAKE3_ROOT : 0;
+                blake3_parent_cv(chunkCvs[i].data(), chunkCvs[i + 1].data(),
+                                 key, flags, parentCv.data());
+                parentCvs.push_back(parentCv);
+            } else {
+                parentCvs.push_back(chunkCvs[i]);
+            }
+        }
+        chunkCvs = std::move(parentCvs);
+    }
+
+    // Convert final CV to bytes (little-endian)
+    std::array<uint8_t, 32> result{};
+    for (int i = 0; i < 8; ++i) {
+        result[static_cast<size_t>(i) * 4]     = static_cast<uint8_t>(chunkCvs[0][static_cast<size_t>(i)]);
+        result[static_cast<size_t>(i) * 4 + 1] = static_cast<uint8_t>(chunkCvs[0][static_cast<size_t>(i)] >> 8);
+        result[static_cast<size_t>(i) * 4 + 2] = static_cast<uint8_t>(chunkCvs[0][static_cast<size_t>(i)] >> 16);
+        result[static_cast<size_t>(i) * 4 + 3] = static_cast<uint8_t>(chunkCvs[0][static_cast<size_t>(i)] >> 24);
+    }
     return result;
 }
 
@@ -317,7 +536,7 @@ Core::Result<std::string, Core::Error> FileHasher::hashFile(
         }
         return Core::Result<std::string, Core::Error>::ok(toHex(hasher.finalize()));
     } else {
-        // BLAKE3 placeholder - read entire file then hash
+        // BLAKE3: read entire file then hash with tree structure
         std::vector<uint8_t> fileData;
         file.seekg(0, std::ios::end);
         auto fileSize = file.tellg();
@@ -327,7 +546,7 @@ Core::Result<std::string, Core::Error> FileHasher::hashFile(
             file.read(reinterpret_cast<char*>(fileData.data()), fileSize);
         }
         return Core::Result<std::string, Core::Error>::ok(
-            toHex(blake3Placeholder(fileData.data(), fileData.size())));
+            toHex(blake3Hash(fileData.data(), fileData.size())));
     }
 }
 
@@ -340,7 +559,7 @@ Core::Result<std::string, Core::Error> FileHasher::hashBuffer(
         return Core::Result<std::string, Core::Error>::ok(toHex(digest));
     } else {
         return Core::Result<std::string, Core::Error>::ok(
-            toHex(blake3Placeholder(data.data(), data.size())));
+            toHex(blake3Hash(data.data(), data.size())));
     }
 }
 
@@ -353,7 +572,7 @@ Core::Result<std::string, Core::Error> FileHasher::hashString(
         return Core::Result<std::string, Core::Error>::ok(toHex(digest));
     } else {
         return Core::Result<std::string, Core::Error>::ok(
-            toHex(blake3Placeholder(reinterpret_cast<const uint8_t*>(data.data()), data.size())));
+            toHex(blake3Hash(reinterpret_cast<const uint8_t*>(data.data()), data.size())));
     }
 }
 

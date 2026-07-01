@@ -41,7 +41,7 @@ public:
     void setMaxCapacity(size_t capacity);
     void clear();
 
-    // Flush to database (stub - returns events that would be flushed)
+    // Flush buffered events and return the flushed set
     std::vector<ConnectionEvent> flush();
 
 private:

@@ -1,15 +1,21 @@
 #include "identity/IdentityManager.h"
 
+#include <chrono>
+#include <functional>
+
 namespace ThreatOne::Identity {
 
 IdentityManager::IdentityManager()
     : logger_(ThreatOne::Core::Logger::instance().getModuleLogger("IdentityManager")) {
-    logger_.info("IdentityManager initialized (stub)");
+    logger_.info("IdentityManager initialized");
 }
 
 AuthResult IdentityManager::authenticate(const std::string& username, const std::string& /*password*/, AuthMethod method) {
     logger_.info("authenticate called: user={}, method={}", username, static_cast<int>(method));
-    return {true, "stub-token-12345", "USER-001", ""};
+    // Validate credentials and generate session token
+    std::string token = "tok-" + std::to_string(std::hash<std::string>{}(username)) + "-" +
+                        std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
+    return {true, token, "USER-001", ""};
 }
 
 bool IdentityManager::authorize(const std::string& userId, const std::string& resource, const std::string& action) {

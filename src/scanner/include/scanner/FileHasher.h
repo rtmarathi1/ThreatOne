@@ -3,7 +3,7 @@
 // ThreatOne Scanner - File Hashing
 // When HAS_OPENSSL is defined: uses OpenSSL EVP API for SHA256
 // Otherwise: uses custom FIPS 180-4 SHA256 implementation (no external library needed)
-// BLAKE3 placeholder for future implementation
+// BLAKE3: 7-round ChaCha-based compression with tree hashing
 
 #include <string>
 #include <vector>
@@ -22,7 +22,7 @@ namespace ThreatOne::Scanner {
 // Hash algorithm selection
 enum class HashAlgorithm {
     SHA256,
-    BLAKE3  // Placeholder - returns a simplified hash
+    BLAKE3  // BLAKE3 with 7-round ChaCha compression
 };
 
 #ifdef HAS_OPENSSL
@@ -95,8 +95,8 @@ private:
     // Convert bytes to hex string
     static std::string toHex(const std::array<uint8_t, 32>& bytes);
 
-    // BLAKE3 placeholder hash
-    static std::array<uint8_t, 32> blake3Placeholder(const uint8_t* data, size_t length);
+    // BLAKE3 hash (7-round ChaCha compression, tree hashing)
+    static std::array<uint8_t, 32> blake3Hash(const uint8_t* data, size_t length);
 };
 
 } // namespace ThreatOne::Scanner

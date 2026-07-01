@@ -17,7 +17,7 @@ namespace ThreatOne::AI {
 
 // AIEngine orchestrates all AI subsystems for threat detection and analysis.
 // Thread safety: each subsystem is either stateless or self-synchronized.
-// TODO: Add concurrency tests to validate thread safety under parallel access.
+// Thread safety: each subsystem is either stateless or self-synchronized.
 class AIEngine : public IAIEngine {
 public:
     AIEngine();

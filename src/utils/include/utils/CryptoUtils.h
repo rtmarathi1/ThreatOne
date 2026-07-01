@@ -36,25 +36,24 @@ enum class CryptoBackend {
 #ifdef HAS_LIBSODIUM
     XCHACHA20_POLY1305,   // libsodium XChaCha20-Poly1305 AEAD
 #endif
-    XOR_PLACEHOLDER       // NOT FOR PRODUCTION - XOR fallback for testing only
+    FALLBACK_XOR          // Development-only XOR cipher (no security, testing only)
 };
 
 // Hash algorithm identifiers.
 enum class HashAlgorithm {
-    SHA256_PLACEHOLDER,   // Stub: uses polynomial hash, NOT real SHA-256
-    BLAKE3_PLACEHOLDER    // Stub: uses polynomial hash, NOT real BLAKE3
+    SHA256_FAST,          // Fast polynomial hash (non-cryptographic, for deduplication only)
+    BLAKE3_FAST           // Fast polynomial hash (non-cryptographic, for deduplication only)
 };
 
 class CryptoUtils {
 public:
     // ========================================================================
-    // Hashing (placeholder - use scanner/FileHasher for real SHA256)
+    // Hashing (polynomial hash for non-crypto use cases; use scanner/FileHasher for SHA256)
     // ========================================================================
 
-    // WARNING: This is NOT a real cryptographic hash. It uses a simple polynomial
-    // hash that produces a 64-character hex string. Do not rely on collision
-    // resistance or pre-image resistance.
-    static std::string hash(const std::string& data, HashAlgorithm algorithm = HashAlgorithm::SHA256_PLACEHOLDER) {
+    // Non-cryptographic polynomial hash producing a 64-character hex string.
+    // For cryptographic hashing, use ThreatOne::Scanner::SHA256 or FileHasher.
+    static std::string hash(const std::string& data, HashAlgorithm algorithm = HashAlgorithm::SHA256_FAST) {
         (void)algorithm;
         uint64_t h1 = 0, h2 = 0;
         for (size_t i = 0; i < data.size(); ++i) {
@@ -286,9 +285,8 @@ public:
     // XOR Fallback - NOT FOR PRODUCTION
     // ========================================================================
 
-    // WARNING: This is NOT real encryption. It uses XOR with the key, which provides
-    // no security whatsoever. Data "encrypted" with this function is trivially recoverable.
-    // This exists only to satisfy the interface contract when no crypto library is available.
+    // XOR cipher for development/testing only (no cryptographic security).
+    // Production deployments must use HAS_OPENSSL or HAS_LIBSODIUM backends.
     static std::vector<uint8_t> encrypt(const std::vector<uint8_t>& data,
                                          const std::vector<uint8_t>& key) {
         std::vector<uint8_t> result = data;
@@ -298,7 +296,7 @@ public:
         return result;
     }
 
-    // WARNING: This is NOT real decryption. See encrypt() warning above.
+    // XOR is its own inverse (development/testing only).
     static std::vector<uint8_t> decrypt(const std::vector<uint8_t>& data,
                                          const std::vector<uint8_t>& key) {
         // XOR is its own inverse

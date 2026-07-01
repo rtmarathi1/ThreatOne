@@ -2,10 +2,11 @@
 
 // ThreatOne Scanner - YARA Rule Engine
 // When HAS_YARA is defined: uses real libyara for rule compilation and scanning
-// Otherwise: stub backend that parses rule names but returns empty matches
+// Otherwise: built-in Aho-Corasick multi-pattern matching engine
 
 #include <string>
 #include <vector>
+#include <array>
 #include <filesystem>
 #include <unordered_map>
 
@@ -24,6 +25,7 @@ struct YaraMatch {
     std::string ruleNamespace;
     std::vector<std::string> tags;
     std::vector<std::string> metaStrings;
+    std::vector<std::pair<std::string, std::vector<size_t>>> matchedStrings;
 };
 
 // Status of the YARA engine
@@ -92,6 +94,44 @@ private:
     // Callback for YARA scan results
     static int scanCallback(YR_SCAN_CONTEXT* context, int message,
                            void* message_data, void* user_data);
+#else
+    // Internal structures for the pattern-matching automaton
+    struct PatternDef {
+        std::string identifier;
+        enum Type { Text, Hex } type;
+        std::vector<uint8_t> bytes;
+        std::vector<bool> mask; // true = must match, false = wildcard
+        bool nocase;
+    };
+
+    struct RuleDef {
+        std::string name;
+        std::string ns;
+        std::vector<std::string> tags;
+        std::vector<std::pair<std::string, std::string>> meta;
+        std::vector<PatternDef> patterns;
+        std::string condition;
+    };
+
+    struct AhoNode {
+        std::array<int, 256> children;
+        int failure;
+        std::vector<size_t> outputs; // indices into allPatterns_
+        AhoNode() : failure(0) { children.fill(-1); }
+    };
+
+    std::vector<RuleDef> compiledRules_;
+    std::vector<PatternDef*> allPatterns_;
+    std::vector<AhoNode> automaton_;
+    bool automatonBuilt_;
+
+    void buildAutomaton();
+    std::vector<YaraMatch> scanData(const uint8_t* data, size_t length) const;
+    bool evaluateCondition(const std::string& condition,
+                           const std::vector<PatternDef>& patterns,
+                           const std::unordered_map<std::string, std::vector<size_t>>& hits) const;
+    static RuleDef parseRule(const std::string& ruleText);
+    static std::vector<std::string> splitRules(const std::string& text);
 #endif
 };
 

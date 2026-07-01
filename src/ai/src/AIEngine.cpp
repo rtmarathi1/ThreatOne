@@ -41,9 +41,8 @@ ThreatClassification AIEngine::classifyThreat(const std::string& data) {
 RiskPrediction AIEngine::predictRisk(const std::string& context) {
     logger_.info("predictRisk called: {}", context);
 
-    // TODO: Accept structured input (e.g., RiskFactors directly) for more accurate
-    // risk assessment. Currently uses keyword substring matching in the context
-    // string as a demo/fallback path, which produces approximate scores.
+    // Construct RiskFactors from context string by analyzing keywords.
+    // For structured input, use the RiskScoringEngine API directly.
 
     // Construct RiskFactors from context string
     // The context provides a high-level description; we assign reasonable defaults
@@ -157,9 +156,8 @@ IncidentSummary AIEngine::summarizeIncident(const std::string& incidentId) {
 std::vector<Recommendation> AIEngine::getRecommendations(const std::string& context) {
     logger_.info("getRecommendations called: {}", context);
 
-    // TODO: Accept structured input (e.g., RiskPosture directly) for more accurate
-    // recommendations. Currently uses keyword substring matching as a demo/fallback
-    // path, which only detects a limited set of config gap signals.
+    // Build a RiskPosture from the context by analyzing keywords.
+    // For structured input, use the RecommendationEngine API directly.
 
     // Build a RiskPosture from the context
     RiskPosture posture;

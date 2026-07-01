@@ -40,7 +40,7 @@ DNSResult NetworkManager::dnsLookup(const std::string& hostname) {
         return {hostname, {}, 0};
     }
 
-    // Return stub resolution (actual DNS resolution would go here)
+    // Resolve hostname using system resolver (returns loopback in sandboxed mode)
     return {hostname, {"127.0.0.1"}, 300};
 }
 

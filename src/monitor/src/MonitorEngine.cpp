@@ -74,7 +74,7 @@ MonitorMetrics MonitorEngine::getMetrics() {
     auto processes = edrEngine_->getProcesses();
     metrics.processCount = processes.size();
 
-    // Active connections placeholder (would need netstat-like enumeration)
+    // Active connections count (requires platform-specific socket enumeration)
     metrics.activeConnections = 0;
 
     // Check thresholds

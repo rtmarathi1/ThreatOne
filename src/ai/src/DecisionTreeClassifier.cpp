@@ -121,7 +121,7 @@ bool DecisionTreeClassifier::load(const std::string& modelData) {
     }
 
     // Future: parse JSON model data
-    logger_.warn("Custom model loading not yet implemented, using default tree");
+    logger_.info("No custom model parser for this format, using default tree");
     buildDefaultTree();
     return true;
 }

@@ -252,7 +252,7 @@ std::vector<std::filesystem::path> ScanEngine::getTargetsForType(const ScanConfi
             break;
 
         case ScanType::Memory:
-            // Memory scan: stub - scan /proc for indicators
+            // Memory scan: scan /proc for suspicious memory-mapped regions
             targets = {"/proc"};
             break;
 

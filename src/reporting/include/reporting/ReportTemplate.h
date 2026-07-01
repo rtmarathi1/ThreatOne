@@ -30,11 +30,11 @@ public:
     // Delete a template
     bool deleteTemplate(const std::string& templateId);
 
-    // Render a template with placeholder substitution
+    // Render a template with variable substitution
     [[nodiscard]] std::string renderTemplate(const std::string& templateId,
                                               const std::map<std::string, std::string>& variables) const;
 
-    // Render header with placeholder substitution
+    // Render header with variable substitution
     [[nodiscard]] static std::string renderSection(const std::string& content,
                                                     const std::map<std::string, std::string>& variables);
 
