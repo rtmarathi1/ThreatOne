@@ -229,6 +229,29 @@ public:
     auto begin() const { return type_ == value_t::object ? object_val_.begin() : object_val_.begin(); }
     auto end() const { return type_ == value_t::object ? object_val_.end() : object_val_.end(); }
 
+    // Array iterators for range-for support
+    array_t::iterator array_begin() { return array_val_.begin(); }
+    array_t::iterator array_end() { return array_val_.end(); }
+    array_t::const_iterator array_begin() const { return array_val_.begin(); }
+    array_t::const_iterator array_end() const { return array_val_.end(); }
+
+    // Return the underlying array (for iteration)
+    const array_t& get_array() const {
+        if (type_ != value_t::array) {
+            static const array_t empty;
+            return empty;
+        }
+        return array_val_;
+    }
+
+    array_t& get_array() {
+        if (type_ == value_t::null) type_ = value_t::array;
+        if (type_ != value_t::array) {
+            throw std::runtime_error("json: not an array");
+        }
+        return array_val_;
+    }
+
     // items() for object iteration
     const object_t& items() const {
         if (type_ != value_t::object) {

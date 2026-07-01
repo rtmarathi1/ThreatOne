@@ -1,5 +1,7 @@
 # Tests CMakeLists.txt - Unit test runner using doctest
 
+find_package(Threads REQUIRED)
+
 # Collect all test source files
 set(TEST_SOURCES
     test_main.cpp
@@ -9,6 +11,12 @@ set(TEST_SOURCES
     core/test_service_locator.cpp
     database/test_query_builder.cpp
     database/test_migration.cpp
+    scanner/test_file_hasher.cpp
+    scanner/test_signature_database.cpp
+    scanner/test_signature_matcher.cpp
+    scanner/test_file_enumerator.cpp
+    scanner/test_quarantine_manager.cpp
+    scanner/test_scan_engine.cpp
 )
 
 # Create the test executable
@@ -19,6 +27,7 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/core/include
         ${CMAKE_SOURCE_DIR}/src/database/include
         ${CMAKE_SOURCE_DIR}/src/utils/include
+        ${CMAKE_SOURCE_DIR}/src/scanner/include
 )
 
 target_link_libraries(threatone_tests
@@ -27,9 +36,11 @@ target_link_libraries(threatone_tests
         threatone_core
         threatone_database
         threatone_utils
+        threatone_scanner
         spdlog
         nlohmann_json
         sqlite3
+        Threads::Threads
 )
 
 # Register with CTest
