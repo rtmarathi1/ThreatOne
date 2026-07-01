@@ -3,5 +3,12 @@
   "task_description": "Implement Phase 7: Complete QML UI layer with all dashboard modules, pages, data-bound components, reusable widgets, enhanced themes, and C++ view models for ThreatOne Enterprise Desktop.",
   "status": "in_progress",
   "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
-  "blocked_reason": null
+  "blocked_reason": null,
+  "review_fixes_applied": {
+    "issue_1_widget_imports": "Added qml/widgets/qmldir and qml/themes/qmldir module files. Added explicit relative import statements to all pages, components, and widgets.",
+    "issue_4_sidebar_index": "Replaced fragile parent.parent.index traversal with pre-computed sectionOffsets array and computeFlatIndex() helper. Outer delegate exposes sectionIdx property for child access.",
+    "issue_5_dual_source_of_truth": "Aligned App.qml sample property values with page-level ViewModel stubs (securityScore=87, cpuUsage=0.42, totalEndpoints=342, etc.).",
+    "v2_issue_1_threat_intel_path": "Fixed path typo in NavigationSidebar.qml: changed pages/threatintel/ to pages/threat_intel/ to match actual filesystem path.",
+    "v2_issue_2_dead_dedup_guard": "Replaced dead objectName comparison in main.qml with a currentPagePath property that tracks the active page file path, enabling correct duplicate-navigation detection."
+  }
 }
