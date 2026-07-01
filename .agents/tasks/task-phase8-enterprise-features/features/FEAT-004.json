@@ -1,0 +1,38 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Create new src/api/ module for REST API Framework: API Router, API Controllers, API Authentication, Webhook Manager.",
+  "status": "pending",
+  "steps": [
+    "Create src/api/ directory structure: include/api/ and src/",
+    "Create src/api/include/api/Router.h - HTTP request routing with path parameters. Structs: HttpRequest (method, path, headers map, queryParams map, body, pathParams map, clientIP), HttpResponse (statusCode, headers map, body, contentType), Route (method, pathPattern, handler, middlewares). Enum: HttpMethod (GET, POST, PUT, DELETE, PATCH). Using Handler = std::function<HttpResponse(const HttpRequest&)>; Using Middleware = std::function<HttpResponse(const HttpRequest&, Handler)>. IRouter interface: addRoute, addMiddleware, handleRequest, getRegisteredRoutes.",
+    "Create src/api/src/Router.cpp - Implementation: route registration, path pattern matching with parameter extraction (e.g., /api/v1/users/:id extracts id), middleware chain execution (auth, rate limiting, logging), 404 handling for unmatched routes.",
+    "Create src/api/include/api/Controllers.h - Controllers for major modules. Base ApiController class with registerRoutes method. Concrete controllers: ScanController (CRUD for scans), AlertController (list/acknowledge/resolve alerts), AssetController (endpoint/asset management), UserController (user CRUD), PolicyController (policy CRUD), ReportController (generate/list reports). Each with standard REST endpoints.",
+    "Create src/api/src/Controllers.cpp - Implementation of all controllers with handler methods that return appropriate HttpResponse objects. Use JSON serialization for request/response bodies.",
+    "Create src/api/include/api/ApiAuth.h - API authentication. Structs: ApiKey (id, key, name, permissions, rateLimit, createdAt, expiresAt), JwtPayload (subject, issuer, audience, issuedAt, expiresAt, claims map), RateLimitInfo (maxRequests, windowSeconds, currentCount, windowStart). IApiAuth interface: validateApiKey, generateApiKey, revokeApiKey, validateJwt, generateJwt, checkRateLimit.",
+    "Create src/api/src/ApiAuth.cpp - Implementation: API key storage and validation, simple JWT-like token generation/validation (base64 header.payload.signature format), rate limiting with sliding window per key.",
+    "Create src/api/include/api/WebhookManager.h - Outbound webhook subscriptions. Structs: WebhookSubscription (id, url, events, secret, active, createdAt, retryPolicy), WebhookDelivery (id, subscriptionId, event, payload, status, attempts, lastAttemptAt, responseCode), RetryPolicy (maxRetries, backoffSeconds, backoffMultiplier). Enum: DeliveryStatus (Pending, Delivered, Failed, Retrying). IWebhookManager interface: subscribe, unsubscribe, listSubscriptions, triggerEvent, getDeliveryHistory, retryDelivery.",
+    "Create src/api/src/WebhookManager.cpp - Implementation: subscription CRUD, event matching and dispatch, delivery tracking with retry queue, delivery history.",
+    "Create src/api/CMakeLists.txt - Static library threatone_api with all sources, link to threatone_compiler_options, threatone_core, nlohmann_json.",
+    "Update root CMakeLists.txt - Add add_subdirectory(src/api) before src/app.",
+    "Create tests/api/test_router.cpp - Tests for route matching, path parameter extraction, middleware execution order, 404 on unknown routes.",
+    "Create tests/api/test_controllers.cpp - Tests for controller registration, CRUD operations returning proper HTTP responses.",
+    "Create tests/api/test_api_auth.cpp - Tests for API key generation/validation, JWT generation/validation, rate limiting.",
+    "Create tests/api/test_webhook_manager.cpp - Tests for webhook subscription, event triggering, delivery tracking, retry logic.",
+    "Update tests/CMakeLists.txt - Add api test files, include api headers, link threatone_api."
+  ],
+  "acceptance_criteria": [
+    "cmake --build build compiles the new threatone_api library without errors",
+    "ctest passes all new api tests",
+    "Router correctly extracts path parameters from patterns like /api/v1/users/:id",
+    "API auth correctly rejects invalid API keys and expired JWTs",
+    "Rate limiter correctly blocks requests exceeding the configured limit",
+    "Webhook manager correctly matches events to subscriptions and tracks delivery"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

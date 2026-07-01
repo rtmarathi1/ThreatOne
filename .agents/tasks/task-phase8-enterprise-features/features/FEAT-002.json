@@ -1,0 +1,30 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Implement Licensing module: License Manager with full validation/enforcement, Feature Gates system. Expand the existing stub in src/licensing/.",
+  "status": "pending",
+  "steps": [
+    "Create src/licensing/include/licensing/LicenseValidator.h - License key validation with format checking (structured key format: TIER-XXXXX-XXXXX-XXXXX-CHECK), checksum verification, expiration date parsing, seat counting, grace period logic. Structs: LicenseKey (tier, segments, checksum), ValidationResult (valid, reason, expiresAt, seatsAllowed, gracePeriodDays).",
+    "Create src/licensing/src/LicenseValidator.cpp - Implementation: parseKey, validateChecksum (simple hash-based), checkExpiration, enforceSeatLimit, calculateGracePeriod. License tiers enum: Free, Professional, Enterprise.",
+    "Create src/licensing/include/licensing/FeatureGate.h - Runtime feature flag system. FeatureGate class with isEnabled(featureName), getRequiredTier(featureName), registerFeature(name, tier, description), setCurrentTier(tier). FeatureDefinition struct. GracefulDegradation: when feature unavailable return appropriate fallback info.",
+    "Create src/licensing/src/FeatureGate.cpp - Implementation: feature registry (map of feature name to required tier), tier comparison logic, degradation callback support, feature usage tracking.",
+    "Update src/licensing/include/licensing/LicenseManager.h and src/licensing/src/LicenseManager.cpp - Integrate LicenseValidator and FeatureGate. Add methods: validateKey, getEntitlements, getSeatCount, getRemainingDays, isInGracePeriod.",
+    "Update src/licensing/CMakeLists.txt - Add new source files.",
+    "Create tests/licensing/test_license_validator.cpp - Tests for key parsing, checksum validation (valid/invalid keys), expiration checking, seat limits, grace periods.",
+    "Create tests/licensing/test_feature_gate.cpp - Tests for feature registration, tier-based enabling/disabling, degradation when feature unavailable, tier upgrade enables features.",
+    "Update tests/CMakeLists.txt - Add licensing test files, link threatone_licensing."
+  ],
+  "acceptance_criteria": [
+    "cmake --build build compiles all new licensing code without errors",
+    "ctest passes all new licensing tests",
+    "License validator correctly rejects malformed keys and accepts well-formed keys",
+    "Feature gate correctly enables features based on tier and disables them when tier is insufficient",
+    "Grace period logic allows temporary access after expiration"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

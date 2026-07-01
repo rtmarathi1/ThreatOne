@@ -1,0 +1,31 @@
+{
+  "project_type": "C++20 Enterprise Desktop Cybersecurity Platform",
+  "language": "C++20",
+  "build_system": "CMake 3.22 with vendored third-party libs (spdlog, nlohmann_json, doctest, sqlite3)",
+  "test_framework": "doctest with single test_main.cpp defining DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN; tests in tests/<module>/test_*.cpp",
+  "build_command": "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+  "test_command": "cd build && ctest --output-on-failure",
+  "verification_instructions": "1. cmake -B build -DENABLE_QT=OFF, 2. cmake --build build (must compile clean), 3. cd build && ctest --output-on-failure (all tests pass)",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "Already built and tested. Baseline passes.",
+  "environment_constraints": "INTEGRATIONS_ONLY network - no external downloads. GCC 11.5/Clang 15, CMake 3.22 pre-installed. Third-party libs vendored in third_party/ (spdlog, nlohmann_json, doctest, sqlite3_stub).",
+  "contribution_requirements": "C++20 standard, static libraries, modules follow include/src layout, tests in tests/ using doctest",
+  "key_patterns": "Each module: add_library(threatone_<name> STATIC ...), PUBLIC include dir, link to threatone_compiler_options + threatone_core. Interfaces in I*.h, implementations in *.h/*.cpp. Tests use TEST_CASE/SUBCASE/CHECK/REQUIRE macros. ModuleLogger from core/Logger.h for logging. Namespaces: ThreatOne::<Module>.",
+  "relevant_files": [
+    "CMakeLists.txt",
+    "src/identity/CMakeLists.txt",
+    "src/identity/include/identity/IIdentityManager.h",
+    "src/identity/include/identity/IdentityManager.h",
+    "src/identity/src/IdentityManager.cpp",
+    "src/licensing/CMakeLists.txt",
+    "src/licensing/include/licensing/ILicenseManager.h",
+    "src/licensing/include/licensing/LicenseManager.h",
+    "src/licensing/src/LicenseManager.cpp",
+    "tests/CMakeLists.txt",
+    "cmake/Dependencies.cmake",
+    "src/core/include/core/Logger.h",
+    "src/core/include/core/Types.h",
+    "src/edr/CMakeLists.txt"
+  ],
+  "directory_structure": "Root: CMakeLists.txt, cmake/ (CompilerOptions/Version/Dependencies), src/ (30+ modules each with CMakeLists.txt + include/ + src/), tests/ (test_main.cpp + per-module dirs), third_party/ (doctest/nlohmann/spdlog/sqlite), qml/ (Qt UI)"
+}

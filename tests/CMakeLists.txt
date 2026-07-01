@@ -59,6 +59,11 @@ set(TEST_SOURCES
     threat_intel/test_threat_scoring.cpp
     threat_intel/test_report_generator.cpp
     threat_intel/test_enrichment.cpp
+    identity/test_rbac.cpp
+    identity/test_authentication.cpp
+    identity/test_audit_logger.cpp
+    identity/test_sso_provider.cpp
+    identity/test_ldap_connector.cpp
 )
 
 # Create the test executable
@@ -78,6 +83,7 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/analytics/include
         ${CMAKE_SOURCE_DIR}/src/threat_intel/include
         ${CMAKE_SOURCE_DIR}/src/security/include
+        ${CMAKE_SOURCE_DIR}/src/identity/include
 )
 
 target_link_libraries(threatone_tests
@@ -95,6 +101,7 @@ target_link_libraries(threatone_tests
         threatone_analytics
         threatone_threat_intel
         threatone_security
+        threatone_identity
         spdlog
         nlohmann_json
         sqlite3

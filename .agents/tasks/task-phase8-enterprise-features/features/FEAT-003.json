@@ -1,0 +1,37 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Create new src/fleet/ module for Fleet and Remote Management: Fleet Manager, Policy Engine, Remote Management, Deployment Manager.",
+  "status": "pending",
+  "steps": [
+    "Create src/fleet/ directory structure: include/fleet/ and src/",
+    "Create src/fleet/include/fleet/FleetManager.h - Endpoint registration, heartbeat monitoring, status tracking, group management, bulk operations. Structs: EndpointInfo (id, hostname, ip, os, agentVersion, lastHeartbeat, status, group, tags), EndpointGroup (id, name, endpoints), HeartbeatData (endpointId, timestamp, cpuUsage, memUsage, threatCount). Enum: EndpointStatus (Online, Offline, Degraded, Maintenance). IFleetManager interface: registerEndpoint, deregisterEndpoint, heartbeat, getEndpoints, getEndpointsByGroup, createGroup, addToGroup, bulkOperation.",
+    "Create src/fleet/src/FleetManager.cpp - Implementation with in-memory endpoint registry, heartbeat tracking with timeout detection (marks offline after configurable interval), group management, bulk operations (restart, scan, update) that queue commands.",
+    "Create src/fleet/include/fleet/PolicyEngine.h - Security policy definition and distribution. Structs: SecurityPolicy (id, name, version, rules, priority, groups, createdAt, updatedAt), PolicyRule (type, parameters, action, severity), PolicyCompliance (endpointId, policyId, compliant, violations, lastChecked). IPolicyEngine interface: createPolicy, updatePolicy, deletePolicy, distributePolicy, checkCompliance, getPolicyHistory, getInheritedPolicies.",
+    "Create src/fleet/src/PolicyEngine.cpp - Implementation: policy CRUD, version history tracking, compliance state per endpoint, policy inheritance (endpoint inherits from group, group inherits from global), distribution queue.",
+    "Create src/fleet/include/fleet/RemoteManager.h - Remote command execution interface. Structs: RemoteCommand (id, endpointId, commandType, parameters, status, result, issuedAt, completedAt), CommandResult (success, output, errorMessage, exitCode). Enum: CommandType (Scan, ConfigPush, Restart, Update, Custom). IRemoteManager interface: executeCommand, getCommandStatus, cancelCommand, pushConfig, triggerRemoteScan.",
+    "Create src/fleet/src/RemoteManager.cpp - Implementation: command queue per endpoint, status tracking, config push simulation, scan trigger dispatch.",
+    "Create src/fleet/include/fleet/DeploymentManager.h - Agent deployment tracking. Structs: DeploymentInfo (id, version, targetEndpoints, status, startedAt, completedAt, rollbackVersion), RolloutConfig (stages, batchSize, delayBetweenBatches, autoRollbackOnFailurePercent). Enum: DeploymentStatus (Planned, InProgress, Paused, Completed, RolledBack, Failed). IDeploymentManager interface: createDeployment, startRollout, pauseRollout, rollback, getDeploymentStatus, getVersionDistribution.",
+    "Create src/fleet/src/DeploymentManager.cpp - Implementation: staged rollout simulation, version tracking per endpoint, rollback capability, deployment history.",
+    "Create src/fleet/CMakeLists.txt - Static library threatone_fleet with all sources, link to threatone_compiler_options, threatone_core, nlohmann_json.",
+    "Update root CMakeLists.txt - Add add_subdirectory(src/fleet) before src/app.",
+    "Create tests/fleet/test_fleet_manager.cpp - Tests for endpoint registration, heartbeat timeout detection, group management, bulk operations.",
+    "Create tests/fleet/test_policy_engine.cpp - Tests for policy CRUD, versioning, compliance checking, inheritance.",
+    "Create tests/fleet/test_remote_manager.cpp - Tests for command execution, status tracking, cancellation.",
+    "Create tests/fleet/test_deployment_manager.cpp - Tests for deployment creation, staged rollout, rollback.",
+    "Update tests/CMakeLists.txt - Add fleet test files, include fleet headers, link threatone_fleet."
+  ],
+  "acceptance_criteria": [
+    "cmake --build build compiles the new threatone_fleet library without errors",
+    "ctest passes all new fleet tests",
+    "Fleet manager correctly detects offline endpoints after heartbeat timeout",
+    "Policy engine correctly resolves inherited policies",
+    "Deployment manager correctly tracks staged rollout progress and supports rollback"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

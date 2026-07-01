@@ -1,0 +1,41 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Implement Identity module: RBAC, Authentication Manager, SSO Interface, LDAP/AD Connector, Azure AD/Google Workspace providers, Audit Logger. Expand the existing stub in src/identity/.",
+  "status": "in_progress",
+  "steps": [
+    "Create src/identity/include/identity/RBACManager.h - RBAC system with Role enum (Admin, Analyst, Viewer, Custom), Permission struct (read/write/execute per module), role-permission mapping, user-role assignment. Namespace ThreatOne::Identity.",
+    "Create src/identity/src/RBACManager.cpp - Implementation with in-memory role store, addRole, removeRole, assignRole, checkPermission, getPermissionsForRole methods.",
+    "Create src/identity/include/identity/AuthenticationManager.h - Local auth with SHA256+salt hashing, session management (token generation, session expiry), MFA interface (TOTP stub). SessionInfo struct with token/userId/expiry/mfaVerified.",
+    "Create src/identity/src/AuthenticationManager.cpp - Implementation: hashPassword (SHA256+random salt), verifyPassword, createSession, validateSession, invalidateSession, refreshSession. Store sessions in-memory map.",
+    "Create src/identity/include/identity/SSOProvider.h - SAML 2.0 and OAuth2/OIDC interface stubs. Data models: SSOToken (accessToken, refreshToken, expiresAt, claims), SSOClaims (subject, email, name, groups, issuer), SSOProviderConfig (name, issuerUrl, clientId, clientSecret, redirectUri, scopes). Abstract ISSOProvider interface.",
+    "Create src/identity/src/SSOProvider.cpp - Base class implementation with token validation stubs, claims parsing stubs.",
+    "Create src/identity/include/identity/LDAPConnector.h - LDAP directory interface: ILDAPConnector with connect, disconnect, searchUsers, syncUsers, mapGroupsToRoles. Structs: LDAPConfig (host, port, baseDN, bindDN, bindPassword, searchFilter, useTLS), LDAPUser (dn, cn, mail, memberOf).",
+    "Create src/identity/src/LDAPConnector.cpp - Implementation stub that stores config, simulates connection state, provides mock search results for testing.",
+    "Create src/identity/include/identity/CloudIdentityProvider.h - Azure AD and Google Workspace provider interfaces. ICloudIdentityProvider with authenticate, refreshToken, provisionUser, deprovisionUser, listUsers. Structs: CloudIdentityConfig, CloudToken (token, refreshToken, expiresAt).",
+    "Create src/identity/src/CloudIdentityProvider.cpp - AzureADProvider and GoogleWorkspaceProvider stub implementations.",
+    "Create src/identity/include/identity/AuditLogger.h - Comprehensive audit trail. AuditEntry struct (id, timestamp, userId, action, resource, outcome, sourceIP, details, previousHash, hash). IAuditLogger interface: logEvent, search, getEntries, setRetentionPolicy. Tamper-evident: each entry hashes previous entry's hash for chain integrity.",
+    "Create src/identity/src/AuditLogger.cpp - Implementation: append-only log with hash chain (SHA256 of previous entry hash + current entry data), search/filter by time range/user/action, retention policy enforcement (max age, max entries).",
+    "Update src/identity/CMakeLists.txt - Add all new .cpp files to the library sources.",
+    "Update src/identity/include/identity/IIdentityManager.h and IdentityManager.h/.cpp if needed to integrate with new components.",
+    "Create tests/identity/test_rbac.cpp - Tests for role creation, permission assignment, permission checking, role hierarchy.",
+    "Create tests/identity/test_authentication.cpp - Tests for password hashing, session creation/validation/expiry, token generation.",
+    "Create tests/identity/test_audit_logger.cpp - Tests for audit logging, hash chain integrity, search/filter, retention.",
+    "Create tests/identity/test_sso_provider.cpp - Tests for SSO data models, token structure, claims parsing.",
+    "Create tests/identity/test_ldap_connector.cpp - Tests for LDAP config, connection state, user search simulation.",
+    "Update tests/CMakeLists.txt - Add all new identity test files, include identity headers, link threatone_identity."
+  ],
+  "acceptance_criteria": [
+    "cmake --build build compiles all new identity source files without errors or warnings",
+    "ctest passes all new identity tests",
+    "RBAC tests verify role-permission mapping correctly allows/denies access",
+    "Authentication tests verify password hash+salt produces different hashes for same password, session tokens are unique, expired sessions are rejected",
+    "Audit logger tests verify hash chain integrity (altering any entry breaks the chain verification)"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

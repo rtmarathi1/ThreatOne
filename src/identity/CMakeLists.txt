@@ -1,5 +1,11 @@
 add_library(threatone_identity STATIC
     src/IdentityManager.cpp
+    src/RBACManager.cpp
+    src/AuthenticationManager.cpp
+    src/SSOProvider.cpp
+    src/LDAPConnector.cpp
+    src/CloudIdentityProvider.cpp
+    src/AuditLogger.cpp
 )
 
 target_include_directories(threatone_identity
