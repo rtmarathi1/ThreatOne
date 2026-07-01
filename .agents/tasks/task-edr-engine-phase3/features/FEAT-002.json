@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Implement detection and analysis components: BehaviorAnalyzer, DetectionRulesEngine, AlertManager, PersistenceDetection, RansomwareDetection, LateralMovementDetection, and IncidentTimeline. These consume events from the monitors (FEAT-001) and produce alerts/incidents.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create src/edr/include/edr/BehaviorAnalyzer.h - BehaviorAnalyzer class with: addEvent(EDREvent), analyzePatterns() returning vector<BehaviorAlert>, detectRansomwareBehavior(), detectPrivilegeEscalation(), detectDataExfiltration(). Maintain a sliding window of events. Pattern matching: file encryption sequences (high entropy writes + renames), mass deletion, rapid file access patterns, process injection chains.",
     "Create src/edr/src/BehaviorAnalyzer.cpp - Implementation with event window (configurable size, default 1000 events). Pattern detection logic: (1) ransomware = many file renames to crypto extensions + high entropy writes in short time, (2) privilege escalation = suid changes, sudo/su invocations from unexpected processes, (3) data exfiltration = large outbound data + archive creation + suspicious destination.",
@@ -41,5 +41,5 @@
     "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All 7 detection/analysis components implemented and tested. 140 tests pass (35 new). Key findings: (1) The vendored nlohmann/json is a simplified stub that does not support get<vector<T>>() - must use get_array() and iterate manually. (2) Doctest SUBCASEs in this project share the parent-scope objects across subcases (they do not re-construct on each pass), so each independent test case must use separate TEST_CASE blocks rather than SUBCASEs when the test object accumulates state. (3) [[nodiscard]] attributes require (void) casts in tests where return values are intentionally discarded."
 }
