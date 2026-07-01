@@ -15,6 +15,7 @@ target_link_libraries(threatone_monitor
     PUBLIC
         threatone_compiler_options
         threatone_core
+        threatone_edr
         nlohmann_json
         Threads::Threads
 )

@@ -26,6 +26,8 @@ set(TEST_SOURCES
     edr/test_alert_manager.cpp
     edr/test_ransomware_detection.cpp
     edr/test_incident_timeline.cpp
+    edr/test_edr_engine.cpp
+    edr/test_monitor_engine.cpp
 )
 
 # Create the test executable
