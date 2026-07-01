@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Implement core ML infrastructure: Feature Extractor, ML Model Interface, Decision Tree Classifier, and Anomaly Detector in src/ai/",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create src/ai/include/ai/FeatureExtractor.h - Define FeatureVector struct (map of string->double), FileFeatures struct (entropy, fileSize, sectionCount, importCount, suspiciousStringCount, etc.), BehaviorFeatures struct (eventFrequency, timingVariance, sequenceLength, uniqueEventTypes). Create FeatureExtractor class with methods: extractFileFeatures(data) -> FileFeatures, extractBehaviorFeatures(events) -> BehaviorFeatures, toFeatureVector(FileFeatures/BehaviorFeatures) -> FeatureVector. Include entropy calculation helper.",
     "Create src/ai/src/FeatureExtractor.cpp - Implement entropy calculation using Shannon entropy formula on byte distribution. File size is data.size(). Section analysis counts PE-like section markers. Import table analysis counts common API patterns (LoadLibrary, VirtualAlloc, CreateRemoteThread etc). String analysis extracts and scores suspicious strings (URLs, registry paths, crypto-related). Behavior features: compute event frequency (events per time window), timing variance (std::deviation of inter-event times), sequence analysis.",
@@ -26,5 +26,5 @@
     "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Build and tests pass cleanly. nlohmann_json and Threads::Threads already available as targets in the project. No issues encountered."
 }
