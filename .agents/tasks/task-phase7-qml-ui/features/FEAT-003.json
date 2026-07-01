@@ -1,0 +1,36 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Create C++ View Model classes in src/app/ that bridge backend engines to the QML UI layer. Each ViewModel exposes Q_PROPERTY bindings, Q_INVOKABLE methods, and signals. All guarded with #ifdef ENABLE_QT_BUILD so non-Qt build compiles with stub/empty files. Update CMakeLists.txt to include new files conditionally.",
+  "status": "pending",
+  "steps": [
+    "Create src/app/include/app/viewmodels/DashboardViewModel.h: class with Q_OBJECT macro (inside #ifdef ENABLE_QT_BUILD), Q_PROPERTY for securityScore (double), threatCount (int), activeScans (int), openIncidents (int), alertCount (int), complianceScore (double), endpointHealthy (int), endpointWarning (int), endpointCritical (int), cpuUsage (double), memoryUsage (double), networkStatus (QString), aiInsights (QStringList). Q_INVOKABLE methods: refresh(), getRecentAlerts(), getThreatTimeline(). Signals: dataUpdated(). Include non-Qt stub with matching interface but no Qt macros.",
+    "Create src/app/include/app/viewmodels/ScannerViewModel.h: Q_PROPERTY for scanTypes (QStringList), activeScanType (QString), scanProgress (double), filesScanned (int), threatsFound (int), elapsedTime (QString), currentFile (QString), isScanning (bool), scanHistory model. Q_INVOKABLE: startScan(type), pauseScan(), resumeScan(), stopScan(), getScanResults(scanId). Signals: scanStarted(), scanProgress(double), scanCompleted(), threatDetected(). Non-Qt stub.",
+    "Create src/app/include/app/viewmodels/FirewallViewModel.h: Q_PROPERTY for rules model, activeConnections model, blockedIPs (QStringList), rulesCount (int), blockedToday (int), bandwidth (double). Q_INVOKABLE: addRule(params), removeRule(id), toggleRule(id), blockIP(ip), unblockIP(ip), getDNSCategories(), setGeoBlocking(country, enabled). Signals: ruleAdded(), ruleRemoved(), connectionBlocked(). Non-Qt stub.",
+    "Create src/app/include/app/viewmodels/EDRViewModel.h: Q_PROPERTY for processes model (tree), fileEvents model, alerts model, behaviorAlerts model, timeline model, processCount (int), alertCount (int). Q_INVOKABLE: killProcess(pid), quarantineFile(path), getProcessTree(), getFileEvents(timeRange), acknowledgeAlert(id). Signals: alertTriggered(), suspiciousActivity(). Non-Qt stub.",
+    "Create src/app/include/app/viewmodels/IncidentViewModel.h: Q_PROPERTY for incidents model, selectedIncident (object), severityFilter (QString), statusFilter (QString), incidentCount (int). Q_INVOKABLE: createIncident(params), updateStatus(id, status), assignTo(id, user), addNote(id, text), getTimeline(id), getEvidence(id). Signals: incidentCreated(), statusChanged(). Non-Qt stub.",
+    "Create src/app/include/app/viewmodels/AssetViewModel.h: Q_PROPERTY for assets model, selectedAsset (object), totalAssets (int), healthyCount (int), atRiskCount (int). Q_INVOKABLE: getAssetDetail(id), getSoftwareInventory(id), getVulnerabilities(id), getEvents(id), scanAsset(id). Signals: assetStatusChanged(), newVulnerability(). Non-Qt stub.",
+    "Create src/app/include/app/viewmodels/ThreatIntelViewModel.h: Q_PROPERTY for iocResults model, feeds model, mitreMatrix model, cveList model, correlations model, feedCount (int), iocCount (int). Q_INVOKABLE: searchIOC(type, value), refreshFeeds(), getCVEDetail(id), getMitreDetails(techniqueId), runCorrelation(). Signals: newIOCFound(), feedUpdated(). Non-Qt stub.",
+    "Create src/app/include/app/viewmodels/ReportViewModel.h: Q_PROPERTY for templates model, generatedReports model, currentStep (int), reportTypes (QStringList). Q_INVOKABLE: generateReport(type, config), exportReport(id, format), deleteReport(id), getReportPreview(id), getTemplates(). Signals: reportGenerated(), exportComplete(). Non-Qt stub.",
+    "Create src/app/include/app/viewmodels/SettingsViewModel.h: Q_PROPERTY for language (QString), autoUpdate (bool), defaultScanType (QString), firewallPolicy (QString), notificationEmail (bool), notificationDesktop (bool), licenseKey (QString), licenseExpiry (QString), appVersion (QString), all settings categories. Q_INVOKABLE: save(), reset(), importConfig(path), exportConfig(path), activateLicense(key), checkForUpdates(). Signals: settingChanged(), updateAvailable(). Non-Qt stub.",
+    "Create src/app/include/app/viewmodels/UsersViewModel.h: Q_PROPERTY for users model, roles model, auditLog model, userCount (int), activeUsers (int). Q_INVOKABLE: addUser(params), removeUser(id), updateRole(userId, roleId), getAuditLog(filters), resetPassword(id), toggleMFA(id). Signals: userAdded(), roleChanged(). Non-Qt stub.",
+    "Create src/app/src/viewmodels/ directory with corresponding .cpp files for all 10 ViewModels. The non-Qt stub implementations should be minimal (empty constructors/destructors, placeholder return values). The ENABLE_QT_BUILD sections should have full implementations connecting to backend engines via ServiceLocator.",
+    "Update src/app/CMakeLists.txt to include the new ViewModel source files. All ViewModel .cpp files should be added unconditionally (since they use #ifdef internally). Add conditional Qt target_link_libraries when ENABLE_QT is ON.",
+    "Verify the full non-Qt build compiles: cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc) and tests pass."
+  ],
+  "acceptance_criteria": [
+    "All 10 ViewModel header files exist in src/app/include/app/viewmodels/",
+    "All 10 ViewModel .cpp files exist in src/app/src/viewmodels/",
+    "Each ViewModel compiles in non-Qt mode (stubs compile without Qt headers)",
+    "Each ViewModel has #ifdef ENABLE_QT_BUILD guarded Qt-specific code (Q_OBJECT, Q_PROPERTY, etc.)",
+    "src/app/CMakeLists.txt includes all new ViewModel source files",
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build passes",
+    "ctest --output-on-failure passes"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -1,0 +1,33 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Create all 10 production-quality QML pages with comprehensive UI, data-binding placeholders for view models, and realistic sample data models. Each page should be a complete, polished enterprise UI.",
+  "status": "pending",
+  "steps": [
+    "Replace qml/pages/dashboard/DashboardPage.qml with executive dashboard: SecurityScoreGauge widget, ThreatScoreCard (using StatCard), RiskHeatmap (grid of colored cells), LiveAttackTimeline (using TimelineView), MITREMatrix view (tactics/techniques grid), AssetsOverview (pie chart placeholder), CriticalAlerts (using AlertCard list), VulnerabilitySummary (stats bar), ComplianceScore (percentage gauge), NetworkStatus (up/down indicators), EndpointHealth (healthy/warning/critical counts), SystemPerformance (CPU/RAM/Disk bars), AIInsights (text-based recommendations list). All bound to dashboardViewModel properties.",
+    "Replace qml/pages/scanner/ScannerPage.qml with full scanner UI: scan type launcher grid (Quick/Full/Custom/Memory/IOC/YARA scan cards with descriptions and estimated times), active scan progress panel with ProgressRing widget and real-time stats (files scanned, threats found, elapsed time, ETA, current file), scan controls (pause/resume/stop), scan history list (using DataTable with columns: date, type, duration, threats, status), scan results detail view (expandable threat cards with file path, threat name, severity, action taken, MITRE mapping). Bound to scannerViewModel.",
+    "Replace qml/pages/firewall/FirewallPage.qml with complete firewall management: tabbed interface (Rules, Connections, Blocked IPs, DNS Filter, Geo-blocking, Bandwidth). Rules tab: DataTable with CRUD operations, inline enable/disable toggle, add rule dialog. Connections tab: live connection table with sorting (source IP, dest IP, port, protocol, status, duration, bytes). Blocked IPs tab: list with add/remove, import/export. DNS filter tab: category toggles, custom blocklist. Geo-blocking tab: country list with toggle (map placeholder). Bandwidth tab: upload/download stats with chart. Bound to firewallViewModel.",
+    "Create qml/pages/edr/EDRPage.qml with EDR module: tabbed interface (Processes, Files, Alerts, Behavior, Timeline). Processes tab: tree view of running processes with PID, name, CPU, memory, network, parent, risk score columns. Files tab: file events timeline (created/modified/deleted/accessed) using TimelineView. Alerts tab: severity-filtered alert list using AlertCard. Behavior tab: behavior analysis cards showing suspicious patterns with confidence scores. Timeline tab: incident timeline showing correlated events. Bound to edrViewModel.",
+    "Create qml/pages/incidents/IncidentsPage.qml with incident management: incident list with severity filters (critical/high/medium/low toggles), status filters (open/investigating/resolved/closed), DataTable with columns (ID, title, severity, status, assignee, created, updated), incident detail view (slide-in panel or separate view) with: summary, timeline of events, evidence section (affected files, processes, network connections), remediation steps checklist, notes/comments area. Bound to incidentViewModel.",
+    "Create qml/pages/assets/AssetsPage.qml with asset inventory: device/endpoint list using DataTable (hostname, IP, OS, status, last seen, risk score, agent version), asset detail view with tabs (Overview, Software, Vulnerabilities, Events), overview shows health status gauges, software inventory tab lists installed packages with versions, vulnerabilities tab shows CVEs affecting the asset, events tab shows recent security events. Bound to assetViewModel.",
+    "Create qml/pages/threat_intel/ThreatIntelPage.qml with threat intelligence: tabbed interface (IOC Search, Threat Feeds, MITRE ATT&CK, CVE Browser, Correlations). IOC search with type selector (IP/domain/hash/URL) and search results list. Threat feeds tab: feed source list with status (active/error/stale), last updated, IOC count. MITRE ATT&CK tab: tactics row with techniques grid underneath (colored by coverage). CVE browser: searchable CVE list with severity, CVSS score, affected products, detail panel. Correlations tab: placeholder for graph visualization. Bound to threatIntelViewModel.",
+    "Create qml/pages/reports/ReportsPage.qml with report center: report generator wizard (step 1: select type, step 2: configure scope/date range, step 3: select sections, step 4: preview/generate), report templates list (executive summary, compliance, incident, vulnerability, threat landscape), generated reports list with download buttons, export options (PDF/Excel/HTML/JSON format selector). Bound to reportViewModel.",
+    "Replace qml/pages/settings/SettingsPage.qml with full settings interface: left category list, right content area. Categories: General (language, startup, auto-lock timeout), Scan Settings (default scan type, exclusions list, scheduled scans), Firewall (default policy, logging verbosity), Notifications (email/desktop/sms toggles, severity thresholds), Updates (auto-update toggle, channel selector, proxy settings), License (key display, expiry, features list, activate button), About (version, build info, system info, credits). Each category has proper form controls (switches, dropdowns, text inputs, sliders). Bound to settingsViewModel.",
+    "Create qml/pages/users/UsersPage.qml with user management: user list using DataTable (username, email, role, status, last login, MFA status), role management section (role list with permissions matrix), access control panel (IP whitelist, session timeout, password policy), audit log viewer with filters (user, action, date range) using DataTable. Bound to usersViewModel."
+  ],
+  "acceptance_criteria": [
+    "All 10 page QML files exist in their respective directories under qml/pages/",
+    "Each page uses Qt 6 import syntax and references theme tokens from ThemeManager",
+    "Each page includes realistic sample ListModel data for demonstration",
+    "Pages reference view model properties (e.g., dashboardViewModel.securityScore) with property bindings",
+    "Each page uses widgets from qml/widgets/ where appropriate (DataTable, TimelineView, AlertCard, etc.)",
+    "Navigation between pages works via the StackView routing in main.qml",
+    "Non-Qt C++ build still passes"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

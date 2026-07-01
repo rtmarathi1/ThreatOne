@@ -1,0 +1,40 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Build the complete QML foundation: enhanced theming system (DarkTheme, LightTheme, ThemeManager), all reusable widgets (SecurityScoreGauge, ThreatChart, AlertCard, DataTable, TimelineView, StatCard, ProgressRing, SearchBar), enhanced shared components (NavigationSidebar with icons/badges/collapsible sections, TopBar with search/notifications/user menu, StatusBar), and the updated main.qml/App.qml shell with page routing.",
+  "status": "in_progress",
+  "steps": [
+    "Replace qml/themes/ThemeManager.qml with a complete Qt6 pragma Singleton that includes all color tokens, typography scale, spacing scale, radius, elevation/shadow definitions, animation durations, and a toggleTheme() function. Use Qt 6 import syntax (import QtQuick, no version numbers).",
+    "Replace qml/themes/DarkTheme.qml with a comprehensive dark palette (background, surface, surfaceVariant, primary, primaryVariant, secondary, accent, success, warning, error, onBackground, onSurface, textPrimary, textSecondary, textMuted, border, divider, sidebar, sidebarActive, topbar, overlay, chart colors array).",
+    "Replace qml/themes/LightTheme.qml with matching light palette.",
+    "Create qml/widgets/SecurityScoreGauge.qml - circular arc gauge using Canvas or Shape with animated score, grade label, and color-coded arcs (green/yellow/red). Accept score property 0-100.",
+    "Create qml/widgets/ThreatChart.qml - line/bar chart component using Canvas rendering with configurable data model, axis labels, gridlines, tooltips on hover. Accept chartData model and chartType (line/bar) property.",
+    "Create qml/widgets/AlertCard.qml - severity-colored card with icon, title, description, timestamp, source badge, and severity indicator. Accept severity (critical/high/medium/low), title, description, source, timestamp properties.",
+    "Create qml/widgets/DataTable.qml - sortable, filterable table with column headers, row selection, pagination controls, search filter input, and customizable column widths. Accept columns model and rows model.",
+    "Create qml/widgets/TimelineView.qml - vertical event timeline with timestamp, event dot (color-coded), title, description, and connecting vertical line. Accept events model.",
+    "Create qml/widgets/StatCard.qml - metric card with title, large value, trend arrow (up/down), trend percentage, sparkline placeholder, and themed background. Accept title, value, trend, trendPositive properties.",
+    "Create qml/widgets/ProgressRing.qml - animated circular progress indicator with percentage text center, configurable ring width, start/stop animation control. Accept progress (0-1), label, running properties.",
+    "Create qml/widgets/SearchBar.qml - search input with filter dropdown, recent searches, keyboard shortcut hint, clear button. Accept placeholder, filters model properties.",
+    "Replace qml/components/NavigationSidebar.qml with enhanced version: collapsible sidebar (icon-only mode vs expanded), section headers (Security, Analysis, Management), navigation items with Unicode icons and badge counts, active state highlighting with left accent bar, collapse/expand toggle button, version/status footer.",
+    "Replace qml/components/TopBar.qml with enhanced version: breadcrumb path, global search bar (using SearchBar widget), notification bell with badge count and dropdown panel showing recent notifications, user avatar with dropdown menu (profile, preferences, logout), theme toggle button, system status indicators.",
+    "Create qml/components/StatusBar.qml - bottom status bar with: connection status indicator, last scan time, active protection status, CPU/memory usage indicators, update available badge.",
+    "Replace qml/main.qml with production-quality Qt6 ApplicationWindow: proper StackView-based routing driven by sidebar selection, StatusBar at bottom, responsive layout that adjusts sidebar collapse at narrow widths, page transition animations (fade/slide), keyboard shortcuts for navigation.",
+    "Replace qml/App.qml with updated root application state management: theme state, navigation state with history stack, global alert count, security score binding, connection status, and utility functions (navigateTo, navigateBack, toggleTheme)."
+  ],
+  "acceptance_criteria": [
+    "All widget QML files exist in qml/widgets/ and use Qt 6 import syntax",
+    "All component QML files exist in qml/components/ and use Qt 6 import syntax",
+    "ThemeManager singleton provides comprehensive color/typography/spacing tokens",
+    "NavigationSidebar includes entries for all 10+ pages with section grouping",
+    "main.qml uses StackView for page routing with transition animations",
+    "StatusBar component exists with system health indicators",
+    "All QML files are syntactically valid Qt Quick 6 code",
+    "Non-Qt C++ build still passes (cmake -B build -DENABLE_QT=OFF && cmake --build build)"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
