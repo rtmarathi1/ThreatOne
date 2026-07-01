@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Implement Risk Scoring Engine, Threat Classifier, Behavior Analytics (UEBA), and Model Manager in src/ai/ and src/analytics/",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create src/ai/include/ai/RiskScoringEngine.h - Define RiskFactors struct (fileReputation 0-100, behaviorScore 0-100, networkRisk 0-100, vulnerabilityScore 0-100). Define RiskWeights struct with configurable weights (default: file=0.3, behavior=0.3, network=0.2, vulnerability=0.2). Define RiskResult struct (overallScore 0-100, riskLevel string, contributingFactors vector, breakdown map). RiskScoringEngine class: calculateRisk(factors) -> RiskResult, setWeights(weights), getRiskLevel(score) -> string, getBreakdown(factors) -> map<string,double>.",
     "Create src/ai/src/RiskScoringEngine.cpp - Implement weighted score calculation: overallScore = sum(factor_i * weight_i). Risk levels: 0-20 'minimal', 21-40 'low', 41-60 'medium', 61-80 'high', 81-100 'critical'. Breakdown shows each factor's contribution. Contributing factors list those above threshold (>50).",
@@ -27,5 +27,5 @@
     "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Build and tests pass cleanly. All 4 components compile without errors. nlohmann_json and Threads::Threads already available. BehaviorAnalyticsEngine uses gmtime_r for time extraction (POSIX). ModelManager uses DecisionTreeClassifier as the default model type for loading."
 }
