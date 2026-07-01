@@ -7,7 +7,7 @@
 #include "core/Logger.h"
 
 #include <memory>
-#include <mutex>
+#include <atomic>
 
 namespace ThreatOne::Firewall {
 
@@ -36,8 +36,7 @@ private:
     ConnectionTracker connectionTracker_;
     std::unique_ptr<PacketFilter> packetFilter_;
     Core::ModuleLogger logger_;
-    mutable std::mutex mutex_;
-    int nextRuleId_ = 1;
+    std::atomic<int> nextRuleId_{1};
 };
 
 } // namespace ThreatOne::Firewall

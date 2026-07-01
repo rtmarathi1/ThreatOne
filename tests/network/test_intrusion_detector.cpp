@@ -190,3 +190,50 @@ TEST_CASE("IntrusionDetector - alerts include source/dest info") {
     CHECK(alerts[0].sourceIP == "192.168.1.10");
     CHECK(alerts[0].destIP == "10.0.0.1");
 }
+
+TEST_CASE("IntrusionDetector - alert eviction at capacity") {
+    IntrusionDetector detector;
+
+    // Add a rule that matches any TCP packet with "trigger" in the payload
+    IDSRule rule;
+    rule.id = "eviction_rule";
+    rule.name = "Eviction Test Rule";
+    rule.protocol = "TCP";
+    rule.contentPattern = "trigger";
+    rule.action = IDSAction::Alert;
+    detector.addRule(rule);
+
+    // Push more alerts than kMaxAlerts to trigger eviction.
+    // Each evaluate() call with a matching packet generates one alert.
+    const size_t totalAlerts = IntrusionDetector::kMaxAlerts + 100;
+    for (size_t i = 0; i < totalAlerts; i++) {
+        PacketInfo packet;
+        packet.sourceIP = "10.0.0." + std::to_string(i % 256);
+        packet.destIP = "192.168.1.1";
+        packet.sourcePort = static_cast<uint16_t>(1000 + (i % 60000));
+        packet.destPort = 80;
+        packet.protocol = "TCP";
+        packet.payload = "trigger_" + std::to_string(i);
+
+        detector.evaluate(packet);
+    }
+
+    // Alert count should be capped at kMaxAlerts
+    CHECK(detector.getAlertCount() == IntrusionDetector::kMaxAlerts);
+
+    // Verify oldest alerts were evicted: the first 100 alerts (indices 0-99)
+    // should have been evicted. The remaining alerts should correspond to
+    // packets sent with i >= 100. The oldest remaining alert should have
+    // source IP corresponding to i=100: "10.0.0.100"
+    auto alerts = detector.getAlerts();
+    REQUIRE(alerts.size() == IntrusionDetector::kMaxAlerts);
+
+    // The first (oldest) alert in the collection should be from index 100
+    CHECK(alerts[0].sourceIP == "10.0.0.100");
+    // The payload description should reference the rule
+    CHECK(alerts[0].ruleName == "Eviction Test Rule");
+
+    // The last (newest) alert should be from the final iteration
+    size_t lastIdx = totalAlerts - 1;
+    CHECK(alerts.back().sourceIP == "10.0.0." + std::to_string(lastIdx % 256));
+}

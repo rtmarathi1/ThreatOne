@@ -121,6 +121,12 @@ bool IntrusionDetector::detectSYNFlood(const std::string& destIP, int count, int
             [&cutoff](const auto& ts) { return ts < cutoff; }),
         timestamps.end());
 
+    // Remove empty keys to prevent unbounded map growth
+    if (timestamps.empty()) {
+        synFloodTracker_.erase(destIP);
+        return false;
+    }
+
     bool detected = static_cast<int>(timestamps.size()) >= count;
     if (detected) {
         IDSAlert alert;
@@ -157,6 +163,12 @@ bool IntrusionDetector::detectBruteForce(const std::string& destIP, uint16_t des
             [&cutoff](const auto& ts) { return ts < cutoff; }),
         timestamps.end());
 
+    // Remove empty keys to prevent unbounded map growth
+    if (timestamps.empty()) {
+        bruteForceTracker_.erase(key);
+        return false;
+    }
+
     bool detected = static_cast<int>(timestamps.size()) >= failCount;
     if (detected) {
         IDSAlert alert;
@@ -180,7 +192,7 @@ bool IntrusionDetector::detectBruteForce(const std::string& destIP, uint16_t des
 
 std::vector<IDSAlert> IntrusionDetector::getAlerts() const {
     std::lock_guard<std::mutex> lock(mutex_);
-    return alerts_;
+    return std::vector<IDSAlert>(alerts_.begin(), alerts_.end());
 }
 
 void IntrusionDetector::clearAlerts() {
@@ -247,9 +259,9 @@ void IntrusionDetector::pruneOldEntries() {
 }
 
 void IntrusionDetector::appendAlert(const IDSAlert& alert) {
-    // Evict oldest alerts when at capacity
+    // Evict oldest alerts when at capacity (O(1) with deque)
     if (alerts_.size() >= kMaxAlerts) {
-        alerts_.erase(alerts_.begin());
+        alerts_.pop_front();
     }
     alerts_.push_back(alert);
 }

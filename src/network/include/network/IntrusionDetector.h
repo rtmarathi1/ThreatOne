@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 #include <unordered_map>
 #include <cstdint>
 #include <chrono>
@@ -99,7 +100,7 @@ private:
 
     mutable std::mutex mutex_;
     std::vector<IDSRule> rules_;
-    std::vector<IDSAlert> alerts_;
+    std::deque<IDSAlert> alerts_;
 
     // Tracking for detection
     std::unordered_map<std::string, std::vector<ConnectionAttempt>> portScanTracker_;

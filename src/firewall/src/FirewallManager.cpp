@@ -11,10 +11,9 @@ FirewallManager::FirewallManager()
 }
 
 bool FirewallManager::addRule(const FirewallRule& rule) {
-    std::lock_guard<std::mutex> lock(mutex_);
     FirewallRule ruleToAdd = rule;
     if (ruleToAdd.id.empty()) {
-        ruleToAdd.id = std::to_string(nextRuleId_++);
+        ruleToAdd.id = std::to_string(nextRuleId_.fetch_add(1));
     }
     bool result = ruleEngine_.addRule(ruleToAdd);
     if (result) {
@@ -24,7 +23,6 @@ bool FirewallManager::addRule(const FirewallRule& rule) {
 }
 
 bool FirewallManager::removeRule(const std::string& ruleId) {
-    std::lock_guard<std::mutex> lock(mutex_);
     bool result = ruleEngine_.removeRule(ruleId);
     if (result) {
         logger_.info("Removed rule: {}", ruleId);
@@ -50,9 +48,8 @@ std::vector<ConnectionInfo> FirewallManager::getConnections() {
 }
 
 bool FirewallManager::blockIP(const std::string& ip) {
-    std::lock_guard<std::mutex> lock(mutex_);
     FirewallRule rule;
-    rule.id = std::to_string(nextRuleId_++);
+    rule.id = std::to_string(nextRuleId_.fetch_add(1));
     rule.name = "Block " + ip;
     rule.sourceIP = ip;
     rule.action = Action::Block;
@@ -64,9 +61,8 @@ bool FirewallManager::blockIP(const std::string& ip) {
 }
 
 bool FirewallManager::allowIP(const std::string& ip) {
-    std::lock_guard<std::mutex> lock(mutex_);
     FirewallRule rule;
-    rule.id = std::to_string(nextRuleId_++);
+    rule.id = std::to_string(nextRuleId_.fetch_add(1));
     rule.name = "Allow " + ip;
     rule.sourceIP = ip;
     rule.action = Action::Allow;
