@@ -5,6 +5,9 @@ add_library(threatone_ai STATIC
     src/FeatureExtractor.cpp
     src/DecisionTreeClassifier.cpp
     src/AnomalyDetector.cpp
+    src/RiskScoringEngine.cpp
+    src/ThreatClassifier.cpp
+    src/ModelManager.cpp
 )
 
 target_include_directories(threatone_ai
