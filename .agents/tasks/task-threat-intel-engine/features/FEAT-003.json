@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "feat",
   "description": "Implement Intel Report Generator and Enrichment Service, update SecurityEngine integration, and add comprehensive unit tests for the entire threat_intel module.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create src/threat_intel/include/threat_intel/IntelReportGenerator.h and src/threat_intel/src/IntelReportGenerator.cpp - Define ReportSection struct (title, content, data). IntelReport struct (id, title, generatedAt, summary, sections vector, topThreats vector, trendingIndicators vector, statistics map). IntelReportGenerator class with: generateReport(IOCManager&, ThreatCorrelationEngine&, ThreatScoringEngine&) -> IntelReport, generateThreatLandscape() summarizing current IOC counts by type/severity, getTopThreats(count) ranked by score, getTrendingIndicators(timeWindow) recently added/updated IOCs, toJson(report) -> nlohmann::json serialization",
     "Create src/threat_intel/include/threat_intel/EnrichmentService.h and src/threat_intel/src/EnrichmentService.cpp - Define EnrichmentResult struct (originalIOC, relatedIOCs, campaigns, threatActors, ttps vector of MITRE technique IDs, additionalContext map). IEnrichmentProvider interface with virtual enrich(ioc) method. EnrichmentService class with: registerProvider(name, IEnrichmentProvider*), enrich(ioc) -> EnrichmentResult that queries all providers, enrichBatch(iocs) -> vector<EnrichmentResult>. Create LocalEnrichmentProvider that uses IOCManager + CorrelationEngine + MitreAttack to provide local enrichment. Add stub ExternalEnrichmentProvider with interface for VirusTotal/AbuseIPDB/AlienVault OTX (returns empty results since no network, but the interface is defined).",
@@ -38,5 +38,5 @@
     "Confirm all tests pass including new threat_intel tests"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All 380 tests pass. doctest SUBCASEs in this project run sequentially within a single TEST_CASE invocation (they share state), so tests must use separate TEST_CASE blocks for isolation. The nlohmann json stub uses get_array() for iteration. STIX parser extractFromPattern uses first/last single-quote matching so patterns with inner quoted strings (like hashes.SHA-256) need unquoted style. MitreAttack searchTechniques only searches name and description fields, not dataSources. SecurityEngine now depends on threatone_threat_intel. Build takes ~3 minutes from clean."
 }
