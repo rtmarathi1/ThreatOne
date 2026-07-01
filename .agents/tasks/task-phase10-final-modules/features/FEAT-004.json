@@ -1,0 +1,37 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Implement Sandbox Engine (File Detonation, Behavior Recording, Verdict Generation, Sandbox Profiles) and HIDS Engine (File Integrity Monitor, Log Monitor, Rootkit Detector). Replace stubs with full implementations.",
+  "status": "in_progress",
+  "steps": [
+    "Expand src/sandbox/include/sandbox/ISandboxEngine.h to add: SandboxProfile struct (id, name, type enum [Quick/Deep/Custom], timeoutSeconds, networkSimulation bool, recordRegistry bool, recordFilesystem bool, recordNetwork bool), DetonationConfig struct (samplePath, profileId, priority enum [Low/Normal/High]), DetonationStatus enum (Queued/Running/Completed/Failed/Timeout), DetonationJob struct (id, config DetonationConfig, status DetonationStatus, submittedAt, startedAt, completedAt, result optional<AnalysisResult>), NetworkActivity struct (protocol, destination, port, data, timestamp), SandboxVerdict enum (Clean/Suspicious/Malicious/Unknown). Add virtual methods: submitWithProfile(DetonationConfig), getDetonationStatus(jobId), cancelDetonation(jobId), createProfile(SandboxProfile), getProfiles(), getProfile(profileId), deleteProfile(profileId), getNetworkActivity(sampleId), getVerdict(sampleId).",
+    "Expand src/sandbox/include/sandbox/SandboxEngine.h to declare all new methods with private members: jobs_ map, profiles_ map (pre-loaded with Quick/Deep/Custom defaults), samples_ map, mutex_, counters.",
+    "Implement src/sandbox/src/SandboxEngine.cpp: submitSample creates job with default profile. submitWithProfile creates job with specified profile. getAnalysis computes verdict based on behavior count and severity (0 behaviors=Clean, 1-2=Suspicious, 3+=Malicious). getIOCs extracts IOCs from behavior patterns (network connections become IP IOCs, dropped files become file hash IOCs). getBehaviorReport aggregates all recorded behaviors. detonateURL creates URL analysis job. Profile management (CRUD). Network activity simulation records connection attempts. Verdicts computed from behavior analysis score.",
+    "Expand src/hids/include/hids/IHIDSEngine.h to add: MonitoringStatus enum (Active/Paused/Stopped), MonitoringConfig struct (paths vector, recursive bool, includePatterns, excludePatterns, checkIntervalSeconds), LogPattern struct (id, name, pattern regex string, severity, description, enabled), RootkitIndicator struct (id, type enum [HiddenProcess/HiddenFile/KernelModule/SyscallHook], description, evidence, severity, detectedAt), SystemLogEntry struct (id, source, message, level, timestamp, matched bool, matchedPatternId). Add virtual methods: stopMonitoring(), getMonitoringStatus(), setMonitoringConfig(MonitoringConfig), createBaseline(name), compareToBaseline(baselineId), addLogPattern(LogPattern), getLogPatterns(), getMatchedLogEntries(), runRootkitScan(), getRootkitIndicators(), addMonitoredPath(path), removeMonitoredPath(path).",
+    "Expand src/hids/include/hids/HIDSEngine.h to declare all new methods with private members: status_, config_, baselines_ map, fileHashes_ map (path->hash for integrity), logPatterns_ map, logEntries_ vector, rootkitIndicators_ vector, mutex_, counters.",
+    "Implement src/hids/src/HIDSEngine.cpp: startMonitoring sets Active status. stopMonitoring sets Stopped. setMonitoringConfig stores config. createBaseline captures current file hashes for configured paths (simulated with stored data). compareToBaseline compares current hashes to stored baseline, generates IntegrityEvent for mismatches. getFileChanges returns detected changes since last check. addLogPattern stores regex patterns. getMatchedLogEntries checks stored logs against patterns. runRootkitScan performs checks: iterates known processes for hidden ones, checks for hidden files, detects suspicious kernel modules. File integrity monitoring uses hash comparison on monitored paths.",
+    "Update src/sandbox/CMakeLists.txt and src/hids/CMakeLists.txt if needed.",
+    "Create tests/sandbox/test_sandbox_engine.cpp: test sample submission (basic and with profile), detonation job lifecycle (queued->running->completed), verdict generation (clean/suspicious/malicious based on behaviors), IOC extraction from behaviors, behavior report aggregation, URL detonation, profile CRUD (create/get/delete), network activity recording.",
+    "Create tests/hids/test_hids_engine.cpp: test monitoring lifecycle (start/stop/status), file integrity monitoring (baseline creation, change detection, IntegrityEvent generation), log pattern matching (regex matches trigger entries), rootkit detection (hidden process/file indicators), monitoring config management, path add/remove.",
+    "Update tests/CMakeLists.txt to add sandbox and hids test files, include directories, link libraries."
+  ],
+  "acceptance_criteria": [
+    "SandboxEngine submits samples and tracks detonation job lifecycle",
+    "SandboxEngine generates correct verdicts based on behavior count",
+    "SandboxEngine extracts IOCs from behavior data",
+    "SandboxEngine profile management (CRUD) works correctly",
+    "SandboxEngine URL detonation works",
+    "HIDSEngine monitoring start/stop lifecycle works",
+    "HIDSEngine file integrity creates baselines and detects changes",
+    "HIDSEngine log patterns match against entries",
+    "HIDSEngine rootkit scan generates indicators",
+    "All existing tests continue to pass",
+    "cmake --build build succeeds"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
