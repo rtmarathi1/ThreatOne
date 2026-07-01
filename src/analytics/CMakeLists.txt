@@ -16,6 +16,7 @@ target_link_libraries(threatone_analytics
     PUBLIC
         threatone_compiler_options
         threatone_core
+        threatone_ai
         nlohmann_json
         Threads::Threads
 )

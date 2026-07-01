@@ -8,6 +8,10 @@ add_library(threatone_ai STATIC
     src/RiskScoringEngine.cpp
     src/ThreatClassifier.cpp
     src/ModelManager.cpp
+    src/NLPProcessor.cpp
+    src/RecommendationEngine.cpp
+    src/AutoInvestigation.cpp
+    src/PredictionEngine.cpp
 )
 
 target_include_directories(threatone_ai
