@@ -1,0 +1,33 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Create the src/threat_intel/ module directory structure, CMakeLists.txt, and implement the foundational components: IOC Manager, Threat Feed Manager, and Feed Parsers (STIX JSON, CSV, plain text, OpenIOC XML). Register the module in the root CMakeLists.txt.",
+  "status": "in_progress",
+  "steps": [
+    "Create src/threat_intel/include/threat_intel/ and src/threat_intel/src/ directories",
+    "Create src/threat_intel/CMakeLists.txt as a static library (threatone_threat_intel) following the pattern in src/ai/CMakeLists.txt - link to threatone_core, nlohmann_json, Threads::Threads",
+    "Add add_subdirectory(src/threat_intel) to the root CMakeLists.txt after add_subdirectory(src/security)",
+    "Create src/threat_intel/include/threat_intel/IOCTypes.h - Define IOC types enum (IP, Domain, Hash_MD5, Hash_SHA1, Hash_SHA256, URL, EmailAddress, FilePath), IOC struct with fields: id, type, value, source, confidence (0.0-1.0), severity, firstSeen, lastSeen, expirationDate, tags, metadata, active flag",
+    "Create src/threat_intel/include/threat_intel/IOCManager.h and src/threat_intel/src/IOCManager.cpp - CRUD operations for IOCs (addIOC, removeIOC, updateIOC, getIOCById, getAllIOCs, searchByValue, searchByType, getExpiredIOCs, getActiveIOCs). Use Result<T> for returns. Thread-safe with shared_mutex.",
+    "Create src/threat_intel/include/threat_intel/FeedFormat.h - Define FeedFormat enum (STIX_JSON, CSV, PlainText, OpenIOC_XML), FeedConfig struct with name, url, format, refreshInterval, enabled, lastRefresh, credentials",
+    "Create src/threat_intel/include/threat_intel/IFeedParser.h - Interface with virtual method Result<std::vector<IOC>> parse(const std::string& data)",
+    "Create src/threat_intel/include/threat_intel/StixParser.h and src/threat_intel/src/StixParser.cpp - Parse STIX 2.1 JSON bundles, extract indicators (pattern field), map to IOC types",
+    "Create src/threat_intel/include/threat_intel/CsvParser.h and src/threat_intel/src/CsvParser.cpp - Parse CSV with configurable columns (type, value, confidence, source), handle headers",
+    "Create src/threat_intel/include/threat_intel/PlainTextParser.h and src/threat_intel/src/PlainTextParser.cpp - Parse one-indicator-per-line text, auto-detect IOC type from format (IP regex, domain, hash by length, URL, email)",
+    "Create src/threat_intel/include/threat_intel/OpenIOCParser.h and src/threat_intel/src/OpenIOCParser.cpp - Parse OpenIOC-like XML format using simple string parsing (no external XML lib), extract indicator items",
+    "Create src/threat_intel/include/threat_intel/ThreatFeedManager.h and src/threat_intel/src/ThreatFeedManager.cpp - Manage feed subscriptions (addFeed, removeFeed, getFeed, listFeeds), store FeedConfig list, processFeedData(feedId, rawData) method that selects the right parser and adds IOCs to IOCManager, checkFeedRefresh() to identify feeds needing refresh"
+  ],
+  "acceptance_criteria": [
+    "src/threat_intel/ directory exists with include/ and src/ structure",
+    "cmake --build build compiles the new threatone_threat_intel static library without errors",
+    "IOCManager supports add, remove, update, get, search operations returning Result<T>",
+    "All four parsers (STIX, CSV, PlainText, OpenIOC) implement IFeedParser interface",
+    "ThreatFeedManager can add feeds, select appropriate parser, and process raw data into IOCs"
+  ],
+  "verification": [
+    "Run: cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "Confirm no compilation errors for the new threat_intel module"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
