@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Create all 10 production-quality QML pages with comprehensive UI, data-binding placeholders for view models, and realistic sample data models. Each page should be a complete, polished enterprise UI.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Replace qml/pages/dashboard/DashboardPage.qml with executive dashboard: SecurityScoreGauge widget, ThreatScoreCard (using StatCard), RiskHeatmap (grid of colored cells), LiveAttackTimeline (using TimelineView), MITREMatrix view (tactics/techniques grid), AssetsOverview (pie chart placeholder), CriticalAlerts (using AlertCard list), VulnerabilitySummary (stats bar), ComplianceScore (percentage gauge), NetworkStatus (up/down indicators), EndpointHealth (healthy/warning/critical counts), SystemPerformance (CPU/RAM/Disk bars), AIInsights (text-based recommendations list). All bound to dashboardViewModel properties.",
     "Replace qml/pages/scanner/ScannerPage.qml with full scanner UI: scan type launcher grid (Quick/Full/Custom/Memory/IOC/YARA scan cards with descriptions and estimated times), active scan progress panel with ProgressRing widget and real-time stats (files scanned, threats found, elapsed time, ETA, current file), scan controls (pause/resume/stop), scan history list (using DataTable with columns: date, type, duration, threats, status), scan results detail view (expandable threat cards with file path, threat name, severity, action taken, MITRE mapping). Bound to scannerViewModel.",
