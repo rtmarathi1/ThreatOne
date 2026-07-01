@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "chore",
   "description": "Verify baseline environment: build and test pass before making changes",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Run cmake -B build -DENABLE_QT=OFF && cmake --build build and confirm it succeeds",
     "Run cd build && ctest --output-on-failure and confirm all tests pass",
@@ -17,5 +17,5 @@
     "cd build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": "Build and tests pass successfully. 100% tests passed, 0 tests failed out of 1. Baseline is green."
+  "findings": "All 4 confirmed bugs fixed and 3 design-intent documentation additions made. Build passes, all 257 tests pass. RuleEngine::evaluatePacket now returns EvalResult struct with both action and matchedRuleId. IntrusionDetector caps alerts at 10000 with oldest-first eviction. pruneOldEntries called from evaluate and detectPortScan. BandwidthMonitor::checkRateLimit is no longer const."
 }
