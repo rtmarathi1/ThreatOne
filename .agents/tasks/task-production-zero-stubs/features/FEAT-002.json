@@ -1,0 +1,37 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Replace spdlog mini-implementation with a production-quality logging library that has async logging with lock-free ring buffer, multiple sink support (console with colors, rotating file), configurable format patterns, flush policies, and the same API surface as real spdlog.",
+  "status": "in_progress",
+  "steps": [
+    "Rewrite third_party/spdlog/include/spdlog/spdlog.h with a full implementation (~800-1200 lines) keeping the same namespace and class names",
+    "Implement a lock-free ring buffer (power-of-2 size, atomic head/tail) for async message passing from producer threads to the logging backend thread",
+    "Implement a sink interface (abstract base class) with: log(level, formatted_message), flush(), set_level(level), should_log(level)",
+    "Implement stdout_color_sink_mt in spdlog/sinks/stdout_color_sinks.h: writes to stdout/stderr with ANSI color codes based on log level (trace=white, debug=cyan, info=green, warn=yellow, error=red, critical=bold red)",
+    "Implement basic_file_sink_mt in spdlog/sinks/basic_file_sink.h: writes to a file with optional truncation on open",
+    "Add a rotating_file_sink_mt: rotates files when they exceed max_size bytes, keeps up to max_files rotated copies (renames file.log to file.1.log, file.1.log to file.2.log, etc.)",
+    "Implement the spdlog::logger class with: multiple sinks vector, per-logger level, format pattern string, name, log() method that formats message then dispatches to all sinks",
+    "Implement format pattern parsing: support %Y (year), %m (month), %d (day), %H (hour), %M (minute), %S (second), %e (milliseconds), %n (logger name), %l (level), %t (thread id), %v (message), %s (source file), %# (line number)",
+    "Implement async logging mode: a background thread reads from ring buffer and writes to sinks. flush() blocks until ring buffer is drained",
+    "Implement flush policies: flush_on(level) flushes when a message at or above the given level is logged; periodic flush via flush_every(seconds)",
+    "Keep the existing free functions: spdlog::info(), spdlog::debug(), etc. that delegate to default_logger()",
+    "Keep spdlog::get(name) and spdlog::set_default_logger() working",
+    "Ensure the existing Logger.cpp in src/core/src/ compiles unchanged - it uses spdlog::logger, spdlog::get(), spdlog::level, std::make_shared<spdlog::logger>(name), logger->set_level(), logger->trace/debug/info/warn/error/critical(fmt, args...)",
+    "Ensure all format string substitution uses the existing {} placeholder syntax with variadic template expansion"
+  ],
+  "acceptance_criteria": [
+    "cmake --build build compiles cleanly",
+    "All 1053+ tests pass",
+    "Logger outputs colored messages to console (ANSI escape codes present)",
+    "File sink creates and writes to log files",
+    "Rotating file sink rotates when file exceeds configured size",
+    "Async logging mode does not block the calling thread",
+    "Thread-safe: multiple threads logging concurrently produces no data races"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build 2>&1 | tail -5",
+    "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
