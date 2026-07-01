@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Create the src/threat_intel/ module directory structure, CMakeLists.txt, and implement the foundational components: IOC Manager, Threat Feed Manager, and Feed Parsers (STIX JSON, CSV, plain text, OpenIOC XML). Register the module in the root CMakeLists.txt.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create src/threat_intel/include/threat_intel/ and src/threat_intel/src/ directories",
     "Create src/threat_intel/CMakeLists.txt as a static library (threatone_threat_intel) following the pattern in src/ai/CMakeLists.txt - link to threatone_core, nlohmann_json, Threads::Threads",
@@ -29,5 +29,5 @@
     "Confirm no compilation errors for the new threat_intel module"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Build uses a simplified nlohmann/json stub - no parse_error exception class (catches std::exception instead), iteration over arrays requires get_array() method rather than range-for directly on the json object, and begin()/end() return map iterators (object iteration only). Sign conversion warnings resolved with explicit static_cast<size_t>."
 }
