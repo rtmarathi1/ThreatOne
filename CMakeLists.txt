@@ -71,6 +71,7 @@ add_subdirectory(src/licensing)
 add_subdirectory(src/telemetry)
 add_subdirectory(src/updates)
 add_subdirectory(src/plugin)
+add_subdirectory(src/fleet)
 add_subdirectory(src/app)
 
 # Testing

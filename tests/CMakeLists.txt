@@ -66,6 +66,10 @@ set(TEST_SOURCES
     identity/test_ldap_connector.cpp
     licensing/test_license_validator.cpp
     licensing/test_feature_gate.cpp
+    fleet/test_fleet_manager.cpp
+    fleet/test_policy_engine.cpp
+    fleet/test_remote_manager.cpp
+    fleet/test_deployment_manager.cpp
 )
 
 # Create the test executable
@@ -87,6 +91,7 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/security/include
         ${CMAKE_SOURCE_DIR}/src/identity/include
         ${CMAKE_SOURCE_DIR}/src/licensing/include
+        ${CMAKE_SOURCE_DIR}/src/fleet/include
 )
 
 target_link_libraries(threatone_tests
@@ -106,6 +111,7 @@ target_link_libraries(threatone_tests
         threatone_security
         threatone_identity
         threatone_licensing
+        threatone_fleet
         spdlog
         nlohmann_json
         sqlite3
