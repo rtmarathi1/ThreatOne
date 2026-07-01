@@ -1,3 +1,5 @@
+find_package(Threads REQUIRED)
+
 add_library(threatone_monitor STATIC
     src/MonitorEngine.cpp
 )
@@ -13,4 +15,6 @@ target_link_libraries(threatone_monitor
     PUBLIC
         threatone_compiler_options
         threatone_core
+        nlohmann_json
+        Threads::Threads
 )

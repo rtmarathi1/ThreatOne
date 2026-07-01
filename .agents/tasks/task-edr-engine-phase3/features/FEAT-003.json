@@ -1,0 +1,35 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Update EDREngine and MonitorEngine stubs to fully functional implementations that orchestrate all components from FEAT-001 and FEAT-002. Wire everything together with EventBus integration.",
+  "status": "pending",
+  "steps": [
+    "Rewrite src/edr/include/edr/IEDREngine.h - Expand the interface to include methods for all capabilities: startCollection(), stopCollection(), getProcesses(), getFileEvents(), getRegistryEvents(), detectPersistence(), detectLateralMovement(), detectRansomware(), getAlerts(), getIncidents(), evaluateRules(), getTimeline(incident_id). Keep backward-compatible struct definitions but enrich them with more fields where needed.",
+    "Rewrite src/edr/include/edr/EDREngine.h - Full orchestrator class that owns: ProcessMonitor, FileMonitor, RegistryMonitor, MemoryMonitor, TelemetryCollector, BehaviorAnalyzer, DetectionRulesEngine, AlertManager, PersistenceDetection, RansomwareDetection, LateralMovementDetection, IncidentTimeline. Implements all IEDREngine methods by delegating to components.",
+    "Rewrite src/edr/src/EDREngine.cpp - Full implementation that: initializes all components in constructor, starts monitoring on startCollection(), feeds events from monitors into BehaviorAnalyzer and DetectionRulesEngine, routes rule matches to AlertManager, creates incidents from correlated alerts, publishes summary events to EventBus.",
+    "Rewrite src/monitor/include/monitor/IMonitorEngine.h - Expand interface with: startMonitoring(type), stopMonitoring(type), getMetrics(), getAlerts(), setThresholds(), getProcessList(), getFileEvents(), isMonitoring(type). Keep existing MonitorType enum but ensure it covers all needed types.",
+    "Rewrite src/monitor/include/monitor/MonitorEngine.h - Full implementation class that delegates to EDR components (ProcessMonitor, FileMonitor, etc.) for actual data collection. Owns threshold state and generates alerts when thresholds are breached.",
+    "Rewrite src/monitor/src/MonitorEngine.cpp - Full implementation that: manages monitoring lifecycle per type, collects metrics from TelemetryCollector, checks thresholds and generates MonitorAlerts, provides unified access to process/file/registry events from EDR monitors.",
+    "Update src/monitor/CMakeLists.txt to link threatone_edr since MonitorEngine now delegates to EDR components.",
+    "Create tests/edr/test_edr_engine.cpp - Integration tests for the full EDREngine: test startCollection/stopCollection lifecycle, test getProcesses returns data, test alert generation flow (inject suspicious events and verify alerts appear), test rule evaluation pipeline.",
+    "Create tests/edr/test_monitor_engine.cpp - Integration tests for MonitorEngine: test startMonitoring/stopMonitoring for each type, test getMetrics returns valid data, test threshold breach generates alert.",
+    "Update tests/CMakeLists.txt to add the new integration test files and link both threatone_edr and threatone_monitor."
+  ],
+  "acceptance_criteria": [
+    "Build passes with the fully-wired EDREngine and MonitorEngine",
+    "All existing tests continue to pass",
+    "EDREngine.startCollection() initializes all monitors successfully",
+    "EDREngine.getProcesses() returns at least the current process",
+    "EDREngine.detectRansomware() processes file events correctly",
+    "MonitorEngine.getMetrics() returns real system metrics (CPU > 0, memory > 0)",
+    "MonitorEngine threshold breach generates an alert",
+    "All new integration tests pass",
+    "No circular dependency between edr and monitor libraries (monitor depends on edr, not vice versa)"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

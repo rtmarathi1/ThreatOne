@@ -1,0 +1,45 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Implement detection and analysis components: BehaviorAnalyzer, DetectionRulesEngine, AlertManager, PersistenceDetection, RansomwareDetection, LateralMovementDetection, and IncidentTimeline. These consume events from the monitors (FEAT-001) and produce alerts/incidents.",
+  "status": "pending",
+  "steps": [
+    "Create src/edr/include/edr/BehaviorAnalyzer.h - BehaviorAnalyzer class with: addEvent(EDREvent), analyzePatterns() returning vector<BehaviorAlert>, detectRansomwareBehavior(), detectPrivilegeEscalation(), detectDataExfiltration(). Maintain a sliding window of events. Pattern matching: file encryption sequences (high entropy writes + renames), mass deletion, rapid file access patterns, process injection chains.",
+    "Create src/edr/src/BehaviorAnalyzer.cpp - Implementation with event window (configurable size, default 1000 events). Pattern detection logic: (1) ransomware = many file renames to crypto extensions + high entropy writes in short time, (2) privilege escalation = suid changes, sudo/su invocations from unexpected processes, (3) data exfiltration = large outbound data + archive creation + suspicious destination.",
+    "Create src/edr/include/edr/DetectionRulesEngine.h - DetectionRulesEngine class with: loadRules(json_string), addRule(DetectionRule), evaluate(EDREvent) returning vector<RuleMatch>. DetectionRule struct: id, name, description, severity (info/low/medium/high/critical), conditions (list of condition objects with field/operator/value), actions (alert/block/quarantine/log). Support AND/OR condition logic.",
+    "Create src/edr/src/DetectionRulesEngine.cpp - Implementation that: parses rules from JSON (nlohmann/json), evaluates events against rule conditions, supports operators (equals, contains, regex, greater_than, less_than, in_list), returns matches with rule metadata and matched event data.",
+    "Create src/edr/include/edr/AlertManager.h - AlertManager class with: generateAlert(source, severity, description, evidence), getAlerts(filter), acknowledgeAlert(id), deduplicateAlerts(), getAlertStats(). Alert struct with: id, timestamp, source, severity, description, evidence, status (new/acknowledged/resolved), dedup_key. Publishes SecurityEvent to EventBus on new alerts.",
+    "Create src/edr/src/AlertManager.cpp - Implementation with: deduplication based on source+description within time window, priority queue sorted by severity, integration with EventBus::instance().publish() for SecurityEvent emission, alert lifecycle management.",
+    "Create src/edr/include/edr/PersistenceDetection.h - PersistenceDetection class with: scanForPersistence() returning vector<PersistenceIndicator>, checkStartupItems(), checkScheduledTasks(), checkServices(), checkCronJobs(), checkShellProfiles(). Checks: crontab entries, systemd units, /etc/init.d scripts, .bashrc/.profile modifications, LD_PRELOAD.",
+    "Create src/edr/src/PersistenceDetection.cpp - Implementation that checks common Linux persistence locations: /etc/cron.d/*, /var/spool/cron/*, /etc/systemd/system/*.service, /etc/init.d/*, ~/.bashrc, ~/.profile, /etc/ld.so.preload, /etc/rc.local. Returns findings with severity based on type.",
+    "Create src/edr/include/edr/RansomwareDetection.h - RansomwareDetection class with: analyzeFileOperation(FileEvent) returning RansomwareIndicator, calculateFileEntropy(path) returning double, checkKnownExtensions(filename) returning bool, getDetectionStats(). Known ransomware extensions list. Entropy threshold for encrypted file detection (>7.5 on 0-8 scale).",
+    "Create src/edr/src/RansomwareDetection.cpp - Implementation with: Shannon entropy calculation on file contents, known ransomware extension database (.encrypted, .locked, .crypto, .crypt, .locky, .cerber, .zepto, .thor, .aaa, .abc, .zzz, etc.), mass rename detection within time window, ransom note filename detection (README_DECRYPT, HOW_TO_RECOVER, etc.).",
+    "Create src/edr/include/edr/LateralMovementDetection.h - LateralMovementDetection class with: analyzeConnection(NetworkEvent) returning LateralMovementIndicator, detectCredentialAccess(), detectRemoteExecution(), detectUnusualConnections(). Track: SSH connections to new hosts, unusual port usage, credential file access (/etc/shadow, .ssh/), remote command execution patterns.",
+    "Create src/edr/src/LateralMovementDetection.cpp - Implementation that: maintains a baseline of normal connections, flags connections to new internal IPs, detects rapid SSH/connection attempts (brute force), identifies credential harvesting (reading shadow files, ssh keys), detects remote execution tools (psexec-like patterns, reverse shells).",
+    "Create src/edr/include/edr/IncidentTimeline.h - IncidentTimeline class with: createIncident(name, severity) returning incident_id, addEvent(incident_id, TimelineEvent), correlateEvents(vector<TimelineEvent>), getTimeline(incident_id), getActiveIncidents(). TimelineEvent struct: timestamp, source, type, description, severity, related_entities. Auto-correlation: group events by process tree, file path, or network connection.",
+    "Create src/edr/src/IncidentTimeline.cpp - Implementation with: incident creation/management, event correlation by shared attributes (same PID, same file path prefix, same network endpoint), chronological timeline generation, incident severity escalation when new high-severity events are added.",
+    "Update src/edr/CMakeLists.txt to add all new source files (BehaviorAnalyzer.cpp, DetectionRulesEngine.cpp, AlertManager.cpp, PersistenceDetection.cpp, RansomwareDetection.cpp, LateralMovementDetection.cpp, IncidentTimeline.cpp).",
+    "Create tests/edr/test_behavior_analyzer.cpp - Tests: detect ransomware-like patterns (mass renames + high entropy), detect privilege escalation sequences, normal activity does not trigger false positives.",
+    "Create tests/edr/test_detection_rules.cpp - Tests: load rules from JSON, evaluate event matching a rule, evaluate event not matching, AND/OR conditions, severity levels.",
+    "Create tests/edr/test_alert_manager.cpp - Tests: generate alert, deduplication prevents duplicate alerts within window, alert acknowledgement, EventBus receives published security event.",
+    "Create tests/edr/test_ransomware_detection.cpp - Tests: high entropy file detection, known extension matching, mass rename detection, clean file not flagged.",
+    "Create tests/edr/test_incident_timeline.cpp - Tests: create incident and add events, timeline ordered chronologically, event correlation groups related events.",
+    "Update tests/CMakeLists.txt with all new test files."
+  ],
+  "acceptance_criteria": [
+    "Build passes with all new detection components compiled",
+    "All existing tests continue to pass",
+    "BehaviorAnalyzer detects ransomware-like event patterns in tests",
+    "DetectionRulesEngine loads JSON rules and evaluates events correctly",
+    "AlertManager deduplicates alerts and publishes to EventBus",
+    "RansomwareDetection correctly identifies high-entropy files and known extensions",
+    "IncidentTimeline correlates related events into incidents",
+    "All new tests pass via ctest --output-on-failure"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

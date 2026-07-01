@@ -1,0 +1,40 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Implement core monitoring components: ProcessMonitor, FileMonitor, RegistryMonitor, MemoryMonitor, and TelemetryCollector. These are the data-collection foundations that feed into the higher-level detection systems.",
+  "status": "in_progress",
+  "steps": [
+    "Create src/edr/include/edr/ProcessMonitor.h - ProcessMonitor class in ThreatOne::EDR namespace with: enumerateProcesses() returning vector<ProcessInfo>, trackProcessCreation/Termination callbacks, detectSuspiciousProcessTree(pid) returning threat indicators, analyzeCommandLine(string) returning suspicion score/details. Use ModuleLogger. Support registering callbacks for process events. Internally read from /proc on Linux (simulated for testability).",
+    "Create src/edr/src/ProcessMonitor.cpp - Implementation that: reads /proc filesystem to enumerate processes (with fallback to mock data for testing), analyzes command lines for suspicious patterns (base64 decode commands, powershell-like invocations, known malicious tool names), detects suspicious process trees (orphaned processes, deep nesting, unusual parent-child relationships).",
+    "Create src/edr/include/edr/FileMonitor.h - FileMonitor class with: watchDirectory(path, recursive), unwatchDirectory(path), getEvents() returning vector<FileEvent>, setCallback for real-time notification. Platform-abstracted interface (inotify on Linux concept but implemented as polling-based for portability and testability). Track create/modify/delete/rename operations.",
+    "Create src/edr/src/FileMonitor.cpp - Implementation using filesystem polling (check file modification times periodically). Detect suspicious file operations: mass file creation in temp dirs, executable drops, file permission changes, hidden file creation. Store events in a ring buffer.",
+    "Create src/edr/include/edr/RegistryMonitor.h - RegistryMonitor class (config file watcher on Linux) with: watchConfigPath(path), getEvents() returning vector<RegistryEvent>, detectPersistenceMechanisms(). Monitor key system config files: /etc/crontab, /etc/passwd, /etc/ld.so.preload, systemd unit files, shell profiles.",
+    "Create src/edr/src/RegistryMonitor.cpp - Implementation that watches config files for modifications, detects additions to startup/persistence locations, tracks which process modified configs.",
+    "Create src/edr/include/edr/MemoryMonitor.h - MemoryMonitor class with: scanProcessMemory(pid) returning indicators, detectCodeInjection(pid), getMemoryRegions(pid), calculateMemoryEntropy(pid, address, size). Detect: RWX memory regions, injected code patterns, suspicious memory allocations.",
+    "Create src/edr/src/MemoryMonitor.cpp - Implementation that reads /proc/[pid]/maps for memory regions, detects RWX permissions (potential code injection), calculates entropy of memory regions for packed/encrypted code detection, identifies known shellcode patterns.",
+    "Create src/edr/include/edr/TelemetryCollector.h - TelemetryCollector class with: collectSystemMetrics() returning TelemetryData struct (cpu, memory, disk, network stats), getHistoricalMetrics(timeRange), detectAnomalies() comparing current vs baseline. Collect from /proc/stat, /proc/meminfo, /proc/diskstats, /proc/net/dev.",
+    "Create src/edr/src/TelemetryCollector.cpp - Implementation that parses proc filesystem for system metrics, maintains a rolling window of historical data for anomaly detection (e.g., sudden CPU spike, unusual network traffic volume).",
+    "Update src/edr/CMakeLists.txt to add the new source files (ProcessMonitor.cpp, FileMonitor.cpp, RegistryMonitor.cpp, MemoryMonitor.cpp, TelemetryCollector.cpp). Add find_package(Threads REQUIRED) and link Threads::Threads and nlohmann_json.",
+    "Update src/monitor/CMakeLists.txt to link nlohmann_json and Threads::Threads since MonitorEngine will use monitoring components.",
+    "Create tests/edr/test_process_monitor.cpp - Tests for ProcessMonitor: test process enumeration returns non-empty list, test command line analysis detects suspicious commands (base64, curl|bash, etc.), test suspicious process tree detection.",
+    "Create tests/edr/test_file_monitor.cpp - Tests for FileMonitor: test watching a temp directory detects new file creation, test detecting file modification events, test suspicious file operation detection (mass creates, executable writes).",
+    "Create tests/edr/test_memory_monitor.cpp - Tests for MemoryMonitor: test memory region enumeration for current process, test entropy calculation returns valid values, test code injection pattern detection with known-bad patterns.",
+    "Create tests/edr/test_telemetry_collector.cpp - Tests for TelemetryCollector: test metric collection returns reasonable values (CPU 0-100%, memory > 0), test historical metric storage, test anomaly detection with injected spike data.",
+    "Update tests/CMakeLists.txt to add all new edr test files and link threatone_edr and threatone_monitor libraries."
+  ],
+  "acceptance_criteria": [
+    "Build passes: cmake -B build -DENABLE_QT=OFF && cmake --build build succeeds with no errors",
+    "All existing tests continue to pass",
+    "New EDR tests pass: ctest --output-on-failure shows all edr tests passing",
+    "ProcessMonitor can enumerate at least the current process",
+    "FileMonitor detects file creation in a watched temp directory",
+    "MemoryMonitor can read memory regions for current process",
+    "TelemetryCollector returns non-zero CPU and memory metrics"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

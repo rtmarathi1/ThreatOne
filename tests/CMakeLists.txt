@@ -17,6 +17,10 @@ set(TEST_SOURCES
     scanner/test_file_enumerator.cpp
     scanner/test_quarantine_manager.cpp
     scanner/test_scan_engine.cpp
+    edr/test_process_monitor.cpp
+    edr/test_file_monitor.cpp
+    edr/test_memory_monitor.cpp
+    edr/test_telemetry_collector.cpp
 )
 
 # Create the test executable
@@ -28,6 +32,8 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/database/include
         ${CMAKE_SOURCE_DIR}/src/utils/include
         ${CMAKE_SOURCE_DIR}/src/scanner/include
+        ${CMAKE_SOURCE_DIR}/src/edr/include
+        ${CMAKE_SOURCE_DIR}/src/monitor/include
 )
 
 target_link_libraries(threatone_tests
@@ -37,6 +43,8 @@ target_link_libraries(threatone_tests
         threatone_database
         threatone_utils
         threatone_scanner
+        threatone_edr
+        threatone_monitor
         spdlog
         nlohmann_json
         sqlite3
