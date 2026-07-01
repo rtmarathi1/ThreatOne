@@ -65,6 +65,15 @@ Core::Result<QuarantineEntry, Core::Error> QuarantineManager::quarantine(
         }
     }
 
+    // Strip permissions on quarantined file - restrict to owner read only
+    // This prevents accidental execution of quarantined malware
+    std::filesystem::permissions(entry.quarantinedPath,
+        std::filesystem::perms::owner_read,
+        std::filesystem::perm_options::replace, ec);
+    if (ec) {
+        logger_.warn("Failed to restrict permissions on quarantined file: {}", ec.message());
+    }
+
     // Write metadata
     auto metaResult = writeMetadata(entry);
     if (metaResult.isErr()) {

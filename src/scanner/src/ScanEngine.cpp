@@ -149,20 +149,26 @@ bool ScanEngine::pauseScan(const std::string& scanId) {
 }
 
 ScanResult ScanEngine::getScanStatus(const std::string& scanId) {
-    std::lock_guard<std::mutex> lock(scansMutex_);
-    auto it = activeScans_.find(scanId);
-    if (it == activeScans_.end()) {
-        return {scanId, ScanStatus::Idle, 0, 0, 0.0, {}};
+    std::shared_ptr<ActiveScan> scan;
+    {
+        std::lock_guard<std::mutex> lock(scansMutex_);
+        auto it = activeScans_.find(scanId);
+        if (it == activeScans_.end()) {
+            return {scanId, ScanStatus::Idle, 0, 0, 0.0, {}};
+        }
+        scan = it->second;
     }
 
-    auto& scan = *it->second;
     ScanResult result;
     result.scanId = scanId;
-    result.status = scan.status;
-    result.filesScanned = scan.progress->filesScanned();
-    result.threatsFound = scan.progress->threatsFound();
-    result.progress = scan.progress->percentage();
-    result.findings = scan.findings;
+    result.status = scan->status;
+    result.filesScanned = scan->progress->filesScanned();
+    result.threatsFound = scan->progress->threatsFound();
+    result.progress = scan->progress->percentage();
+    {
+        std::lock_guard<std::mutex> lock(scan->findingsMutex);
+        result.findings = scan->findings;
+    }
     return result;
 }
 
@@ -178,7 +184,10 @@ std::vector<ScanResult> ScanEngine::getScanResults() {
         result.filesScanned = scan->progress->filesScanned();
         result.threatsFound = scan->progress->threatsFound();
         result.progress = scan->progress->percentage();
-        result.findings = scan->findings;
+        {
+            std::lock_guard<std::mutex> findingsLock(scan->findingsMutex);
+            result.findings = scan->findings;
+        }
         results.push_back(std::move(result));
     }
 
@@ -193,23 +202,45 @@ Core::Result<size_t, Core::Error> ScanEngine::loadSignaturesFromString(const std
     return sigDb_.loadFromJsonString(json);
 }
 
+void ScanEngine::setQuickScanPaths(const std::vector<std::filesystem::path>& paths) {
+    defaultQuickScanPaths_ = paths;
+}
+
+void ScanEngine::setFullScanPaths(const std::vector<std::filesystem::path>& paths) {
+    defaultFullScanPaths_ = paths;
+}
+
 std::vector<std::filesystem::path> ScanEngine::getTargetsForType(const ScanConfig& config) const {
     std::vector<std::filesystem::path> targets;
 
     switch (config.type) {
         case ScanType::Quick:
-            // Quick scan: critical system paths
-            targets = {"/usr/bin", "/usr/sbin", "/home"};
+            // Quick scan: use configured paths, falling back to platform defaults
+            if (!defaultQuickScanPaths_.empty()) {
+                targets = defaultQuickScanPaths_;
+            } else {
+                #ifdef _WIN32
+                targets = {"C:\\Windows\\System32", "C:\\Program Files"};
+                #else
+                targets = {"/usr/bin", "/usr/sbin"};
+                #endif
+            }
             break;
 
         case ScanType::Full:
-            // Full scan: use provided targets or default to root
+            // Full scan: use provided targets, then configured defaults, then platform default
             if (!config.targets.empty()) {
                 for (const auto& t : config.targets) {
                     targets.emplace_back(t);
                 }
+            } else if (!defaultFullScanPaths_.empty()) {
+                targets = defaultFullScanPaths_;
             } else {
+                #ifdef _WIN32
+                targets = {"C:\\"};
+                #else
                 targets = {"/"};
+                #endif
             }
             break;
 
@@ -263,7 +294,7 @@ void ScanEngine::processFile(const std::filesystem::path& file, ActiveScan& scan
             match.signature->name + " - " +
             threatLevelToString(match.signature->threatLevel) + "]";
         {
-            std::lock_guard<std::mutex> lock(scansMutex_);
+            std::lock_guard<std::mutex> lock(scan.findingsMutex);
             scan.findings.push_back(finding);
         }
 
@@ -271,6 +302,25 @@ void ScanEngine::processFile(const std::filesystem::path& file, ActiveScan& scan
         publishThreatEvent(file.string(), *match.signature);
 
         logger_.warn("Threat detected: {} in {}", match.signature->name, file.string());
+    }
+
+    // Match against YARA rules (if any are loaded and compiled)
+    if (yaraEngine_.status() == YaraEngineStatus::Ready && yaraEngine_.ruleCount() > 0) {
+        auto yaraResult = yaraEngine_.matchFile(file);
+        if (yaraResult.isOk() && !yaraResult.value().empty()) {
+            for (const auto& yaraMatch : yaraResult.value()) {
+                scan.progress->incrementThreats();
+
+                std::string finding = file.string() + " [YARA:" +
+                    yaraMatch.ruleName + "]";
+                {
+                    std::lock_guard<std::mutex> lock(scan.findingsMutex);
+                    scan.findings.push_back(finding);
+                }
+
+                logger_.warn("YARA match: {} in {}", yaraMatch.ruleName, file.string());
+            }
+        }
     }
 
     scan.progress->incrementScanned();

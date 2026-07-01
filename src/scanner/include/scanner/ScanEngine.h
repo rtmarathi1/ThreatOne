@@ -32,6 +32,7 @@ struct ActiveScan {
     ScanConfig config;
     ScanStatus status = ScanStatus::Running;
     std::unique_ptr<ScanProgress> progress;
+    std::mutex findingsMutex;  // Guards the findings vector (separate from scansMutex_)
     std::vector<std::string> findings;
 };
 
@@ -58,6 +59,10 @@ public:
     Core::Result<size_t, Core::Error> loadSignatures(const std::filesystem::path& path);
     Core::Result<size_t, Core::Error> loadSignaturesFromString(const std::string& json);
 
+    // Configure default scan paths for Quick scan (instead of hard-coded system paths)
+    void setQuickScanPaths(const std::vector<std::filesystem::path>& paths);
+    void setFullScanPaths(const std::vector<std::filesystem::path>& paths);
+
 private:
     // Get target paths based on scan type
     std::vector<std::filesystem::path> getTargetsForType(const ScanConfig& config) const;
@@ -78,6 +83,10 @@ private:
 
     mutable std::mutex scansMutex_;
     std::unordered_map<std::string, std::shared_ptr<ActiveScan>> activeScans_;
+
+    // Configurable default scan paths
+    std::vector<std::filesystem::path> defaultQuickScanPaths_;
+    std::vector<std::filesystem::path> defaultFullScanPaths_;
 };
 
 } // namespace ThreatOne::Scanner

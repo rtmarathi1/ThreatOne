@@ -1,0 +1,31 @@
+{
+  "id": "FEAT-003",
+  "type": "fix",
+  "description": "Address code review findings: fix data race on findings vector by adding per-scan mutex, wire YARA engine into processFile, strip file permissions after quarantine move, and make Quick scan paths configurable instead of hard-coded.",
+  "status": "in_progress",
+  "steps": [
+    "Add a std::mutex findingsMutex to the ActiveScan struct in ScanEngine.h to guard the findings vector separately from scansMutex_",
+    "Add a defaultQuickScanPaths_ field and a setter method to ScanEngine so Quick scan paths are configurable",
+    "In ScanEngine.cpp processFile, use scan.findingsMutex instead of scansMutex_ when pushing to findings",
+    "In ScanEngine.cpp processFile, add a call to yaraEngine_.matchFile() and handle YARA matches",
+    "In ScanEngine.cpp getScanStatus/getScanResults, use the per-scan findingsMutex when reading findings",
+    "In ScanEngine.cpp getTargetsForType, use the configurable paths for Quick scan instead of hard-coded values",
+    "In QuarantineManager.cpp quarantine(), call std::filesystem::permissions() after the file move to restrict access (remove all permissions except owner read)",
+    "Build and test to verify all fixes work correctly"
+  ],
+  "acceptance_criteria": [
+    "ActiveScan has its own mutex for findings, separate from the map-level scansMutex_",
+    "processFile uses the per-scan mutex for findings",
+    "processFile calls yaraEngine_.matchFile() and records any YARA matches in findings",
+    "QuarantineManager strips permissions on quarantined files after move",
+    "Quick scan paths are configurable via a setter or constructor parameter, not hard-coded",
+    "Build compiles without errors",
+    "All tests pass"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": null
+}
