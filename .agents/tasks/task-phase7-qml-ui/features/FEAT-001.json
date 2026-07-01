@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Build the complete QML foundation: enhanced theming system (DarkTheme, LightTheme, ThemeManager), all reusable widgets (SecurityScoreGauge, ThreatChart, AlertCard, DataTable, TimelineView, StatCard, ProgressRing, SearchBar), enhanced shared components (NavigationSidebar with icons/badges/collapsible sections, TopBar with search/notifications/user menu, StatusBar), and the updated main.qml/App.qml shell with page routing.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Replace qml/themes/ThemeManager.qml with a complete Qt6 pragma Singleton that includes all color tokens, typography scale, spacing scale, radius, elevation/shadow definitions, animation durations, and a toggleTheme() function. Use Qt 6 import syntax (import QtQuick, no version numbers).",
     "Replace qml/themes/DarkTheme.qml with a comprehensive dark palette (background, surface, surfaceVariant, primary, primaryVariant, secondary, accent, success, warning, error, onBackground, onSurface, textPrimary, textSecondary, textMuted, border, divider, sidebar, sidebarActive, topbar, overlay, chart colors array).",
@@ -36,5 +36,5 @@
     "cd build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All QML foundation files created successfully. Build passes with ENABLE_QT=OFF. Tests pass. 16 QML files created/replaced covering ThemeManager singleton, DarkTheme, LightTheme, 8 widgets (SecurityScoreGauge, ThreatChart, AlertCard, DataTable, TimelineView, StatCard, ProgressRing, SearchBar), 3 components (NavigationSidebar, TopBar, StatusBar), main.qml with StackView routing and transitions, App.qml with state management. Old AlertsWidget, SecurityScoreWidget, ThreatMapWidget remain untouched (they use Qt5 imports but are pre-existing). NavigationSidebar has 10 page entries across 3 sections (Security, Analysis, Management)."
 }
