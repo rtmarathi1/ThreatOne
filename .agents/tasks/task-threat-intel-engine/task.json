@@ -1,0 +1,7 @@
+{
+  "task_id": "task-threat-intel-engine",
+  "task_description": "Build the Threat Intelligence Engine for ThreatOne Enterprise Desktop - Phase 6. Create src/threat_intel/ module with IOC Manager, Threat Feed Manager, Feed Parsers, MITRE ATT&CK Integration, CVE Database, Threat Correlation Engine, IOC Matching Engine, Threat Scoring, Intel Report Generator, and Enrichment Service. Integrate with SecurityEngine and add comprehensive unit tests.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null
+}

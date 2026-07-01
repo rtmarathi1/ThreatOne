@@ -1,11 +1,17 @@
 #include "security/SecurityEngine.h"
+#include "threat_intel/ThreatIntelEngine.h"
 
 namespace ThreatOne::Security {
 
 SecurityEngine::SecurityEngine()
     : logger_(ThreatOne::Core::Logger::instance().getModuleLogger("SecurityEngine")) {
-    logger_.info("SecurityEngine initialized (stub)");
+    // Initialize threat intelligence engine
+    threatIntelEngine_ = std::make_unique<ThreatOne::ThreatIntel::ThreatIntelEngine>();
+    threatIntelEngine_->initialize();
+    logger_.info("SecurityEngine initialized with ThreatIntel integration");
 }
+
+SecurityEngine::~SecurityEngine() = default;
 
 bool SecurityEngine::scanFile(const std::string& filePath) {
     logger_.info("scanFile called: {}", filePath);
@@ -40,6 +46,20 @@ std::vector<DetectionEngineInfo> SecurityEngine::getDetectionEngines() {
         {"Heuristic Engine", "1.0.0", DetectionType::Heuristic, true},
         {"ML Engine", "1.0.0", DetectionType::ML, true}
     };
+}
+
+bool SecurityEngine::checkThreatIntel(const std::string& indicator) {
+    if (!threatIntelEngine_) {
+        logger_.error("ThreatIntelEngine not available");
+        return false;
+    }
+
+    auto result = threatIntelEngine_->processIndicator(indicator);
+    if (result.matched) {
+        logger_.info("Threat intel match for '{}': score={:.1f}, matches={}",
+                     indicator, result.score.overallScore, result.matches.size());
+    }
+    return result.matched;
 }
 
 } // namespace ThreatOne::Security

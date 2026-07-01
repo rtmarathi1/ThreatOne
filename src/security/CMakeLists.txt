@@ -13,4 +13,5 @@ target_link_libraries(threatone_security
     PUBLIC
         threatone_compiler_options
         threatone_core
+        threatone_threat_intel
 )

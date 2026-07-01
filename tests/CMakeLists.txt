@@ -49,6 +49,16 @@ set(TEST_SOURCES
     ai/test_auto_investigation.cpp
     ai/test_prediction_engine.cpp
     analytics/test_behavior_analytics.cpp
+    threat_intel/test_ioc_manager.cpp
+    threat_intel/test_feed_parsers.cpp
+    threat_intel/test_threat_feed_manager.cpp
+    threat_intel/test_mitre_attack.cpp
+    threat_intel/test_cve_database.cpp
+    threat_intel/test_correlation.cpp
+    threat_intel/test_ioc_matcher.cpp
+    threat_intel/test_threat_scoring.cpp
+    threat_intel/test_report_generator.cpp
+    threat_intel/test_enrichment.cpp
 )
 
 # Create the test executable
@@ -66,6 +76,8 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/network/include
         ${CMAKE_SOURCE_DIR}/src/ai/include
         ${CMAKE_SOURCE_DIR}/src/analytics/include
+        ${CMAKE_SOURCE_DIR}/src/threat_intel/include
+        ${CMAKE_SOURCE_DIR}/src/security/include
 )
 
 target_link_libraries(threatone_tests
@@ -81,6 +93,8 @@ target_link_libraries(threatone_tests
         threatone_network
         threatone_ai
         threatone_analytics
+        threatone_threat_intel
+        threatone_security
         spdlog
         nlohmann_json
         sqlite3

@@ -1,0 +1,42 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Implement Intel Report Generator and Enrichment Service, update SecurityEngine integration, and add comprehensive unit tests for the entire threat_intel module.",
+  "status": "in_progress",
+  "steps": [
+    "Create src/threat_intel/include/threat_intel/IntelReportGenerator.h and src/threat_intel/src/IntelReportGenerator.cpp - Define ReportSection struct (title, content, data). IntelReport struct (id, title, generatedAt, summary, sections vector, topThreats vector, trendingIndicators vector, statistics map). IntelReportGenerator class with: generateReport(IOCManager&, ThreatCorrelationEngine&, ThreatScoringEngine&) -> IntelReport, generateThreatLandscape() summarizing current IOC counts by type/severity, getTopThreats(count) ranked by score, getTrendingIndicators(timeWindow) recently added/updated IOCs, toJson(report) -> nlohmann::json serialization",
+    "Create src/threat_intel/include/threat_intel/EnrichmentService.h and src/threat_intel/src/EnrichmentService.cpp - Define EnrichmentResult struct (originalIOC, relatedIOCs, campaigns, threatActors, ttps vector of MITRE technique IDs, additionalContext map). IEnrichmentProvider interface with virtual enrich(ioc) method. EnrichmentService class with: registerProvider(name, IEnrichmentProvider*), enrich(ioc) -> EnrichmentResult that queries all providers, enrichBatch(iocs) -> vector<EnrichmentResult>. Create LocalEnrichmentProvider that uses IOCManager + CorrelationEngine + MitreAttack to provide local enrichment. Add stub ExternalEnrichmentProvider with interface for VirusTotal/AbuseIPDB/AlienVault OTX (returns empty results since no network, but the interface is defined).",
+    "Create src/threat_intel/include/threat_intel/ThreatIntelEngine.h and src/threat_intel/src/ThreatIntelEngine.cpp - Facade class that owns IOCManager, ThreatFeedManager, MitreAttackMatrix, CVEDatabase, ThreatCorrelationEngine, IOCMatcher, ThreatScoringEngine, IntelReportGenerator, EnrichmentService. Provides initialize(), processIndicator(value) -> MatchResult + Score, ingestFeed(feedId, data), generateReport() -> IntelReport. Uses ModuleLogger.",
+    "Update src/security/include/security/SecurityEngine.h - Add a ThreatIntelEngine pointer member (forward declared), add method: checkThreatIntel(const std::string& indicator) that delegates to threat intel matching",
+    "Update src/security/src/SecurityEngine.cpp - Include ThreatIntelEngine.h, initialize ThreatIntelEngine in constructor, implement checkThreatIntel method",
+    "Update src/security/CMakeLists.txt - Add dependency on threatone_threat_intel in target_link_libraries",
+    "Create tests/threat_intel/ directory with comprehensive test files:",
+    "Create tests/threat_intel/test_ioc_manager.cpp - Test CRUD operations, search by value/type, expiration handling, thread safety",
+    "Create tests/threat_intel/test_feed_parsers.cpp - Test STIX JSON parsing, CSV parsing, plain text parsing with auto-detection, OpenIOC XML parsing, malformed input handling",
+    "Create tests/threat_intel/test_threat_feed_manager.cpp - Test feed subscription, feed data processing through parsers, feed refresh logic",
+    "Create tests/threat_intel/test_mitre_attack.cpp - Test technique lookup by ID, tactic-to-technique mapping, detection mapping, search",
+    "Create tests/threat_intel/test_cve_database.cpp - Test CVE add/get, search by product/vendor, severity filtering, CVSS scoring",
+    "Create tests/threat_intel/test_correlation.cpp - Test campaign detection from related IOCs, correlation scoring, related IOC finding",
+    "Create tests/threat_intel/test_ioc_matcher.cpp - Test exact hash matching, domain suffix matching, IP prefix matching, URL matching",
+    "Create tests/threat_intel/test_threat_scoring.cpp - Test score calculation with various inputs, age decay, source reliability, correlation boost",
+    "Create tests/threat_intel/test_report_generator.cpp - Test report generation, top threats, trending indicators, JSON serialization",
+    "Create tests/threat_intel/test_enrichment.cpp - Test local enrichment, provider registration, batch enrichment",
+    "Update tests/CMakeLists.txt - Add all new test files to TEST_SOURCES, add ${CMAKE_SOURCE_DIR}/src/threat_intel/include to target_include_directories, add threatone_threat_intel to target_link_libraries"
+  ],
+  "acceptance_criteria": [
+    "IntelReportGenerator produces reports with threat landscape, top threats, and trending indicators",
+    "EnrichmentService enriches IOCs with related data from local sources",
+    "ThreatIntelEngine facade wires all components together",
+    "SecurityEngine.checkThreatIntel delegates to the threat intel module",
+    "All unit tests pass via ctest --output-on-failure",
+    "Tests cover all major components: IOCManager, all 4 parsers, MITRE, CVE, correlation, matching, scoring, reports, enrichment",
+    "Full build (cmake --build build) completes without errors"
+  ],
+  "verification": [
+    "Run: cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "Run: cd build && ctest --output-on-failure",
+    "Confirm all tests pass including new threat_intel tests"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

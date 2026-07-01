@@ -12,6 +12,9 @@ add_library(threatone_threat_intel STATIC
     src/ThreatCorrelation.cpp
     src/IOCMatcher.cpp
     src/ThreatScoring.cpp
+    src/IntelReportGenerator.cpp
+    src/EnrichmentService.cpp
+    src/ThreatIntelEngine.cpp
 )
 
 target_include_directories(threatone_threat_intel
