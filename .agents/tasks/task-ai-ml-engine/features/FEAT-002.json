@@ -1,0 +1,31 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Implement Risk Scoring Engine, Threat Classifier, Behavior Analytics (UEBA), and Model Manager in src/ai/ and src/analytics/",
+  "status": "pending",
+  "steps": [
+    "Create src/ai/include/ai/RiskScoringEngine.h - Define RiskFactors struct (fileReputation 0-100, behaviorScore 0-100, networkRisk 0-100, vulnerabilityScore 0-100). Define RiskWeights struct with configurable weights (default: file=0.3, behavior=0.3, network=0.2, vulnerability=0.2). Define RiskResult struct (overallScore 0-100, riskLevel string, contributingFactors vector, breakdown map). RiskScoringEngine class: calculateRisk(factors) -> RiskResult, setWeights(weights), getRiskLevel(score) -> string, getBreakdown(factors) -> map<string,double>.",
+    "Create src/ai/src/RiskScoringEngine.cpp - Implement weighted score calculation: overallScore = sum(factor_i * weight_i). Risk levels: 0-20 'minimal', 21-40 'low', 41-60 'medium', 61-80 'high', 81-100 'critical'. Breakdown shows each factor's contribution. Contributing factors list those above threshold (>50).",
+    "Create src/ai/include/ai/ThreatClassifier.h - Define ThreatCategory enum (Malware, PUP, Adware, Ransomware, Trojan, Worm, Rootkit, Exploit, Benign, Unknown). Define ClassificationResult struct (category, confidence, secondaryCategories vector, indicators vector). ThreatClassifier class: classify(FileFeatures, BehaviorFeatures) -> ClassificationResult, classifyFromVector(FeatureVector) -> ClassificationResult. Use combination of decision tree and rule-based heuristics.",
+    "Create src/ai/src/ThreatClassifier.cpp - Implement multi-class classification using feature rules: Ransomware (high entropy + many file renames + crypto API imports), Trojan (network API imports + hidden execution + privilege escalation), Worm (self-replication patterns + network scanning), Rootkit (kernel API hooks + stealth indicators), Adware (browser manipulation + ad network URLs), PUP (bundled installer patterns). Each category has weighted indicators. Return highest confidence match plus secondary matches.",
+    "Create src/analytics/include/analytics/BehaviorAnalyticsEngine.h - Define UserBaseline struct (normalHours, typicalAccessPatterns, averageEventRate, commonProcesses). Define DeviationResult struct (isDeviation, deviationScore, baselineMetric, currentValue, description). Define BehaviorAnalyticsEngine class (UEBA): buildBaseline(userId, events), detectDeviation(userId, currentEvent) -> DeviationResult, analyzeTimeOfDay(userId, timestamp) -> DeviationResult, analyzeAccessPattern(userId, resource) -> DeviationResult, getBaseline(userId) -> UserBaseline, updateBaseline(userId, event).",
+    "Create src/analytics/src/BehaviorAnalyticsEngine.cpp - Implement UEBA: Build baseline from historical events (track hour-of-day distribution, common access targets, event rate). Detect deviations by comparing current behavior to baseline using z-score on event rate, check if access time is outside normal hours (>2 stddev from mean hour), check if resource access matches known patterns. Store baselines per-user in an unordered_map.",
+    "Create src/ai/include/ai/ModelManager.h - Define ModelInfo struct (id, name, version, type, status, accuracy, loadTime, predictionCount, driftScore). Define ModelManager class: loadModel(name, modelData) -> bool, unloadModel(name), getModel(name) -> IMLModel*, listModels() -> vector<ModelInfo>, updateModel(name, newData) -> bool, getPerformance(name) -> ModelInfo, detectDrift(name, recentPredictions) -> double. Track model performance metrics and detect concept drift via accuracy monitoring.",
+    "Create src/ai/src/ModelManager.cpp - Implement model lifecycle management. Store models in unordered_map<string, unique_ptr<IMLModel>>. Track per-model metrics (prediction count, recent accuracy if ground truth available). Drift detection: compare recent prediction distribution against historical baseline using simple chi-squared divergence approximation. Version management: store version strings, support A/B routing by returning specific model versions.",
+    "Update src/ai/CMakeLists.txt - Add RiskScoringEngine.cpp, ThreatClassifier.cpp, ModelManager.cpp.",
+    "Update src/analytics/CMakeLists.txt - Add BehaviorAnalyticsEngine.cpp. Add nlohmann_json and Threads::Threads to link libraries.",
+    "Verify build compiles: cmake -B build -DENABLE_QT=OFF && cmake --build build"
+  ],
+  "acceptance_criteria": [
+    "RiskScoringEngine computes weighted risk scores in 0-100 range with configurable weights",
+    "ThreatClassifier categorizes threats into the 8 specified categories plus Benign/Unknown",
+    "BehaviorAnalyticsEngine builds user baselines and detects deviations",
+    "ModelManager can load, list, and unload ML models with version tracking",
+    "cmake --build build succeeds with no errors"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

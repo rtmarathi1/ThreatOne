@@ -1,0 +1,7 @@
+{
+  "task_id": "task-ai-ml-engine",
+  "task_description": "Implement Phase 5: AI and Machine Learning Engine for intelligent threat detection and analysis. Build 12 components across src/ai/ and src/analytics/ including Feature Extractor, Decision Tree Classifier, Anomaly Detector, Risk Scoring, Threat Classifier, UEBA, NLP, Recommendation Engine, Auto Investigation, Prediction Engine, and Model Manager. All implemented from scratch in C++20 with no external ML libraries.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
+  "blocked_reason": null
+}

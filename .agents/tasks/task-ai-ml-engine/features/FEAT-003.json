@@ -1,0 +1,35 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Implement NLP Processor, Recommendation Engine, Auto Investigation, and Prediction Engine. Update AIEngine and AnalyticsEngine stubs to fully functional implementations.",
+  "status": "pending",
+  "steps": [
+    "Create src/ai/include/ai/NLPProcessor.h - Define KeywordResult struct (keyword, frequency, relevance). Define LogSummary struct (summary, keyPatterns, severity, actionItems). Define NLPProcessor class: extractKeywords(text) -> vector<KeywordResult>, summarizeLog(logEntries) -> LogSummary, matchPattern(text, patterns) -> vector<string>, generateAlertSummary(alertData) -> string, tokenize(text) -> vector<string>. Template-based summarization using pattern matching.",
+    "Create src/ai/src/NLPProcessor.cpp - Implement keyword extraction: tokenize text, remove stop words (common English words), count frequencies, rank by TF (term frequency). Pattern matching: compile regex patterns for common log patterns (IP addresses, timestamps, error codes, file paths). Template-based summarization: identify alert type from keywords, fill templates like 'Detected {threat_type} from {source} targeting {target} at {time}'. Use predefined security-relevant keyword dictionaries.",
+    "Create src/ai/include/ai/RecommendationEngine.h - Define SecurityRecommendation struct (id, title, description, priority 1-5, category, effort string, impact string). Define RiskPosture struct (overallRisk, openVulnerabilities, activeThreats, configGaps vector). Define RecommendationEngine class: generateRecommendations(posture) -> vector<SecurityRecommendation>, prioritize(recommendations) -> vector<SecurityRecommendation>, getTopN(n, posture) -> vector<SecurityRecommendation>. Rule-based recommendation generation.",
+    "Create src/ai/src/RecommendationEngine.cpp - Implement rule-based recommendations: if activeThreats > 0 suggest isolation/quarantine, if openVulnerabilities > threshold suggest patching, if configGaps include specific items suggest remediation. Prioritization: sort by risk reduction potential (impact * urgency). Include predefined recommendation templates for common scenarios (unpatched systems, weak auth, open ports, missing encryption, outdated signatures).",
+    "Create src/ai/include/ai/AutoInvestigation.h - Define Evidence struct (type, source, data, timestamp, relevance). Define InvestigationResult struct (incidentId, scope, affectedAssets, timeline, rootCause, suggestedRemediation, confidence). Define InvestigationStep enum (GatherEvidence, CorrelateEvents, DetermineScope, IdentifyRootCause, SuggestRemediation). Define AutoInvestigation class: investigate(triggerId, triggerData) -> InvestigationResult, gatherEvidence(triggerId) -> vector<Evidence>, correlateEvents(evidence) -> vector<string>, determineScope(correlations) -> vector<string>, suggestRemediation(result) -> vector<string>.",
+    "Create src/ai/src/AutoInvestigation.cpp - Implement automated investigation workflow: 1) Gather evidence by collecting related events from trigger data (parse JSON for related IPs, files, processes). 2) Correlate events by matching common attributes (same source IP, same process tree, same time window). 3) Determine scope by counting unique affected assets. 4) Root cause analysis: trace back to earliest event in correlation chain. 5) Remediation suggestions based on threat type (isolate host, block IP, quarantine file, reset credentials).",
+    "Create src/ai/include/ai/PredictionEngine.h - Define PredictionResult struct (likelihood 0.0-1.0, timeframe, predictedThreatType, confidence, reasoning vector). Define ThreatIntelligence struct (activeCampaigns, knownVulnerabilities, industryTargeting). Define PredictionEngine class: predictAttackLikelihood(intel, vulnerabilities, history) -> PredictionResult, predictNextTarget(history) -> string, assessExposure(vulnerabilities) -> double, getHistoricalTrend(period) -> vector<double>.",
+    "Create src/ai/src/PredictionEngine.cpp - Implement prediction based on: 1) Vulnerability exposure score (count * severity weighted), 2) Historical attack frequency (trend analysis using linear regression on event counts), 3) Threat intelligence correlation (if active campaigns match org's vulnerabilities, increase likelihood), 4) Time-based patterns (day-of-week, seasonal trends from history). Combine factors with weighted formula. Confidence based on data quality/quantity.",
+    "Update src/ai/include/ai/AIEngine.h and src/ai/src/AIEngine.cpp - Replace stub implementations. AIEngine now orchestrates: uses FeatureExtractor, ThreatClassifier, RiskScoringEngine, NLPProcessor, RecommendationEngine, AutoInvestigation, PredictionEngine. classifyThreat uses FeatureExtractor + ThreatClassifier. predictRisk uses RiskScoringEngine + PredictionEngine. analyzePattern uses AnomalyDetector. summarizeIncident uses NLPProcessor + AutoInvestigation. getRecommendations uses RecommendationEngine.",
+    "Update src/analytics/include/analytics/AnalyticsEngine.h and src/analytics/src/AnalyticsEngine.cpp - Replace stub implementations. AnalyticsEngine now uses BehaviorAnalyticsEngine for baselines, RiskScoringEngine for scores, maintains internal metrics (threat count, scan coverage, detection rate). getMetrics returns real computed metrics. getTrends returns historical data from stored values. getTopThreats aggregates from classification history. getRiskScore uses RiskScoringEngine. getSecurityPosture computes from all subsystems.",
+    "Update src/ai/CMakeLists.txt - Add NLPProcessor.cpp, RecommendationEngine.cpp, AutoInvestigation.cpp, PredictionEngine.cpp to sources.",
+    "Update src/analytics/CMakeLists.txt - Ensure it links against threatone_ai for using AI components.",
+    "Verify build compiles: cmake -B build -DENABLE_QT=OFF && cmake --build build"
+  ],
+  "acceptance_criteria": [
+    "NLPProcessor extracts keywords and generates template-based summaries",
+    "RecommendationEngine generates prioritized security recommendations",
+    "AutoInvestigation runs a multi-step investigation workflow",
+    "PredictionEngine predicts attack likelihood from multiple factors",
+    "AIEngine is fully functional (not stub) orchestrating all AI components",
+    "AnalyticsEngine is fully functional (not stub) with real metric computation",
+    "cmake --build build succeeds with no errors"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

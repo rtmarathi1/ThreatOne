@@ -1,0 +1,33 @@
+{
+  "project_type": "C++20 enterprise cybersecurity platform (desktop app)",
+  "language": "C++20",
+  "build_system": "CMake 3.22 with vendored third-party deps in third_party/. Static libraries per module. Link order matters (see CMakeLists.txt subdirectory order).",
+  "test_framework": "doctest (header-only, vendored in third_party/doctest/include). Single test executable 'threatone_tests' that compiles all test sources. Tests are in tests/<module>/ directories.",
+  "build_command": "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build",
+  "test_command": "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure",
+  "verification_instructions": "1. cmake -B build -DENABLE_QT=OFF 2. cmake --build build (must compile cleanly) 3. cd build && ctest --output-on-failure (all tests pass)",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "No setup needed - CMake 3.22, GCC 11.5 pre-installed, all deps vendored in third_party/",
+  "environment_constraints": "INTEGRATIONS_ONLY network - no external downloads. All libraries must be vendored or implemented from scratch. No external ML libraries. Use standard C++20 only.",
+  "contribution_requirements": "Follow existing patterns: namespace ThreatOne::<Module>, #pragma once headers, ModuleLogger per class, Result<T> for error handling, struct-based data types, doctest for testing.",
+  "key_patterns": "1. Each module: include/<module>/*.h (headers) + src/*.cpp (impl). 2. Interface classes prefixed with 'I' (IAIEngine, IAnalyticsEngine). 3. ModuleLogger from Core::Logger::instance().getModuleLogger(name). 4. Thread safety via std::mutex. 5. nlohmann_json for serialization. 6. Tests use TEST_CASE with CHECK/REQUIRE macros. 7. CMakeLists.txt lists all .cpp sources explicitly.",
+  "relevant_files": [
+    "src/ai/include/ai/IAIEngine.h",
+    "src/ai/include/ai/AIEngine.h",
+    "src/ai/src/AIEngine.cpp",
+    "src/ai/CMakeLists.txt",
+    "src/analytics/include/analytics/IAnalyticsEngine.h",
+    "src/analytics/include/analytics/AnalyticsEngine.h",
+    "src/analytics/src/AnalyticsEngine.cpp",
+    "src/analytics/CMakeLists.txt",
+    "tests/CMakeLists.txt",
+    "src/core/include/core/Logger.h",
+    "src/core/include/core/Types.h",
+    "src/core/include/core/Error.h",
+    "src/core/include/core/EventBus.h",
+    "src/edr/include/edr/BehaviorAnalyzer.h",
+    "src/edr/include/edr/DetectionRulesEngine.h",
+    "CMakeLists.txt"
+  ],
+  "directory_structure": "src/<module>/include/<module>/*.h for public headers, src/<module>/src/*.cpp for implementation. tests/<module>/test_*.cpp for tests. third_party/ has spdlog, nlohmann json, doctest, sqlite3 (all vendored header-only or stubs)."
+}

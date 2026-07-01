@@ -1,0 +1,30 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Implement core ML infrastructure: Feature Extractor, ML Model Interface, Decision Tree Classifier, and Anomaly Detector in src/ai/",
+  "status": "in_progress",
+  "steps": [
+    "Create src/ai/include/ai/FeatureExtractor.h - Define FeatureVector struct (map of string->double), FileFeatures struct (entropy, fileSize, sectionCount, importCount, suspiciousStringCount, etc.), BehaviorFeatures struct (eventFrequency, timingVariance, sequenceLength, uniqueEventTypes). Create FeatureExtractor class with methods: extractFileFeatures(data) -> FileFeatures, extractBehaviorFeatures(events) -> BehaviorFeatures, toFeatureVector(FileFeatures/BehaviorFeatures) -> FeatureVector. Include entropy calculation helper.",
+    "Create src/ai/src/FeatureExtractor.cpp - Implement entropy calculation using Shannon entropy formula on byte distribution. File size is data.size(). Section analysis counts PE-like section markers. Import table analysis counts common API patterns (LoadLibrary, VirtualAlloc, CreateRemoteThread etc). String analysis extracts and scores suspicious strings (URLs, registry paths, crypto-related). Behavior features: compute event frequency (events per time window), timing variance (std::deviation of inter-event times), sequence analysis.",
+    "Create src/ai/include/ai/IMLModel.h - Define abstract IMLModel interface with: virtual bool load(const std::string& modelData) = 0, virtual std::vector<double> predict(const FeatureVector& features) = 0, virtual std::string explain(const FeatureVector& features) = 0, virtual std::string getVersion() = 0, virtual std::string getName() = 0. Define ModelMetadata struct (name, version, accuracy, lastUpdated). Define ModelPrediction struct (label, confidence, explanations vector).",
+    "Create src/ai/include/ai/DecisionTreeClassifier.h - Define DecisionTreeNode struct (featureName, threshold, leftChild, rightChild, label, isLeaf). Define DecisionTreeClassifier class implementing IMLModel. Methods: train(trainingData), predict(features), explain(features). Store tree as vector of nodes. Include default security-focused tree with hardcoded thresholds (entropy>7.0 suspicious, importCount>50 suspicious, etc).",
+    "Create src/ai/src/DecisionTreeClassifier.cpp - Implement decision tree traversal. Build default tree in constructor with security-relevant thresholds: root splits on entropy (>7.0), left child splits on suspiciousStringCount (>5), right child splits on importCount (>30). Leaf nodes return classifications: 'benign', 'suspicious', 'malicious'. Predict walks the tree. Explain returns the path taken through the tree as human-readable string.",
+    "Create src/ai/include/ai/AnomalyDetector.h - Define AnomalyResult struct (isAnomaly, anomalyScore, method, details). Define AnomalyDetector class with methods: addDataPoint(featureName, value), detectZScore(featureName, value, threshold=3.0) -> AnomalyResult, detectMovingAverage(featureName, value, windowSize=20) -> AnomalyResult, detectIsolationForest(features) -> AnomalyResult, getBaseline(featureName) -> stats. Store running mean/variance per feature using Welford's online algorithm.",
+    "Create src/ai/src/AnomalyDetector.cpp - Implement z-score detection using running mean and stddev (Welford's algorithm for online computation). Moving average uses a deque-based sliding window per feature. Isolation forest simplified: random feature splits with average path length as anomaly score (shorter path = more anomalous). Store per-feature statistics: count, mean, M2 (for variance), min, max, and sliding window of recent values.",
+    "Update src/ai/CMakeLists.txt - Add FeatureExtractor.cpp, DecisionTreeClassifier.cpp, AnomalyDetector.cpp to the source list. Add nlohmann_json and Threads::Threads to target_link_libraries.",
+    "Update src/ai/include/ai/IAIEngine.h - Keep existing structs but add forward declarations and any new structs needed by the updated AIEngine.",
+    "Verify the build compiles cleanly: cmake -B build -DENABLE_QT=OFF && cmake --build build"
+  ],
+  "acceptance_criteria": [
+    "All new headers and source files compile without errors",
+    "FeatureExtractor can calculate Shannon entropy of binary data",
+    "DecisionTreeClassifier can classify a feature vector and return confidence",
+    "AnomalyDetector can detect z-score anomalies using online statistics",
+    "cmake --build build succeeds with no errors"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -1,0 +1,34 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Add comprehensive unit tests for all AI/ML and Analytics components",
+  "status": "pending",
+  "steps": [
+    "Create tests/ai/ directory and test files: test_feature_extractor.cpp, test_decision_tree.cpp, test_anomaly_detector.cpp, test_risk_scoring.cpp, test_threat_classifier.cpp, test_model_manager.cpp, test_nlp_processor.cpp, test_recommendation_engine.cpp, test_auto_investigation.cpp, test_prediction_engine.cpp",
+    "Implement test_feature_extractor.cpp - Test Shannon entropy calculation (all zeros = 0 entropy, random data = ~8.0, known patterns). Test file feature extraction (known PE-like data). Test behavior feature extraction (event frequency, timing).",
+    "Implement test_decision_tree.cpp - Test tree construction. Test prediction with known feature vectors (high entropy -> suspicious/malicious, low entropy + low imports -> benign). Test explain() returns human-readable path. Test edge cases (empty features, boundary values).",
+    "Implement test_anomaly_detector.cpp - Test z-score detection (normal values not flagged, outliers flagged). Test moving average (sudden spike detected). Test isolation forest (isolated points get high anomaly scores). Test Welford's algorithm accuracy against known mean/stddev.",
+    "Implement test_risk_scoring.cpp - Test weighted score calculation (all zeros = 0, all 100 = 100). Test custom weights. Test risk level boundaries (0-20 minimal, 81-100 critical). Test breakdown accuracy.",
+    "Implement test_threat_classifier.cpp - Test classification of known threat patterns: ransomware indicators (high entropy + file renames), trojan indicators (network + stealth), benign (low all scores). Test confidence values are in [0,1].",
+    "Implement test_model_manager.cpp - Test load/unload lifecycle. Test listModels reflects loaded models. Test version tracking. Test drift detection with skewed predictions.",
+    "Implement test_nlp_processor.cpp - Test keyword extraction (known text produces expected keywords). Test tokenization. Test pattern matching (IP address regex, file path patterns). Test alert summarization produces non-empty structured output.",
+    "Implement test_recommendation_engine.cpp - Test recommendations generated for high-risk posture. Test prioritization ordering. Test empty posture produces minimal recommendations. Test top-N filtering.",
+    "Implement test_auto_investigation.cpp - Test investigation workflow produces complete result. Test evidence gathering from trigger data. Test scope determination. Test remediation suggestions are non-empty.",
+    "Implement test_prediction_engine.cpp - Test likelihood is in [0,1] range. Test high vulnerability exposure increases likelihood. Test historical trend calculation. Test with empty/minimal data.",
+    "Create tests/analytics/ directory with test_behavior_analytics.cpp - Test baseline building. Test deviation detection (normal event not flagged, unusual time flagged). Test time-of-day analysis. Test access pattern analysis.",
+    "Update tests/CMakeLists.txt - Add all new test source files to TEST_SOURCES. Add include paths for src/ai/include and src/analytics/include. Add threatone_ai and threatone_analytics to target_link_libraries.",
+    "Verify all tests pass: cmake -B build -DENABLE_QT=OFF && cmake --build build && cd build && ctest --output-on-failure"
+  ],
+  "acceptance_criteria": [
+    "All test files compile without errors",
+    "All tests pass (ctest reports 100% pass)",
+    "Each component has at least 3 meaningful test cases that exercise core logic",
+    "Tests cover both normal operation and edge cases",
+    "Tests would fail if the implementation were reverted to stubs"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build && cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
