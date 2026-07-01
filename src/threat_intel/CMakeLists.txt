@@ -7,6 +7,11 @@ add_library(threatone_threat_intel STATIC
     src/PlainTextParser.cpp
     src/OpenIOCParser.cpp
     src/ThreatFeedManager.cpp
+    src/MitreAttack.cpp
+    src/CVEDatabase.cpp
+    src/ThreatCorrelation.cpp
+    src/IOCMatcher.cpp
+    src/ThreatScoring.cpp
 )
 
 target_include_directories(threatone_threat_intel

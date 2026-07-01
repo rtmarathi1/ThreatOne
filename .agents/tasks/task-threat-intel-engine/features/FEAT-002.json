@@ -1,0 +1,28 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Implement the advanced threat intel components: MITRE ATT&CK Integration, CVE Database, Threat Correlation Engine, IOC Matching Engine, and Threat Scoring system.",
+  "status": "in_progress",
+  "steps": [
+    "Create src/threat_intel/include/threat_intel/MitreAttack.h and src/threat_intel/src/MitreAttack.cpp - Define Tactic struct (id, name, description, techniques list), Technique struct (id, name, description, tactics, dataSources, detection). MitreAttackMatrix class with: addTechnique, getTechniqueById (e.g., T1059), getTechniquesByTactic, getAllTactics, mapDetectionToTechnique(detectionInfo) -> vector<Technique>, searchTechniques(query). Pre-populate with common ATT&CK techniques in constructor (at least 20 entries covering Initial Access, Execution, Persistence, Privilege Escalation, Defense Evasion, etc.)",
+    "Create src/threat_intel/include/threat_intel/CVEDatabase.h and src/threat_intel/src/CVEDatabase.cpp - Define CVEEntry struct (cveId, description, cvssScore, severity, affectedProducts vector with vendor/product/version, publishDate, lastModified, references). CVEDatabase class with: addCVE, getCVEById, searchByProduct, searchByVendor, filterBySeverity(minScore), getRecentCVEs(days), updateCVE. Thread-safe.",
+    "Create src/threat_intel/include/threat_intel/ThreatCorrelation.h and src/threat_intel/src/ThreatCorrelation.cpp - Define Campaign struct (id, name, iocIds vector, techniques vector, threatActors, confidence, firstSeen, lastSeen, description). CorrelationRule struct (name, iocTypes to correlate, timeWindow, minIOCs). ThreatCorrelationEngine class with: addCorrelationRule, correlateIOCs(iocs) -> vector<Campaign>, findRelatedIOCs(iocId) -> vector of related IOCs with relationship type, calculateCorrelationScore(campaign) -> double",
+    "Create src/threat_intel/include/threat_intel/IOCMatcher.h and src/threat_intel/src/IOCMatcher.cpp - IOCMatcher class with: loadIOCs(from IOCManager), matchExact(value) for hash/email exact matching using unordered_map, matchDomain(domain) with suffix matching for domain IOCs, matchIP(ip) with prefix trie for IP/CIDR matching, matchURL(url), matchAll(indicator) -> vector<MatchResult> with matched IOC, match type, confidence. Use efficient data structures (hash maps for exact, simple trie node struct for prefix).",
+    "Create src/threat_intel/include/threat_intel/ThreatScoring.h and src/threat_intel/src/ThreatScoring.cpp - Define ThreatScore struct (overallScore 0-100, iocConfidence, sourceReliability, ageDecay, correlationBoost, breakdown map). ThreatScoringEngine class with: calculateScore(ioc) -> ThreatScore considering confidence, source reliability weights, age decay formula (newer = higher), correlation boost if IOC is part of campaign. configureWeights(map of factor->weight). Scoring formula: base = confidence * 100, apply source weight multiplier, apply age decay (exponential decay over 90 days), add correlation boost if correlated.",
+    "Update src/threat_intel/CMakeLists.txt to include all new .cpp files"
+  ],
+  "acceptance_criteria": [
+    "MitreAttackMatrix can look up techniques by ID (T1059, T1053, etc.) and map tactics to techniques",
+    "CVEDatabase supports CRUD and search by product/vendor/severity with CVSS scoring",
+    "ThreatCorrelationEngine identifies campaigns from related IOCs and scores correlation strength",
+    "IOCMatcher efficiently matches indicators using hash-based exact match and trie-based prefix matching",
+    "ThreatScoringEngine produces scores 0-100 factoring in confidence, source, age, and correlation",
+    "cmake --build build compiles without errors"
+  ],
+  "verification": [
+    "Run: cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "Confirm no compilation errors for the updated threat_intel module"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
