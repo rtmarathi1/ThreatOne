@@ -30,6 +30,7 @@ struct UserBaseline {
     double eventRateStdDev = 0.0;
     double meanHour = 12.0;
     double hourStdDev = 3.0;
+    double hourM2 = 0.0;                          // Welford's M2 for online variance
     uint64_t eventCount = 0;
 };
 

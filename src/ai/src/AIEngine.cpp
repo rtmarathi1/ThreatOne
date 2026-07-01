@@ -10,7 +10,6 @@ AIEngine::AIEngine()
 }
 
 ThreatClassification AIEngine::classifyThreat(const std::string& data) {
-    std::lock_guard<std::mutex> lock(mutex_);
     logger_.info("classifyThreat called with {} bytes", data.size());
 
     // Use FeatureExtractor to extract features from the data
@@ -40,8 +39,11 @@ ThreatClassification AIEngine::classifyThreat(const std::string& data) {
 }
 
 RiskPrediction AIEngine::predictRisk(const std::string& context) {
-    std::lock_guard<std::mutex> lock(mutex_);
     logger_.info("predictRisk called: {}", context);
+
+    // TODO: Accept structured input (e.g., RiskFactors directly) for more accurate
+    // risk assessment. Currently uses keyword substring matching in the context
+    // string as a demo/fallback path, which produces approximate scores.
 
     // Construct RiskFactors from context string
     // The context provides a high-level description; we assign reasonable defaults
@@ -84,7 +86,6 @@ RiskPrediction AIEngine::predictRisk(const std::string& context) {
 }
 
 PatternAnalysis AIEngine::analyzePattern(const std::string& data) {
-    std::lock_guard<std::mutex> lock(mutex_);
     logger_.info("analyzePattern called with {} bytes", data.size());
 
     // Use AnomalyDetector to analyze patterns in the data
@@ -124,7 +125,6 @@ PatternAnalysis AIEngine::analyzePattern(const std::string& data) {
 }
 
 IncidentSummary AIEngine::summarizeIncident(const std::string& incidentId) {
-    std::lock_guard<std::mutex> lock(mutex_);
     logger_.info("summarizeIncident called: {}", incidentId);
 
     // Use AutoInvestigation to investigate the incident
@@ -155,8 +155,11 @@ IncidentSummary AIEngine::summarizeIncident(const std::string& incidentId) {
 }
 
 std::vector<Recommendation> AIEngine::getRecommendations(const std::string& context) {
-    std::lock_guard<std::mutex> lock(mutex_);
     logger_.info("getRecommendations called: {}", context);
+
+    // TODO: Accept structured input (e.g., RiskPosture directly) for more accurate
+    // recommendations. Currently uses keyword substring matching as a demo/fallback
+    // path, which only detects a limited set of config gap signals.
 
     // Build a RiskPosture from the context
     RiskPosture posture;

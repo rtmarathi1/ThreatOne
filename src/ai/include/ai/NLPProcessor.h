@@ -47,13 +47,24 @@ public:
     // Tokenize text on whitespace and punctuation
     [[nodiscard]] std::vector<std::string> tokenize(const std::string& text) const;
 
+    // Maximum combined text size for summarizeLog to avoid unbounded memory usage
+    static constexpr size_t kMaxSummarizeInputBytes = 1024 * 1024; // 1MB
+
 private:
     Core::ModuleLogger logger_;
     std::set<std::string> stopWords_;
     std::vector<std::string> securityKeywords_;
 
+    // Pre-compiled regex patterns for log summarization
+    std::vector<std::pair<std::string, std::regex>> compiledDefaultPatterns_;
+    // Pre-compiled regex for IP matching in action item generation
+    std::regex ipRegex_;
+
     // Initialize stop words and security keyword dictionaries
     void initDictionaries();
+
+    // Initialize pre-compiled regex patterns
+    void initPatterns();
 
     // Check if a word is a stop word
     [[nodiscard]] bool isStopWord(const std::string& word) const;

@@ -45,6 +45,8 @@ void BehaviorAnalyticsEngine::buildBaseline(const std::string& userId,
     baseline.meanHour = hourSum / n;
     double hourVariance = (hourSqSum / n) - (baseline.meanHour * baseline.meanHour);
     baseline.hourStdDev = (hourVariance > 0.0) ? std::sqrt(hourVariance) : 1.0;
+    // Store M2 for Welford's online algorithm (population variance * n)
+    baseline.hourM2 = hourVariance * n;
 
     // Set normal hours based on mean +/- 1 stddev
     int startHour = std::max(0, static_cast<int>(baseline.meanHour - baseline.hourStdDev));
@@ -250,19 +252,18 @@ void BehaviorAnalyticsEngine::updateBaseline(const std::string& userId, const Us
     auto& baseline = it->second;
     baseline.eventCount++;
 
-    // Update mean hour using online mean algorithm
+    // Welford's online algorithm for running mean and variance
     double n = static_cast<double>(baseline.eventCount);
     int currentHour = extractHour(event.timestamp);
     double delta = static_cast<double>(currentHour) - baseline.meanHour;
     baseline.meanHour += delta / n;
+    double delta2 = static_cast<double>(currentHour) - baseline.meanHour;
+    baseline.hourM2 += delta * delta2;
 
-    // Update hour standard deviation (simplified)
-    double newDelta = static_cast<double>(currentHour) - baseline.meanHour;
     if (n > 1) {
-        // Running variance approximation
-        double varianceEstimate = baseline.hourStdDev * baseline.hourStdDev;
-        varianceEstimate = varianceEstimate * (n - 2.0) / (n - 1.0) + (delta * newDelta) / n;
-        baseline.hourStdDev = std::sqrt(std::max(0.0, varianceEstimate));
+        // Derive stddev from M2: variance = M2 / (n - 1) (sample variance)
+        double variance = baseline.hourM2 / (n - 1.0);
+        baseline.hourStdDev = std::sqrt(std::max(0.0, variance));
     }
 
     // Update normal hours

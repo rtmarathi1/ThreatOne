@@ -10,7 +10,29 @@ namespace ThreatOne::AI {
 NLPProcessor::NLPProcessor()
     : logger_(Core::Logger::instance().getModuleLogger("NLPProcessor")) {
     initDictionaries();
+    initPatterns();
     logger_.info("NLPProcessor initialized");
+}
+
+void NLPProcessor::initPatterns() {
+    // Pre-compile default patterns for log summarization
+    std::vector<std::pair<std::string, std::string>> defaultPatternDefs = {
+        {"ip_address", R"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"},
+        {"timestamp", R"(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2})"},
+        {"error_code", R"([A-Z]{2,5}-\d{3,6})"},
+        {"file_path", R"((?:/[\w.-]+)+(?:/[\w.-]*)*)"}
+    };
+
+    for (const auto& [name, pattern] : defaultPatternDefs) {
+        try {
+            compiledDefaultPatterns_.emplace_back(pattern, std::regex(pattern));
+        } catch (const std::regex_error& e) {
+            logger_.warn("Failed to compile default pattern '{}': {}", name, e.what());
+        }
+    }
+
+    // Pre-compile IP regex for action item generation
+    ipRegex_ = std::regex(R"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})");
 }
 
 void NLPProcessor::initDictionaries() {
@@ -130,24 +152,42 @@ LogSummary NLPProcessor::summarizeLog(const std::vector<std::string>& logEntries
         return result;
     }
 
-    // Concatenate all log entries for analysis
+    // Cap combined text size to avoid unbounded memory usage and regex stack overflow.
+    // Process entries individually up to the size limit.
     std::string combined;
+    size_t totalSize = 0;
+    size_t entriesProcessed = 0;
     for (const auto& entry : logEntries) {
+        if (totalSize + entry.size() + 1 > kMaxSummarizeInputBytes) {
+            break;
+        }
         combined += entry + " ";
+        totalSize += entry.size() + 1;
+        entriesProcessed++;
     }
 
     // Extract keywords from combined text
     auto keywords = extractKeywords(combined);
 
-    // Match common patterns (IPs, timestamps, error codes, file paths)
-    std::vector<std::string> defaultPatterns = {
-        R"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",              // IP addresses
-        R"(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2})",          // Timestamps
-        R"([A-Z]{2,5}-\d{3,6})",                                // Error codes
-        R"((?:/[\w.-]+)+(?:/[\w.-]*))"                          // File paths
-    };
-    auto patterns = matchPattern(combined, defaultPatterns);
-    result.keyPatterns = patterns;
+    // Use pre-compiled patterns for matching
+    std::vector<std::string> patternMatches;
+    for (const auto& [patternStr, compiledRegex] : compiledDefaultPatterns_) {
+        try {
+            auto begin = std::sregex_iterator(combined.begin(), combined.end(), compiledRegex);
+            auto end = std::sregex_iterator();
+
+            std::set<std::string> uniqueMatches;
+            for (auto it = begin; it != end; ++it) {
+                uniqueMatches.insert(it->str());
+            }
+            for (const auto& m : uniqueMatches) {
+                patternMatches.push_back(m);
+            }
+        } catch (const std::regex_error& e) {
+            logger_.warn("Regex match error: {}", e.what());
+        }
+    }
+    result.keyPatterns = patternMatches;
 
     // Determine severity
     auto tokens = tokenize(combined);
@@ -163,12 +203,19 @@ LogSummary NLPProcessor::summarizeLog(const std::vector<std::string>& logEntries
         count++;
     }
 
-    result.summary = "Analyzed " + std::to_string(logEntries.size()) +
-                     " log entries. Key topics: " + topKeywords +
+    std::string truncationNote;
+    if (entriesProcessed < logEntries.size()) {
+        truncationNote = " (truncated from " + std::to_string(logEntries.size()) +
+                         " entries due to size limit)";
+    }
+
+    result.summary = "Analyzed " + std::to_string(entriesProcessed) +
+                     " log entries" + truncationNote +
+                     ". Key topics: " + topKeywords +
                      ". Severity: " + result.severity + ".";
 
     // Generate action items
-    result.actionItems = generateActionItems(patterns, result.severity);
+    result.actionItems = generateActionItems(patternMatches, result.severity);
 
     return result;
 }
@@ -287,10 +334,9 @@ std::vector<std::string> NLPProcessor::generateActionItems(
 
     std::vector<std::string> items;
 
-    // Check for IP addresses in patterns
-    std::regex ipRegex(R"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})");
+    // Check for IP addresses in patterns using pre-compiled regex
     for (const auto& p : patterns) {
-        if (std::regex_match(p, ipRegex)) {
+        if (std::regex_match(p, ipRegex_)) {
             items.push_back("Investigate source IP: " + p);
             break;
         }

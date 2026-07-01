@@ -12,10 +12,12 @@
 #include "core/Logger.h"
 
 #include <memory>
-#include <mutex>
 
 namespace ThreatOne::AI {
 
+// AIEngine orchestrates all AI subsystems for threat detection and analysis.
+// Thread safety: each subsystem is either stateless or self-synchronized.
+// TODO: Add concurrency tests to validate thread safety under parallel access.
 class AIEngine : public IAIEngine {
 public:
     AIEngine();
@@ -29,9 +31,9 @@ public:
 
 private:
     ThreatOne::Core::ModuleLogger logger_;
-    mutable std::mutex mutex_;
 
-    // Orchestrated components
+    // Orchestrated components - each is either stateless or carries its own
+    // internal synchronization, so no global mutex is needed here.
     FeatureExtractor featureExtractor_;
     ThreatClassifier threatClassifier_;
     RiskScoringEngine riskScoringEngine_;
