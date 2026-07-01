@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "feat",
   "description": "Update EDREngine and MonitorEngine stubs to fully functional implementations that orchestrate all components from FEAT-001 and FEAT-002. Wire everything together with EventBus integration.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Rewrite src/edr/include/edr/IEDREngine.h - Expand the interface to include methods for all capabilities: startCollection(), stopCollection(), getProcesses(), getFileEvents(), getRegistryEvents(), detectPersistence(), detectLateralMovement(), detectRansomware(), getAlerts(), getIncidents(), evaluateRules(), getTimeline(incident_id). Keep backward-compatible struct definitions but enrich them with more fields where needed.",
     "Rewrite src/edr/include/edr/EDREngine.h - Full orchestrator class that owns: ProcessMonitor, FileMonitor, RegistryMonitor, MemoryMonitor, TelemetryCollector, BehaviorAnalyzer, DetectionRulesEngine, AlertManager, PersistenceDetection, RansomwareDetection, LateralMovementDetection, IncidentTimeline. Implements all IEDREngine methods by delegating to components.",
@@ -31,5 +31,5 @@
     "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All 156 test cases pass. MonitorEngine threshold tests needed to be separated into individual TEST_CASEs instead of SUBCASEs to avoid alert accumulation issues across doctest subcase re-entries. EDREngine correctly initializes all 12 components, starts/stops collection, and delegates to appropriate components. No circular dependency between edr and monitor modules."
 }
