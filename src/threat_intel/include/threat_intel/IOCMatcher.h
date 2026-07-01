@@ -65,6 +65,12 @@ public:
     [[nodiscard]] size_t ipEntryCount() const;
 
 private:
+    // Lock-free implementations called from within already-locked contexts
+    std::vector<MatchResult> matchExact_impl(const std::string& value) const;
+    std::vector<MatchResult> matchDomain_impl(const std::string& domain) const;
+    std::vector<MatchResult> matchIP_impl(const std::string& ip) const;
+    std::vector<MatchResult> matchURL_impl(const std::string& url) const;
+
     void insertIntoTrie(const std::string& prefix, uint64_t iocId);
     std::vector<uint64_t> searchTrie(const std::string& ip) const;
 

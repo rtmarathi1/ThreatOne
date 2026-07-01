@@ -90,13 +90,22 @@ Core::Result<size_t> ThreatIntelEngine::ingestFeed(uint64_t feedId, const std::s
             Core::Error("Engine not initialized", Core::ErrorCategory::Internal));
     }
 
+    // Record the current size before ingestion so we can identify newly added IOCs
+    size_t sizeBefore = iocManager_->size();
+
     auto result = feedManager_->processFeedData(feedId, data);
-    if (result.isOk()) {
-        // Reload IOCs into matcher after ingestion
-        iocMatcher_->clear();
-        iocMatcher_->loadIOCs(*iocManager_);
-        logger_.info("Ingested feed {}, reloaded matcher with {} IOCs",
-                     feedId, iocManager_->size());
+    if (result.isOk() && result.value() > 0) {
+        // Incrementally add only newly ingested IOCs to the matcher
+        auto allIOCs = iocManager_->getActiveIOCs();
+        size_t added = 0;
+        for (const auto& ioc : allIOCs) {
+            if (ioc.id > sizeBefore) {
+                iocMatcher_->addIOC(ioc);
+                ++added;
+            }
+        }
+        logger_.info("Ingested feed {}, incrementally added {} IOCs to matcher",
+                     feedId, added);
     }
     return result;
 }

@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <atomic>
 
 #include <core/Error.h>
 #include <core/Logger.h>
@@ -72,7 +73,7 @@ private:
     std::unique_ptr<IntelReportGenerator> reportGenerator_;
     std::unique_ptr<EnrichmentService> enrichmentService_;
 
-    bool initialized_ = false;
+    std::atomic<bool> initialized_ = false;
     Core::ModuleLogger logger_;
 };
 

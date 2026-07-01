@@ -30,9 +30,14 @@ void IOCMatcher::addIOC(const IOC& ioc) {
         case IOCType::FilePath:
             exactMap_[ioc.value].push_back(ioc.id);
             break;
-        case IOCType::Domain:
-            domainMap_[ioc.value].push_back(ioc.id);
+        case IOCType::Domain: {
+            // Store pre-lowercased domain to avoid per-query transform
+            std::string lowerDomain = ioc.value;
+            std::transform(lowerDomain.begin(), lowerDomain.end(), lowerDomain.begin(),
+                           [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+            domainMap_[lowerDomain].push_back(ioc.id);
             break;
+        }
         case IOCType::IP:
             insertIntoTrie(ioc.value, ioc.id);
             break;
@@ -53,6 +58,9 @@ void IOCMatcher::addIOC(const IOC& ioc) {
                     if (portPos != std::string::npos) {
                         domain = domain.substr(0, portPos);
                     }
+                    // Store pre-lowercased
+                    std::transform(domain.begin(), domain.end(), domain.begin(),
+                                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
                     domainMap_[domain].push_back(ioc.id);
                 }
             }
@@ -69,9 +77,65 @@ void IOCMatcher::clear() {
     iocStore_.clear();
 }
 
+// --- Public locking wrappers ---
+
 std::vector<MatchResult> IOCMatcher::matchExact(const std::string& value) const {
     std::shared_lock lock(mutex_);
+    return matchExact_impl(value);
+}
 
+std::vector<MatchResult> IOCMatcher::matchDomain(const std::string& domain) const {
+    std::shared_lock lock(mutex_);
+    return matchDomain_impl(domain);
+}
+
+std::vector<MatchResult> IOCMatcher::matchIP(const std::string& ip) const {
+    std::shared_lock lock(mutex_);
+    return matchIP_impl(ip);
+}
+
+std::vector<MatchResult> IOCMatcher::matchURL(const std::string& url) const {
+    std::shared_lock lock(mutex_);
+    return matchURL_impl(url);
+}
+
+std::vector<MatchResult> IOCMatcher::matchAll(const std::string& indicator) const {
+    std::shared_lock lock(mutex_);
+
+    std::vector<MatchResult> results;
+
+    // Try exact match first
+    auto exact = matchExact_impl(indicator);
+    results.insert(results.end(), exact.begin(), exact.end());
+
+    // Try domain match
+    auto domain = matchDomain_impl(indicator);
+    results.insert(results.end(), domain.begin(), domain.end());
+
+    // Try IP match
+    auto ip = matchIP_impl(indicator);
+    results.insert(results.end(), ip.begin(), ip.end());
+
+    // Try URL match
+    auto url = matchURL_impl(indicator);
+    results.insert(results.end(), url.begin(), url.end());
+
+    // Deduplicate by IOC ID
+    std::vector<MatchResult> deduplicated;
+    std::unordered_map<uint64_t, bool> seen;
+    for (auto& mr : results) {
+        if (!seen[mr.matchedIOC.id]) {
+            seen[mr.matchedIOC.id] = true;
+            deduplicated.push_back(std::move(mr));
+        }
+    }
+
+    return deduplicated;
+}
+
+// --- Private lock-free implementations ---
+
+std::vector<MatchResult> IOCMatcher::matchExact_impl(const std::string& value) const {
     std::vector<MatchResult> results;
     auto it = exactMap_.find(value);
     if (it != exactMap_.end()) {
@@ -89,30 +153,24 @@ std::vector<MatchResult> IOCMatcher::matchExact(const std::string& value) const 
     return results;
 }
 
-std::vector<MatchResult> IOCMatcher::matchDomain(const std::string& domain) const {
-    std::shared_lock lock(mutex_);
-
+std::vector<MatchResult> IOCMatcher::matchDomain_impl(const std::string& domain) const {
     std::vector<MatchResult> results;
 
-    // Convert to lowercase for matching
+    // Convert query to lowercase (domains in the map are already pre-lowercased)
     std::string lowerDomain = domain;
     std::transform(lowerDomain.begin(), lowerDomain.end(), lowerDomain.begin(),
                    [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
     for (const auto& [storedDomain, ids] : domainMap_) {
-        std::string lowerStored = storedDomain;
-        std::transform(lowerStored.begin(), lowerStored.end(), lowerStored.begin(),
-                       [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-
         bool match = false;
         double confidence = 1.0;
 
-        if (lowerDomain == lowerStored) {
+        if (lowerDomain == storedDomain) {
             match = true;
             confidence = 1.0;
-        } else if (lowerDomain.size() > lowerStored.size()) {
+        } else if (lowerDomain.size() > storedDomain.size()) {
             // Check if domain ends with ".storedDomain"
-            auto suffix = "." + lowerStored;
+            auto suffix = "." + storedDomain;
             if (lowerDomain.size() >= suffix.size() &&
                 lowerDomain.compare(lowerDomain.size() - suffix.size(),
                                     suffix.size(), suffix) == 0) {
@@ -137,9 +195,7 @@ std::vector<MatchResult> IOCMatcher::matchDomain(const std::string& domain) cons
     return results;
 }
 
-std::vector<MatchResult> IOCMatcher::matchIP(const std::string& ip) const {
-    std::shared_lock lock(mutex_);
-
+std::vector<MatchResult> IOCMatcher::matchIP_impl(const std::string& ip) const {
     std::vector<MatchResult> results;
     auto matchedIds = searchTrie(ip);
 
@@ -156,9 +212,7 @@ std::vector<MatchResult> IOCMatcher::matchIP(const std::string& ip) const {
     return results;
 }
 
-std::vector<MatchResult> IOCMatcher::matchURL(const std::string& url) const {
-    std::shared_lock lock(mutex_);
-
+std::vector<MatchResult> IOCMatcher::matchURL_impl(const std::string& url) const {
     std::vector<MatchResult> results;
 
     // Exact URL match
@@ -189,21 +243,17 @@ std::vector<MatchResult> IOCMatcher::matchURL(const std::string& url) const {
             domain = domain.substr(0, portPos);
         }
 
-        // Check domain map (release read lock first, then call matchDomain logic inline)
+        // Domains in the map are already pre-lowercased
         std::string lowerDomain = domain;
         std::transform(lowerDomain.begin(), lowerDomain.end(), lowerDomain.begin(),
                        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
         for (const auto& [storedDomain, ids] : domainMap_) {
-            std::string lowerStored = storedDomain;
-            std::transform(lowerStored.begin(), lowerStored.end(), lowerStored.begin(),
-                           [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-
-            if (lowerDomain == lowerStored ||
-                (lowerDomain.size() > lowerStored.size() &&
-                 lowerDomain.compare(lowerDomain.size() - lowerStored.size() - 1,
-                                     lowerStored.size() + 1,
-                                     "." + lowerStored) == 0)) {
+            if (lowerDomain == storedDomain ||
+                (lowerDomain.size() > storedDomain.size() &&
+                 lowerDomain.compare(lowerDomain.size() - storedDomain.size() - 1,
+                                     storedDomain.size() + 1,
+                                     "." + storedDomain) == 0)) {
                 for (uint64_t id : ids) {
                     auto iocIt = iocStore_.find(id);
                     if (iocIt != iocStore_.end()) {
@@ -231,37 +281,7 @@ std::vector<MatchResult> IOCMatcher::matchURL(const std::string& url) const {
     return results;
 }
 
-std::vector<MatchResult> IOCMatcher::matchAll(const std::string& indicator) const {
-    std::vector<MatchResult> results;
-
-    // Try exact match first
-    auto exact = matchExact(indicator);
-    results.insert(results.end(), exact.begin(), exact.end());
-
-    // Try domain match
-    auto domain = matchDomain(indicator);
-    results.insert(results.end(), domain.begin(), domain.end());
-
-    // Try IP match
-    auto ip = matchIP(indicator);
-    results.insert(results.end(), ip.begin(), ip.end());
-
-    // Try URL match
-    auto url = matchURL(indicator);
-    results.insert(results.end(), url.begin(), url.end());
-
-    // Deduplicate by IOC ID
-    std::vector<MatchResult> deduplicated;
-    std::unordered_map<uint64_t, bool> seen;
-    for (auto& mr : results) {
-        if (!seen[mr.matchedIOC.id]) {
-            seen[mr.matchedIOC.id] = true;
-            deduplicated.push_back(std::move(mr));
-        }
-    }
-
-    return deduplicated;
-}
+// --- Statistics ---
 
 size_t IOCMatcher::exactEntryCount() const {
     std::shared_lock lock(mutex_);
@@ -284,6 +304,8 @@ size_t IOCMatcher::ipEntryCount() const {
     }
     return count;
 }
+
+// --- Trie operations ---
 
 void IOCMatcher::insertIntoTrie(const std::string& prefix, uint64_t iocId) {
     TrieNode* node = ipTrie_.get();

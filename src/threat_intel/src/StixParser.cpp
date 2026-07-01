@@ -27,11 +27,14 @@ bool StixParser::extractFromPattern(const std::string& pattern,
     size_t typeStart = (pattern.front() == '[') ? 1 : 0;
     std::string typeStr = pattern.substr(typeStart, colonPos - typeStart);
 
-    // Find the value between single quotes
-    auto firstQuote = pattern.find('\'');
-    if (firstQuote == std::string::npos) return false;
-    auto lastQuote = pattern.rfind('\'');
-    if (lastQuote == firstQuote) return false;
+    // Find the value between single quotes after the '= ' operator
+    // Look for the "= '" marker to locate the value's opening quote,
+    // avoiding property path quotes like hashes.'SHA-256'
+    auto eqPos = pattern.find("= '");
+    if (eqPos == std::string::npos) return false;
+    auto firstQuote = eqPos + 2; // position of the opening quote after "= "
+    auto lastQuote = pattern.find('\'', firstQuote + 1);
+    if (lastQuote == std::string::npos) return false;
 
     outValue = pattern.substr(firstQuote + 1, lastQuote - firstQuote - 1);
 
