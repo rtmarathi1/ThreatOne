@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "../themes"
 
 // Metric card with title, large value, trend indicator, and sparkline
 Rectangle {

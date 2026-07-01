@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "../themes"
 
 // Severity-colored alert card with icon, title, description, timestamp, source badge
 Rectangle {

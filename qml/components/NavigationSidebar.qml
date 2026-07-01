@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../themes"
 
 // Enhanced navigation sidebar with icons, badges, collapsible sections,
 // active state highlighting with left accent bar, and collapse/expand toggle
@@ -55,6 +56,22 @@ Rectangle {
             }
         }
         return items
+    }
+
+    // Pre-computed section offsets for flat index lookup
+    property var sectionOffsets: {
+        var offsets = []
+        var offset = 0
+        for (var s = 0; s < sections.length; s++) {
+            offsets.push(offset)
+            offset += sections[s].items.length
+        }
+        return offsets
+    }
+
+    // Compute flat index from section index and item index
+    function computeFlatIndex(sectionIndex, itemIndex) {
+        return sectionOffsets[sectionIndex] + itemIndex
     }
 
     ColumnLayout {
@@ -125,6 +142,9 @@ Rectangle {
                         Layout.fillWidth: true
                         spacing: 0
 
+                        // Store section index as a named property for child access
+                        property int sectionIdx: index
+
                         // Section header
                         Rectangle {
                             Layout.fillWidth: true
@@ -159,6 +179,7 @@ Rectangle {
 
                         // Navigation items
                         Repeater {
+                            id: itemsRepeater
                             model: modelData.items
 
                             Rectangle {
@@ -167,20 +188,12 @@ Rectangle {
                                 Layout.leftMargin: sidebar.collapsed ? 4 : ThemeManager.spacingSmall
                                 Layout.rightMargin: sidebar.collapsed ? 4 : ThemeManager.spacingSmall
                                 radius: ThemeManager.radiusMedium
-                                color: {
-                                    // Calculate flat index
-                                    var flatIdx = 0
-                                    for (var s = 0; s < index; s++) flatIdx += sidebar.sections[s].items.length
-                                    flatIdx += modelIndex
-                                    return sidebar.currentIndex === flatIdx ? ThemeManager.sidebarActiveColor : "transparent"
-                                }
 
-                                property int modelIndex: index
-                                property int flatIdx: {
-                                    var idx = 0
-                                    for (var s = 0; s < parent.parent.index; s++) idx += sidebar.sections[s].items.length
-                                    return idx + modelIndex
-                                }
+                                property int itemIndex: index
+                                property int sectionIndex: sectionIdx
+                                property int flatIdx: sidebar.computeFlatIndex(sectionIndex, itemIndex)
+
+                                color: sidebar.currentIndex === flatIdx ? ThemeManager.sidebarActiveColor : "transparent"
 
                                 // Left accent bar for active item
                                 Rectangle {

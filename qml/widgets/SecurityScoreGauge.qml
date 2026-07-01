@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "../themes"
 
 // Circular arc gauge showing overall security score with animated rendering
 Rectangle {

@@ -1,0 +1,4 @@
+module ThreatOne.Themes
+singleton ThemeManager 1.0 ThemeManager.qml
+DarkTheme 1.0 DarkTheme.qml
+LightTheme 1.0 LightTheme.qml

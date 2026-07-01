@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "../themes"
 
 // Animated circular progress indicator with percentage center text
 Rectangle {

@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Layouts
+import "themes"
+import "components"
 
 // ThreatOne Enterprise - Main Application Window
 // Production-quality Qt6 ApplicationWindow with StackView routing,

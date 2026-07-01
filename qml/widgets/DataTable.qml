@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../themes"
 
 // Sortable, filterable data table with column headers, row selection, pagination
 Rectangle {

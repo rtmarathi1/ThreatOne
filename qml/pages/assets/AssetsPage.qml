@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../../themes"
+import "../../widgets"
 
 Rectangle {
     id: assetsPage

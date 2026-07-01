@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../themes"
 
 // Global search bar with filter dropdown, recent searches, keyboard shortcut hint
 Rectangle {

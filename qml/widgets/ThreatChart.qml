@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "../themes"
 
 // Line/Bar chart component with Canvas rendering, axis labels, gridlines
 Rectangle {

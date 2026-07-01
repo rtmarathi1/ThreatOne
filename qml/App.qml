@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import "themes"
 
 // Root application state management component.
 // Manages theme state, navigation with history, global alert/score bindings,
@@ -21,10 +22,12 @@ Item {
     property int maxHistoryLength: 50
 
     // --- Global Application State ---
+    // Note: These default values align with the page-level stub ViewModels.
+    // They will be replaced by real ViewModel bindings when Qt integration lands.
     property bool connected: true
-    property int alertCount: 5
-    property int criticalAlertCount: 2
-    property double securityScore: 85.0
+    property int alertCount: 4
+    property int criticalAlertCount: 4
+    property double securityScore: 87.0
     property string securityGrade: securityScore >= 90 ? "A+" :
                                     securityScore >= 80 ? "A" :
                                     securityScore >= 70 ? "B" :
@@ -33,15 +36,15 @@ Item {
     property bool scanRunning: false
     property real scanProgress: 0.0
     property int threatsDetected: 0
-    property int totalEndpoints: 142
-    property int onlineEndpoints: 138
+    property int totalEndpoints: 342
+    property int onlineEndpoints: 318
     property string lastScanTime: "14:32"
 
     // --- System Health ---
-    property real cpuUsage: 0.23
-    property real memoryUsage: 0.45
-    property real diskUsage: 0.62
-    property real networkThroughput: 0.0
+    property real cpuUsage: 0.42
+    property real memoryUsage: 0.67
+    property real diskUsage: 0.54
+    property real networkThroughput: 45.2
 
     // --- User Info ---
     property string userName: "Admin"

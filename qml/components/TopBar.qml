@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../themes"
 
 // Enhanced top toolbar with breadcrumb, search, notifications, user menu, theme toggle
 Rectangle {

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "../themes"
 
 // Vertical event timeline with timestamps, colored dots, connecting line
 Rectangle {

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "../themes"
 
 // Bottom status bar with connection status, last scan time, protection status,
 // CPU/memory indicators, update badge
