@@ -2,7 +2,7 @@
   "id": "FEAT-004",
   "type": "feat",
   "description": "Implement Sandbox Engine (File Detonation, Behavior Recording, Verdict Generation, Sandbox Profiles) and HIDS Engine (File Integrity Monitor, Log Monitor, Rootkit Detector). Replace stubs with full implementations.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Expand src/sandbox/include/sandbox/ISandboxEngine.h to add: SandboxProfile struct (id, name, type enum [Quick/Deep/Custom], timeoutSeconds, networkSimulation bool, recordRegistry bool, recordFilesystem bool, recordNetwork bool), DetonationConfig struct (samplePath, profileId, priority enum [Low/Normal/High]), DetonationStatus enum (Queued/Running/Completed/Failed/Timeout), DetonationJob struct (id, config DetonationConfig, status DetonationStatus, submittedAt, startedAt, completedAt, result optional<AnalysisResult>), NetworkActivity struct (protocol, destination, port, data, timestamp), SandboxVerdict enum (Clean/Suspicious/Malicious/Unknown). Add virtual methods: submitWithProfile(DetonationConfig), getDetonationStatus(jobId), cancelDetonation(jobId), createProfile(SandboxProfile), getProfiles(), getProfile(profileId), deleteProfile(profileId), getNetworkActivity(sampleId), getVerdict(sampleId).",
     "Expand src/sandbox/include/sandbox/SandboxEngine.h to declare all new methods with private members: jobs_ map, profiles_ map (pre-loaded with Quick/Deep/Custom defaults), samples_ map, mutex_, counters.",
@@ -33,5 +33,5 @@
     "cd build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Build and all 1018 tests pass. Sandbox Engine implements full detonation lifecycle with profile-based analysis, verdict generation (0 behaviors=Clean, 1-2=Suspicious, 3+=Malicious), IOC extraction, URL detonation, and network activity tracking. HIDS Engine implements monitoring lifecycle, hash-based file integrity with baselines, regex log pattern matching, rootkit scanning (4 indicator types), and path management. Both modules follow existing project patterns: mutex-based thread safety, ModuleLogger, ID generation with prefix+counter."
 }
