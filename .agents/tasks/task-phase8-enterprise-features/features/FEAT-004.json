@@ -2,7 +2,7 @@
   "id": "FEAT-004",
   "type": "feat",
   "description": "Create new src/api/ module for REST API Framework: API Router, API Controllers, API Authentication, Webhook Manager.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create src/api/ directory structure: include/api/ and src/",
     "Create src/api/include/api/Router.h - HTTP request routing with path parameters. Structs: HttpRequest (method, path, headers map, queryParams map, body, pathParams map, clientIP), HttpResponse (statusCode, headers map, body, contentType), Route (method, pathPattern, handler, middlewares). Enum: HttpMethod (GET, POST, PUT, DELETE, PATCH). Using Handler = std::function<HttpResponse(const HttpRequest&)>; Using Middleware = std::function<HttpResponse(const HttpRequest&, Handler)>. IRouter interface: addRoute, addMiddleware, handleRequest, getRegisteredRoutes.",
@@ -34,5 +34,5 @@
     "cd build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Vendored nlohmann_json has simplified API: parse() takes only 1 arg (no nullptr/false overload), no is_discarded() method. Use try/catch for parse validation instead. RateLimitInfo default initializer has maxRequests=100, so cannot use maxRequests==0 as uninitialized sentinel. Used windowStart == epoch time_point as initialization check."
 }
