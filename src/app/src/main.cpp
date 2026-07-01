@@ -15,6 +15,23 @@
 #include "core/Types.h"
 #include "app/AppController.h"
 
+#ifdef ENABLE_QT_BUILD
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QUrl>
+#include <QtQml>
+#include "app/viewmodels/DashboardViewModel.h"
+#include "app/viewmodels/ScannerViewModel.h"
+#include "app/viewmodels/FirewallViewModel.h"
+#include "app/viewmodels/EDRViewModel.h"
+#include "app/viewmodels/IncidentViewModel.h"
+#include "app/viewmodels/AssetViewModel.h"
+#include "app/viewmodels/ThreatIntelViewModel.h"
+#include "app/viewmodels/ReportViewModel.h"
+#include "app/viewmodels/SettingsViewModel.h"
+#include "app/viewmodels/UsersViewModel.h"
+#endif
+
 namespace {
 
 struct CommandLineArgs {
@@ -136,11 +153,45 @@ int main(int argc, char** argv) {
     logger.info("All subsystems initialized successfully");
 
 #ifdef ENABLE_QT_BUILD
-    // Qt-based event loop would be set up here:
-    // QGuiApplication qtApp(argc, argv);
-    // QQmlApplicationEngine engine;
-    // engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
-    // return qtApp.exec();
+    // Qt6 GUI application initialization
+    QGuiApplication qtApp(argc, argv);
+    qtApp.setOrganizationName("ThreatOne");
+    qtApp.setApplicationName("ThreatOne Enterprise");
+    qtApp.setApplicationVersion("1.0.0");
+
+    // Register ViewModel types for QML access
+    qmlRegisterType<ThreatOne::App::DashboardViewModel>(
+        "ThreatOne.ViewModels", 1, 0, "DashboardViewModel");
+    qmlRegisterType<ThreatOne::App::ScannerViewModel>(
+        "ThreatOne.ViewModels", 1, 0, "ScannerViewModel");
+    qmlRegisterType<ThreatOne::App::FirewallViewModel>(
+        "ThreatOne.ViewModels", 1, 0, "FirewallViewModel");
+    qmlRegisterType<ThreatOne::App::EDRViewModel>(
+        "ThreatOne.ViewModels", 1, 0, "EDRViewModel");
+    qmlRegisterType<ThreatOne::App::IncidentViewModel>(
+        "ThreatOne.ViewModels", 1, 0, "IncidentViewModel");
+    qmlRegisterType<ThreatOne::App::AssetViewModel>(
+        "ThreatOne.ViewModels", 1, 0, "AssetViewModel");
+    qmlRegisterType<ThreatOne::App::ThreatIntelViewModel>(
+        "ThreatOne.ViewModels", 1, 0, "ThreatIntelViewModel");
+    qmlRegisterType<ThreatOne::App::ReportViewModel>(
+        "ThreatOne.ViewModels", 1, 0, "ReportViewModel");
+    qmlRegisterType<ThreatOne::App::SettingsViewModel>(
+        "ThreatOne.ViewModels", 1, 0, "SettingsViewModel");
+    qmlRegisterType<ThreatOne::App::UsersViewModel>(
+        "ThreatOne.ViewModels", 1, 0, "UsersViewModel");
+
+    // Create and load QML engine
+    QQmlApplicationEngine engine;
+    const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+                     &qtApp, [url](QObject* obj, const QUrl& objUrl) {
+        if (!obj && url == objUrl)
+            QCoreApplication::exit(-1);
+    }, Qt::QueuedConnection);
+    engine.load(url);
+
+    return qtApp.exec();
 #else
     // Simple event loop for non-Qt builds.
     // The Application's signal handler (installed during app.initialize()) sets

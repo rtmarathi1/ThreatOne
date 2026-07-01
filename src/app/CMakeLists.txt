@@ -47,7 +47,28 @@ target_link_libraries(threatone_app
         threatone_updates
         threatone_plugin
         threatone_utils
+        threatone_platform
 )
+
+if(ENABLE_QT)
+    target_link_libraries(threatone_app
+        PRIVATE
+            Qt6::Core
+            Qt6::Quick
+            Qt6::Widgets
+    )
+
+    target_compile_definitions(threatone_app PRIVATE ENABLE_QT_BUILD)
+
+    # Collect QML files for the module
+    file(GLOB_RECURSE QML_FILES "${CMAKE_SOURCE_DIR}/qml/*.qml")
+
+    qt_add_qml_module(threatone_app
+        URI ThreatOne
+        VERSION 1.0
+        QML_FILES ${QML_FILES}
+    )
+endif()
 
 set_target_properties(threatone_app PROPERTIES
     OUTPUT_NAME "threatone"

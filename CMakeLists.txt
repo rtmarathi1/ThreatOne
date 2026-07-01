@@ -25,6 +25,8 @@ include(CompilerOptions)
 include(Version)
 include(Dependencies)
 
+include(Platform)
+
 if(ENABLE_QT)
     include(QtHelpers)
 endif()
@@ -73,6 +75,7 @@ add_subdirectory(src/updates)
 add_subdirectory(src/plugin)
 add_subdirectory(src/fleet)
 add_subdirectory(src/api)
+add_subdirectory(src/platform)
 add_subdirectory(src/app)
 
 # Testing
