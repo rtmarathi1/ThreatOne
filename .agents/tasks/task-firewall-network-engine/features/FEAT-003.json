@@ -1,0 +1,34 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Implement Network Security components in src/network/: IP Blocklist with trie-based efficient lookup, GeoIP blocking with stub database, DNS Filter with wildcard/category support, Bandwidth Monitor, IDS/IPS module with Snort-style rules, Network Isolation capability, Connection Logger with database integration, and Application Control. Update the NetworkManager stub to integrate these components.",
+  "status": "in_progress",
+  "steps": [
+    "Step 1 - Create src/network/include/network/IPBlocklist.h and src/network/src/IPBlocklist.cpp: IPBlocklist class with trie-based IP lookup (use a sorted vector with binary search for IPv4 addresses converted to uint32_t). Methods: addIP(string), removeIP(string), addRange(string cidr), isBlocked(string ip) -> bool, importList(vector<string>), getBlockedCount(), clear(). Support both individual IPs and CIDR ranges.",
+    "Step 2 - Create src/network/include/network/GeoIPDatabase.h and src/network/src/GeoIPDatabase.cpp: Stub GeoIP database with configurable IP-to-country mappings. GeoIPDatabase class with: addMapping(string cidrRange, string countryCode), lookupCountry(string ip) -> string countryCode, loadDefaultMappings() (pre-populate with some example ranges). GeoBlocker class: addBlockedCountry(string code), removeBlockedCountry, isBlocked(string ip) -> bool (uses GeoIPDatabase to resolve then checks country list).",
+    "Step 3 - Create src/network/include/network/DNSFilter.h and src/network/src/DNSFilter.cpp: DNSFilter class with allowlist/blocklist support, wildcard pattern matching (*.example.com matches sub.example.com), category-based blocking (e.g., 'malware', 'adult', 'gambling'). Methods: addToBlocklist(string domain), addToAllowlist(string domain), addCategoryBlock(string category), addDomainToCategory(string domain, string category), isAllowed(string domain) -> FilterResult (allowed/blocked + reason), matchesWildcard(string pattern, string domain).",
+    "Step 4 - Create src/network/include/network/BandwidthMonitor.h and src/network/src/BandwidthMonitor.cpp: Track bytes sent/received per connection and per application. BandwidthMonitor class: recordTraffic(string connectionId, string appPath, uint64_t bytesSent, uint64_t bytesReceived), getStats() -> map of connection stats, getAppStats(string appPath), getTotalStats() -> TrafficStats, setRateLimit(string appPath, uint64_t bytesPerSecond), checkRateLimit(string appPath, uint64_t bytes) -> bool (true if within limit). Use sliding window for rate limiting.",
+    "Step 5 - Create src/network/include/network/IntrusionDetector.h and src/network/src/IntrusionDetector.cpp: IDS/IPS module. IDSRule struct: id, name, protocol, sourceIP, destIP, sourcePort, destPort, contentPattern (string match in payload), action (alert/drop/log), threshold (events per window), window (seconds). IntrusionDetector class: addRule(IDSRule), evaluate(PacketInfo) -> vector<IDSAlert>, detectPortScan(sourceIP, ports) -> bool, detectSYNFlood(destIP, count, window) -> bool, detectBruteForce(destIP, destPort, failCount, window) -> bool. Track per-IP connection attempts with sliding windows.",
+    "Step 6 - Create src/network/include/network/NetworkIsolation.h and src/network/src/NetworkIsolation.cpp: NetworkIsolation class to isolate an endpoint. Methods: enableIsolation(vector<string> managementIPs) - blocks all traffic except to/from managementIPs, disableIsolation(), isIsolated() -> bool, isAllowed(string ip) -> bool (checks against management channel whitelist), getManagementIPs() -> vector<string>.",
+    "Step 7 - Create src/network/include/network/ConnectionLogger.h and src/network/src/ConnectionLogger.cpp: Log all connection events with timestamps. ConnectionEvent struct: timestamp, sourceIP, destIP, sourcePort, destPort, protocol, action (allowed/denied), ruleId, applicationPath, bytesTransferred. ConnectionLogger class: logEvent(ConnectionEvent), getEvents(TimeRange) -> vector<ConnectionEvent>, getEventsByIP(string ip) -> vector, getEventCount() -> size_t, setMaxCapacity(size_t). Store in-memory with ring buffer, plus provide a method to flush to database.",
+    "Step 8 - Create src/network/include/network/ApplicationControl.h and src/network/src/ApplicationControl.cpp: Control network access per application binary path. ApplicationControl class: allowApplication(string path), denyApplication(string path), removeApplication(string path), isAllowed(string appPath) -> bool, getPolicy(string appPath) -> optional<Policy>, getAllPolicies() -> vector<pair<string,Policy>>. Default policy (allow/deny) configurable.",
+    "Step 9 - Update src/network/include/network/INetworkManager.h: Add new method declarations relevant to the network security features (getBlocklist, getDNSFilter, getBandwidthStats, getIntrusionAlerts, etc.) or keep the existing interface and have NetworkManager expose the sub-components via getter methods.",
+    "Step 10 - Update src/network/include/network/NetworkManager.h and src/network/src/NetworkManager.cpp: Replace stub with functional implementation that owns IPBlocklist, GeoBlocker, DNSFilter, BandwidthMonitor, IntrusionDetector, NetworkIsolation, ConnectionLogger, ApplicationControl. Wire together: getConnections uses real data, getTraffic aggregates from BandwidthMonitor, dnsLookup checks DNSFilter first.",
+    "Step 11 - Update src/network/CMakeLists.txt: Add all new .cpp files to the library target. Link against threatone_core and nlohmann_json. Remove placeholder.cpp if it exists.",
+    "Step 12 - Verify the full project builds: cmake -B build -DENABLE_QT=OFF && cmake --build build"
+  ],
+  "acceptance_criteria": [
+    "src/network/ contains IPBlocklist, GeoIPDatabase, DNSFilter, BandwidthMonitor, IntrusionDetector, NetworkIsolation, ConnectionLogger, ApplicationControl headers and source files",
+    "IPBlocklist uses sorted vector with binary search for efficient O(log n) IP lookup",
+    "DNSFilter supports wildcard matching (*.example.com) and category-based blocking",
+    "IntrusionDetector can detect port scans, SYN floods, and brute force patterns",
+    "NetworkManager is no longer a stub - it integrates all sub-components",
+    "The project builds successfully"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

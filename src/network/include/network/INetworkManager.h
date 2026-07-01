@@ -7,6 +7,16 @@
 
 namespace ThreatOne::Network {
 
+// Forward declarations
+class IPBlocklist;
+class GeoBlocker;
+class DNSFilter;
+class BandwidthMonitor;
+class IntrusionDetector;
+class NetworkIsolation;
+class ConnectionLogger;
+class ApplicationControl;
+
 struct HttpResponse {
     int statusCode = 0;
     std::string body;
@@ -59,6 +69,16 @@ public:
     virtual TrafficStats getTraffic() = 0;
     virtual DNSResult dnsLookup(const std::string& hostname) = 0;
     virtual PingResult ping(const std::string& host) = 0;
+
+    // Sub-component access
+    virtual IPBlocklist& getBlocklist() = 0;
+    virtual GeoBlocker& getGeoBlocker() = 0;
+    virtual DNSFilter& getDNSFilter() = 0;
+    virtual BandwidthMonitor& getBandwidthMonitor() = 0;
+    virtual IntrusionDetector& getIntrusionDetector() = 0;
+    virtual NetworkIsolation& getNetworkIsolation() = 0;
+    virtual ConnectionLogger& getConnectionLogger() = 0;
+    virtual ApplicationControl& getApplicationControl() = 0;
 };
 
 } // namespace ThreatOne::Network
