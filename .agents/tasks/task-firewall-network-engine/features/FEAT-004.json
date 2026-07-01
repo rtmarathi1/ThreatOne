@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Add comprehensive unit tests for all firewall and network security components. Follow the existing doctest pattern from tests/edr/ and tests/scanner/. Add tests in tests/firewall/ and tests/network/ directories.",
+  "status": "in_progress",
+  "steps": [
+    "Step 1 - Create tests/firewall/test_rule_engine.cpp: Test RuleEngine with cases for: add/remove rules, priority ordering (higher priority rules match first), CIDR IP matching (192.168.1.0/24 matches 192.168.1.5), port range matching, protocol matching, application path matching, enable/disable rules, default action when no rule matches, evaluatePacket returns correct action.",
+    "Step 2 - Create tests/firewall/test_connection_tracker.cpp: Test ConnectionTracker with cases for: parsing /proc/net/tcp format strings (hex IP/port to readable format), connection state mapping (hex state codes to TCP states), handling malformed input, getConnections returns parsed results.",
+    "Step 3 - Create tests/firewall/test_packet_filter.cpp: Test PacketFilter with cases for: filtering packets against rules, allowing packets that match allow rules, denying packets that match deny rules, logging packets that match log rules, statistics tracking (allowed/denied counts).",
+    "Step 4 - Create tests/network/test_ip_blocklist.cpp: Test IPBlocklist with cases for: add/remove individual IPs, CIDR range blocking (10.0.0.0/8 blocks 10.1.2.3), isBlocked returns true for blocked IPs and false for non-blocked, bulk import, clear resets the list, edge cases (0.0.0.0, 255.255.255.255).",
+    "Step 5 - Create tests/network/test_dns_filter.cpp: Test DNSFilter with cases for: blocklist blocks exact domains, allowlist overrides blocklist, wildcard matching (*.evil.com matches sub.evil.com but not evil.com), category-based blocking, empty domain handling.",
+    "Step 6 - Create tests/network/test_intrusion_detector.cpp: Test IntrusionDetector with cases for: port scan detection (many ports from same source in short window), SYN flood detection (many connections to same dest), brute force detection (many failed attempts to same port), rule-based content matching, normal traffic does not trigger alerts.",
+    "Step 7 - Create tests/network/test_bandwidth_monitor.cpp: Test BandwidthMonitor: recording traffic updates stats, per-app stats accumulate correctly, rate limiting denies over-limit traffic, total stats aggregate all connections.",
+    "Step 8 - Create tests/network/test_network_isolation.cpp: Test NetworkIsolation: enable/disable isolation, management IPs are allowed when isolated, non-management IPs are blocked when isolated, all IPs allowed when not isolated.",
+    "Step 9 - Create tests/network/test_application_control.cpp: Test ApplicationControl: allow/deny specific apps, default policy applies to unknown apps, remove policy resets to default.",
+    "Step 10 - Create tests/network/test_geo_blocking.cpp: Test GeoBlocker: add country block, IP in blocked country is blocked, IP not in blocked country is allowed, remove country unblocks.",
+    "Step 11 - Update tests/CMakeLists.txt: Add all new test files to TEST_SOURCES. Add target_include_directories for src/firewall/include and src/network/include. Add target_link_libraries for threatone_firewall and threatone_network."
+  ],
+  "acceptance_criteria": [
+    "tests/firewall/ contains test_rule_engine.cpp, test_connection_tracker.cpp, test_packet_filter.cpp",
+    "tests/network/ contains test_ip_blocklist.cpp, test_dns_filter.cpp, test_intrusion_detector.cpp, test_bandwidth_monitor.cpp, test_network_isolation.cpp, test_application_control.cpp, test_geo_blocking.cpp",
+    "All tests pass with ctest --output-on-failure",
+    "Tests exercise real logic paths - not just calling methods with mocks",
+    "Each test file has multiple TEST_CASE blocks covering normal and edge cases"
+  ],
+  "verification": [
+    "cd /projects/sandbox/ThreatOne && cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd /projects/sandbox/ThreatOne/build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

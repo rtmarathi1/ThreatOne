@@ -28,6 +28,16 @@ set(TEST_SOURCES
     edr/test_incident_timeline.cpp
     edr/test_edr_engine.cpp
     edr/test_monitor_engine.cpp
+    firewall/test_rule_engine.cpp
+    firewall/test_connection_tracker.cpp
+    firewall/test_packet_filter.cpp
+    network/test_ip_blocklist.cpp
+    network/test_dns_filter.cpp
+    network/test_intrusion_detector.cpp
+    network/test_bandwidth_monitor.cpp
+    network/test_network_isolation.cpp
+    network/test_application_control.cpp
+    network/test_geo_blocking.cpp
 )
 
 # Create the test executable
@@ -41,6 +51,8 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/scanner/include
         ${CMAKE_SOURCE_DIR}/src/edr/include
         ${CMAKE_SOURCE_DIR}/src/monitor/include
+        ${CMAKE_SOURCE_DIR}/src/firewall/include
+        ${CMAKE_SOURCE_DIR}/src/network/include
 )
 
 target_link_libraries(threatone_tests
@@ -52,6 +64,8 @@ target_link_libraries(threatone_tests
         threatone_scanner
         threatone_edr
         threatone_monitor
+        threatone_firewall
+        threatone_network
         spdlog
         nlohmann_json
         sqlite3
