@@ -79,6 +79,11 @@ set(TEST_SOURCES
     reporting/test_export_engine.cpp
     reporting/test_report_scheduler.cpp
     reporting/test_report_storage.cpp
+    compliance/test_compliance_framework.cpp
+    compliance/test_compliance_scanner.cpp
+    compliance/test_compliance_scoring.cpp
+    compliance/test_evidence_collector.cpp
+    compliance/test_remediation_tracker.cpp
 )
 
 # Create the test executable
@@ -103,6 +108,7 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/fleet/include
         ${CMAKE_SOURCE_DIR}/src/api/include
         ${CMAKE_SOURCE_DIR}/src/reporting/include
+        ${CMAKE_SOURCE_DIR}/src/compliance/include
 )
 
 target_link_libraries(threatone_tests
@@ -125,6 +131,7 @@ target_link_libraries(threatone_tests
         threatone_fleet
         threatone_api
         threatone_reporting
+        threatone_compliance
         spdlog
         nlohmann_json
         sqlite3
