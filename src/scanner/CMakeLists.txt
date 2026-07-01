@@ -29,3 +29,16 @@ target_link_libraries(threatone_scanner
         sqlite3
         Threads::Threads
 )
+
+# Conditionally link OpenSSL for FileHasher
+if(ENABLE_OPENSSL AND OpenSSL_FOUND)
+    target_link_libraries(threatone_scanner PUBLIC OpenSSL::Crypto)
+    target_compile_definitions(threatone_scanner PUBLIC HAS_OPENSSL)
+endif()
+
+# Conditionally link YARA for YaraEngine
+if(ENABLE_YARA AND YARA_FOUND)
+    target_include_directories(threatone_scanner PUBLIC ${YARA_INCLUDE_DIRS})
+    target_link_libraries(threatone_scanner PUBLIC ${YARA_LIBRARIES})
+    target_compile_definitions(threatone_scanner PUBLIC HAS_YARA)
+endif()

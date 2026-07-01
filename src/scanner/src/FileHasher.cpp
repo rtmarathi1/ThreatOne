@@ -5,6 +5,51 @@
 
 namespace ThreatOne::Scanner {
 
+#ifdef HAS_OPENSSL
+
+// ============================================================================
+// OpenSSL EVP-based SHA256 implementation
+// ============================================================================
+
+SHA256::SHA256() : ctx_(EVP_MD_CTX_new()) {
+    EVP_DigestInit_ex(ctx_, EVP_sha256(), nullptr);
+}
+
+SHA256::~SHA256() {
+    EVP_MD_CTX_free(ctx_);
+}
+
+void SHA256::update(const uint8_t* data, size_t length) {
+    EVP_DigestUpdate(ctx_, data, length);
+}
+
+void SHA256::update(const std::string& data) {
+    update(reinterpret_cast<const uint8_t*>(data.data()), data.size());
+}
+
+std::array<uint8_t, 32> SHA256::finalize() {
+    std::array<uint8_t, 32> digest{};
+    unsigned int len = 0;
+    EVP_DigestFinal_ex(ctx_, digest.data(), &len);
+    return digest;
+}
+
+std::array<uint8_t, 32> SHA256::hash(const uint8_t* data, size_t length) {
+    SHA256 hasher;
+    hasher.update(data, length);
+    return hasher.finalize();
+}
+
+std::array<uint8_t, 32> SHA256::hash(const std::string& data) {
+    return hash(reinterpret_cast<const uint8_t*>(data.data()), data.size());
+}
+
+#else
+
+// ============================================================================
+// Custom FIPS 180-4 SHA256 implementation (fallback)
+// ============================================================================
+
 // SHA256 constants (first 32 bits of the fractional parts of the cube roots of the first 64 primes)
 static constexpr std::array<uint32_t, 64> K = {
     0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
@@ -191,6 +236,8 @@ std::array<uint8_t, 32> SHA256::hash(const std::string& data) {
     return hash(reinterpret_cast<const uint8_t*>(data.data()), data.size());
 }
 
+#endif // HAS_OPENSSL
+
 // BLAKE3 placeholder - uses a simple mixing function (not real BLAKE3)
 std::array<uint8_t, 32> FileHasher::blake3Placeholder(const uint8_t* data, size_t length) {
     // This is a placeholder that produces deterministic output
@@ -201,10 +248,14 @@ std::array<uint8_t, 32> FileHasher::blake3Placeholder(const uint8_t* data, size_
         0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
     };
 
+    auto rotr_local = [](uint32_t x, unsigned int n) -> uint32_t {
+        return (x >> n) | (x << (32u - n));
+    };
+
     for (size_t i = 0; i < length; ++i) {
         size_t idx = i % 8;
         state[idx] ^= static_cast<uint32_t>(data[i]) << ((i % 4) * 8);
-        state[idx] = rotr(state[idx], 7) ^ state[(idx + 1) % 8];
+        state[idx] = rotr_local(state[idx], 7) ^ state[(idx + 1) % 8];
     }
 
     // Mix length into state

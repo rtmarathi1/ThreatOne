@@ -1,9 +1,8 @@
 #pragma once
 
 // ThreatOne Scanner - YARA Rule Engine
-// Full integration interface for YARA rules.
-// Currently a STUB backend since libyara is not available.
-// The interface is designed to be swapped with a real YARA library implementation.
+// When HAS_YARA is defined: uses real libyara for rule compilation and scanning
+// Otherwise: stub backend that parses rule names but returns empty matches
 
 #include <string>
 #include <vector>
@@ -12,6 +11,10 @@
 
 #include <core/Error.h>
 #include <core/Logger.h>
+
+#ifdef HAS_YARA
+#include <yara.h>
+#endif
 
 namespace ThreatOne::Scanner {
 
@@ -30,11 +33,15 @@ enum class YaraEngineStatus {
     Error
 };
 
-// YARA Rule Engine interface (stubbed)
+// YARA Rule Engine
 class YaraEngine {
 public:
     YaraEngine();
-    ~YaraEngine() = default;
+    ~YaraEngine();
+
+    // Non-copyable
+    YaraEngine(const YaraEngine&) = delete;
+    YaraEngine& operator=(const YaraEngine&) = delete;
 
     // Initialize the engine
     Core::Result<void, Core::Error> initialize();
@@ -45,14 +52,14 @@ public:
     // Load rules from a string
     Core::Result<size_t, Core::Error> loadRulesFromString(const std::string& rulesText);
 
-    // Compile loaded rules (stub: validates rules are loaded)
+    // Compile loaded rules
     Core::Result<void, Core::Error> compileRules();
 
-    // Scan a file against loaded rules (stub: always returns empty matches)
+    // Scan a file against loaded rules
     Core::Result<std::vector<YaraMatch>, Core::Error> matchFile(
         const std::filesystem::path& filePath);
 
-    // Scan a buffer against loaded rules (stub: always returns empty matches)
+    // Scan a buffer against loaded rules
     Core::Result<std::vector<YaraMatch>, Core::Error> matchBuffer(
         const std::vector<uint8_t>& data);
 
@@ -77,6 +84,15 @@ private:
     std::vector<std::string> ruleNames_;
     std::vector<std::string> ruleSources_;
     bool compiled_;
+
+#ifdef HAS_YARA
+    YR_COMPILER* compiler_;
+    YR_RULES* rules_;
+
+    // Callback for YARA scan results
+    static int scanCallback(YR_SCAN_CONTEXT* context, int message,
+                           void* message_data, void* user_data);
+#endif
 };
 
 } // namespace ThreatOne::Scanner
