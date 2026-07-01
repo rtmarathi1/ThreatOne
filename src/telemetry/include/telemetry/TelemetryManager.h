@@ -1,7 +1,15 @@
 #pragma once
 
+// ThreatOne Telemetry - Telemetry Manager Implementation
+// Metrics collection, health monitoring, heartbeat, feature usage tracking
+
 #include "telemetry/ITelemetryManager.h"
 #include "core/Logger.h"
+
+#include <chrono>
+#include <mutex>
+#include <unordered_map>
+#include <map>
 
 namespace ThreatOne::Telemetry {
 
@@ -10,15 +18,70 @@ public:
     TelemetryManager();
     ~TelemetryManager() override = default;
 
+    // Event tracking
     bool trackEvent(const TelemetryEvent& event) override;
     bool trackError(const std::string& error, const std::string& context) override;
-    UsageStats getUsageStats() override;
+    [[nodiscard]] std::vector<TelemetryEvent> getEvents() const override;
+    [[nodiscard]] UsageStats getUsageStats() override;
+
+    // Enable/disable
     void setEnabled(bool enabled) override;
-    bool isEnabled() override;
+    [[nodiscard]] bool isEnabled() const override;
+
+    // Metrics
+    bool recordMetric(const Metric& metric) override;
+    [[nodiscard]] std::vector<Metric> getMetrics(
+        const std::optional<std::string>& name = std::nullopt,
+        const std::optional<MetricType>& type = std::nullopt) const override;
+    [[nodiscard]] std::optional<double> getMetricValue(const std::string& name) const override;
+    void resetMetrics() override;
+
+    // Health checks
+    std::string registerHealthCheck(const std::string& name, const std::string& component) override;
+    SystemHealth runHealthChecks() override;
+    [[nodiscard]] SystemHealth getSystemHealth() const override;
+
+    // Heartbeat
+    bool sendHeartbeat() override;
+    [[nodiscard]] std::optional<Heartbeat> getLastHeartbeat() const override;
+
+    // Feature usage tracking
+    bool trackFeatureUsage(const std::string& featureName, double durationMs) override;
+    [[nodiscard]] std::vector<FeatureUsage> getFeatureUsageStats() const override;
+
+    // Uptime
+    [[nodiscard]] double getUptimeSeconds() const override;
 
 private:
+    std::string generateCheckId();
+    std::string getCurrentTimestamp() const;
+    HealthStatus computeOverallStatus(const std::vector<HealthCheck>& checks) const;
+
+    mutable std::mutex mutex_;
     ThreatOne::Core::ModuleLogger logger_;
     bool enabled_ = true;
+
+    // Event storage
+    std::vector<TelemetryEvent> events_;
+
+    // Metrics storage
+    std::vector<Metric> metrics_;
+
+    // Health checks
+    std::map<std::string, HealthCheck> healthChecks_;
+    SystemHealth lastSystemHealth_;
+
+    // Heartbeat
+    std::optional<Heartbeat> lastHeartbeat_;
+
+    // Feature usage
+    std::unordered_map<std::string, FeatureUsage> featureUsage_;
+
+    // Timing
+    std::chrono::steady_clock::time_point startTime_;
+
+    // ID generation
+    int nextCheckId_ = 1;
 };
 
 } // namespace ThreatOne::Telemetry

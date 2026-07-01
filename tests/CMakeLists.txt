@@ -97,6 +97,7 @@ set(TEST_SOURCES
     updates/test_update_manager.cpp
     sandbox/test_sandbox_engine.cpp
     hids/test_hids_engine.cpp
+    telemetry/test_telemetry_manager.cpp
 )
 
 # Create the test executable
@@ -131,6 +132,7 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/updates/include
         ${CMAKE_SOURCE_DIR}/src/sandbox/include
         ${CMAKE_SOURCE_DIR}/src/hids/include
+        ${CMAKE_SOURCE_DIR}/src/telemetry/include
 )
 
 target_link_libraries(threatone_tests
@@ -163,6 +165,7 @@ target_link_libraries(threatone_tests
         threatone_updates
         threatone_sandbox
         threatone_hids
+        threatone_telemetry
         spdlog
         nlohmann_json
         sqlite3

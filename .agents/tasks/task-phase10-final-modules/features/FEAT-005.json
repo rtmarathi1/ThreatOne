@@ -1,0 +1,34 @@
+{
+  "id": "FEAT-005",
+  "type": "feat",
+  "description": "Implement Telemetry Manager (Metrics Collector, Health Monitor) with full functionality. Replace stub with production implementation. Final verification that ALL stubs are replaced and the complete build passes.",
+  "status": "in_progress",
+  "steps": [
+    "Expand src/telemetry/include/telemetry/ITelemetryManager.h to add: MetricType enum (Counter/Gauge/Histogram/Timer), Metric struct (name, type MetricType, value double, labels map<string,string>, timestamp), HealthCheck struct (id, name, component, status enum [Healthy/Degraded/Unhealthy/Unknown], message, lastChecked, responseTimeMs), SystemHealth struct (overallStatus, checks vector<HealthCheck>, uptimeSeconds, cpuUsage, memoryUsage, diskUsage), Heartbeat struct (timestamp, healthy bool, version, hostname), FeatureUsage struct (featureName, useCount, lastUsed, averageDuration). Add virtual methods: recordMetric(Metric), getMetrics(name optional, type optional) returning vector<Metric>, getMetricValue(name), registerHealthCheck(name, component, checkFunction), runHealthChecks() returning SystemHealth, getSystemHealth(), sendHeartbeat(), getLastHeartbeat(), trackFeatureUsage(featureName, durationMs), getFeatureUsageStats(), resetMetrics(), getUptimeSeconds().",
+    "Expand src/telemetry/include/telemetry/TelemetryManager.h to declare all new methods with private members: metrics_ multimap, healthChecks_ map, featureUsage_ map, heartbeats_ vector, startTime_, enabled_, mutex_, counters.",
+    "Implement src/telemetry/src/TelemetryManager.cpp: trackEvent stores event in list. trackError stores as error event. recordMetric stores metric with timestamp. getMetrics filters by name/type. registerHealthCheck stores check config. runHealthChecks executes all registered checks and aggregates into SystemHealth (overall is worst of all checks). sendHeartbeat creates heartbeat with current status. trackFeatureUsage increments counter and updates average duration. getUptimeSeconds calculates from startTime_. getUsageStats computes from stored events. resetMetrics clears all stored metrics. All thread-safe.",
+    "Update src/telemetry/CMakeLists.txt if needed.",
+    "Create tests/telemetry/test_telemetry_manager.cpp: test event tracking (track and retrieve), error tracking, metric recording (counter/gauge/histogram), metric retrieval with filtering, health check registration and execution, system health aggregation (worst-case overall), heartbeat send/retrieve, feature usage tracking (count and duration), enable/disable toggle, uptime calculation, metric reset.",
+    "Update tests/CMakeLists.txt to add telemetry test files, include directories, link threatone_telemetry library.",
+    "Final verification: build entire project and run all tests to confirm zero stub modules remain and all 9 modules have full implementations with passing tests."
+  ],
+  "acceptance_criteria": [
+    "TelemetryManager tracks events and errors with retrieval",
+    "TelemetryManager records and retrieves metrics by name and type",
+    "TelemetryManager health checks register, execute, and aggregate correctly",
+    "TelemetryManager overall health reflects worst component status",
+    "TelemetryManager heartbeat records current system state",
+    "TelemetryManager feature usage tracks counts and average durations",
+    "TelemetryManager enable/disable controls data collection",
+    "All 9 modules (xdr, siem, soc, cloud, plugin, updates, sandbox, hids, telemetry) have full implementations",
+    "All existing 824+ tests continue to pass",
+    "All new tests pass",
+    "cmake --build build succeeds with no errors or warnings about stubs"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
