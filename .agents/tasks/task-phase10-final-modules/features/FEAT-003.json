@@ -1,0 +1,37 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Implement Plugin Manager (Plugin Manager lifecycle, Plugin SDK interface, Plugin Marketplace, Plugin Permissions) and Update System (Update Manager, Version Manager, Signature Updater). Replace stubs with full implementations.",
+  "status": "in_progress",
+  "steps": [
+    "Expand src/plugin/include/plugin/IPluginManager.h to add: PluginState enum (Unloaded/Loaded/Enabled/Disabled/Error), PluginPermission enum (NetworkAccess/FileRead/FileWrite/APIAccess/SystemInfo/ProcessControl), PluginHook struct (name, eventType, priority int), PluginSDKContext struct (pluginId, permissions set<PluginPermission>, apiVersion, dataDirectory), PluginDependency struct (pluginId, minVersion, required bool), PluginManifest struct (id, name, version, author, description, dependencies vector<PluginDependency>, requiredPermissions vector<PluginPermission>, hooks vector<PluginHook>, entryPoint). Add virtual methods: reloadPlugin(pluginId), getPluginState(pluginId), setPluginPermissions(pluginId, vector<PluginPermission>), getPluginPermissions(pluginId), checkPermission(pluginId, PluginPermission), resolveDependencies(pluginId), getPluginHooks(eventType), searchMarketplace(query), getMarketplaceEntry(pluginId), checkCompatibility(pluginId, version).",
+    "Expand src/plugin/include/plugin/PluginManager.h to declare all new methods with private members: plugins_ map, permissions_ map, manifests_ map, marketplace_ vector, hooks_ multimap, mutex_, counters.",
+    "Implement src/plugin/src/PluginManager.cpp: loadPlugin creates PluginInfo with Loaded state, stores manifest. unloadPlugin checks no dependents rely on it. reloadPlugin unloads then loads. enablePlugin/disablePlugin toggle state. setPluginPermissions/checkPermission manage fine-grained access. resolveDependencies performs topological sort of dependency graph. getPluginHooks returns hooks filtered by event type. Marketplace methods search/filter/check compatibility. installFromMarketplace validates compatibility then loads.",
+    "Expand src/updates/include/updates/IUpdateManager.h to add: UpdateChannel enum (Stable/Beta/Nightly), UpdateStatus enum (Available/Downloading/Downloaded/Installing/Installed/Failed/RolledBack), StagedRollout struct (id, version, percentage, startedAt, status), SignatureUpdate struct (id, type string [YARA/IOC/Signature], version, size, hash, timestamp), VersionCompatibility struct (minVersion, maxVersion, compatible bool, notes), UpdateProgress struct (version, status, bytesDownloaded, totalBytes, percentage). Add virtual methods: setUpdateChannel(UpdateChannel), getUpdateChannel(), getUpdateProgress(version), stageRollout(version, percentage), getSignatureUpdates(), downloadSignatureUpdate(id), installSignatureUpdate(id), checkVersionCompatibility(version), getUpdateHistory(), cancelUpdate(version).",
+    "Expand src/updates/include/updates/UpdateManager.h to declare all new methods with private members: channel_, updates_ map, progress_ map, rollouts_ map, signatureUpdates_ map, history_ vector, mutex_, counters.",
+    "Implement src/updates/src/UpdateManager.cpp: checkForUpdates returns updates based on channel (nightly has more, stable fewer). downloadUpdate tracks progress. installUpdate validates compatibility then applies. stageRollout manages percentage-based deployment. rollback reverts to previous version. Signature updates managed independently (downloadSignatureUpdate, installSignatureUpdate). getUpdateHistory tracks all operations. cancelUpdate stops in-progress downloads. All thread-safe.",
+    "Update src/plugin/CMakeLists.txt and src/updates/CMakeLists.txt if needed.",
+    "Create tests/plugin/test_plugin_manager.cpp: test load/unload/reload lifecycle, enable/disable state transitions, permission management (grant/check/revoke), dependency resolution (simple chain, circular detection), marketplace search and compatibility check, install from marketplace.",
+    "Create tests/updates/test_update_manager.cpp: test check for updates per channel, download/install lifecycle, staged rollout management, signature update independent workflow, version compatibility checking, rollback functionality, update history tracking, cancel update.",
+    "Update tests/CMakeLists.txt to add plugin and updates test files, include directories, link libraries."
+  ],
+  "acceptance_criteria": [
+    "PluginManager load/unload/reload lifecycle works with proper state transitions",
+    "PluginManager permission model grants and checks permissions correctly",
+    "PluginManager dependency resolution detects missing dependencies",
+    "PluginManager marketplace search and compatibility checking works",
+    "UpdateManager returns updates filtered by channel",
+    "UpdateManager download/install tracks progress and status",
+    "UpdateManager staged rollout manages deployment percentage",
+    "UpdateManager signature updates work independently of app updates",
+    "UpdateManager rollback reverts to previous version",
+    "All existing tests continue to pass",
+    "cmake --build build succeeds"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build",
+    "cd build && ctest --output-on-failure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

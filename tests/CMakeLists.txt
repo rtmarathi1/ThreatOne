@@ -93,6 +93,8 @@ set(TEST_SOURCES
     siem/test_siem_engine.cpp
     soc/test_soc_manager.cpp
     cloud/test_cloud_manager.cpp
+    plugin/test_plugin_manager.cpp
+    updates/test_update_manager.cpp
 )
 
 # Create the test executable
@@ -123,6 +125,8 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/siem/include
         ${CMAKE_SOURCE_DIR}/src/soc/include
         ${CMAKE_SOURCE_DIR}/src/cloud/include
+        ${CMAKE_SOURCE_DIR}/src/plugin/include
+        ${CMAKE_SOURCE_DIR}/src/updates/include
 )
 
 target_link_libraries(threatone_tests
@@ -151,6 +155,8 @@ target_link_libraries(threatone_tests
         threatone_siem
         threatone_soc
         threatone_cloud
+        threatone_plugin
+        threatone_updates
         spdlog
         nlohmann_json
         sqlite3
