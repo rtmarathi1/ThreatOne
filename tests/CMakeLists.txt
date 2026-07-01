@@ -70,6 +70,10 @@ set(TEST_SOURCES
     fleet/test_policy_engine.cpp
     fleet/test_remote_manager.cpp
     fleet/test_deployment_manager.cpp
+    api/test_router.cpp
+    api/test_controllers.cpp
+    api/test_api_auth.cpp
+    api/test_webhook_manager.cpp
 )
 
 # Create the test executable
@@ -92,6 +96,7 @@ target_include_directories(threatone_tests
         ${CMAKE_SOURCE_DIR}/src/identity/include
         ${CMAKE_SOURCE_DIR}/src/licensing/include
         ${CMAKE_SOURCE_DIR}/src/fleet/include
+        ${CMAKE_SOURCE_DIR}/src/api/include
 )
 
 target_link_libraries(threatone_tests
@@ -112,6 +117,7 @@ target_link_libraries(threatone_tests
         threatone_identity
         threatone_licensing
         threatone_fleet
+        threatone_api
         spdlog
         nlohmann_json
         sqlite3

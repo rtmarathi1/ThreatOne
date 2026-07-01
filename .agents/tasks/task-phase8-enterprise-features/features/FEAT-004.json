@@ -2,7 +2,7 @@
   "id": "FEAT-004",
   "type": "feat",
   "description": "Create new src/api/ module for REST API Framework: API Router, API Controllers, API Authentication, Webhook Manager.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create src/api/ directory structure: include/api/ and src/",
     "Create src/api/include/api/Router.h - HTTP request routing with path parameters. Structs: HttpRequest (method, path, headers map, queryParams map, body, pathParams map, clientIP), HttpResponse (statusCode, headers map, body, contentType), Route (method, pathPattern, handler, middlewares). Enum: HttpMethod (GET, POST, PUT, DELETE, PATCH). Using Handler = std::function<HttpResponse(const HttpRequest&)>; Using Middleware = std::function<HttpResponse(const HttpRequest&, Handler)>. IRouter interface: addRoute, addMiddleware, handleRequest, getRegisteredRoutes.",
