@@ -2,7 +2,7 @@
   "id": "FEAT-005",
   "type": "feat",
   "description": "Implement Telemetry Manager (Metrics Collector, Health Monitor) with full functionality. Replace stub with production implementation. Final verification that ALL stubs are replaced and the complete build passes.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Expand src/telemetry/include/telemetry/ITelemetryManager.h to add: MetricType enum (Counter/Gauge/Histogram/Timer), Metric struct (name, type MetricType, value double, labels map<string,string>, timestamp), HealthCheck struct (id, name, component, status enum [Healthy/Degraded/Unhealthy/Unknown], message, lastChecked, responseTimeMs), SystemHealth struct (overallStatus, checks vector<HealthCheck>, uptimeSeconds, cpuUsage, memoryUsage, diskUsage), Heartbeat struct (timestamp, healthy bool, version, hostname), FeatureUsage struct (featureName, useCount, lastUsed, averageDuration). Add virtual methods: recordMetric(Metric), getMetrics(name optional, type optional) returning vector<Metric>, getMetricValue(name), registerHealthCheck(name, component, checkFunction), runHealthChecks() returning SystemHealth, getSystemHealth(), sendHeartbeat(), getLastHeartbeat(), trackFeatureUsage(featureName, durationMs), getFeatureUsageStats(), resetMetrics(), getUptimeSeconds().",
     "Expand src/telemetry/include/telemetry/TelemetryManager.h to declare all new methods with private members: metrics_ multimap, healthChecks_ map, featureUsage_ map, heartbeats_ vector, startTime_, enabled_, mutex_, counters.",
@@ -30,5 +30,5 @@
     "cd build && ctest --output-on-failure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All telemetry module functionality implemented: event tracking, error tracking, metric recording (Counter/Gauge/Histogram/Timer), metric filtering by name and type, health check registration and execution with worst-case aggregation, heartbeat with health status, feature usage tracking with running average duration, uptime calculation, enable/disable toggle, and metric reset. All tests pass. Build clean with no errors or warnings."
 }
