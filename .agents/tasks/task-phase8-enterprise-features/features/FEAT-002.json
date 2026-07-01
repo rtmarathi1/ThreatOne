@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Implement Licensing module: License Manager with full validation/enforcement, Feature Gates system. Expand the existing stub in src/licensing/.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create src/licensing/include/licensing/LicenseValidator.h - License key validation with format checking (structured key format: TIER-XXXXX-XXXXX-XXXXX-CHECK), checksum verification, expiration date parsing, seat counting, grace period logic. Structs: LicenseKey (tier, segments, checksum), ValidationResult (valid, reason, expiresAt, seatsAllowed, gracePeriodDays).",
     "Create src/licensing/src/LicenseValidator.cpp - Implementation: parseKey, validateChecksum (simple hash-based), checkExpiration, enforceSeatLimit, calculateGracePeriod. License tiers enum: Free, Professional, Enterprise.",

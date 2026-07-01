@@ -1,5 +1,7 @@
 add_library(threatone_licensing STATIC
     src/LicenseManager.cpp
+    src/LicenseValidator.cpp
+    src/FeatureGate.cpp
 )
 
 target_include_directories(threatone_licensing
