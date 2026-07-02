@@ -101,6 +101,14 @@ set(TEST_SOURCES
     siem/test_correlation_engine.cpp
     siem/test_alert_engine.cpp
     soc/test_soc_manager.cpp
+    soc/test_case_manager.cpp
+    soc/test_incident_manager.cpp
+    soc/test_playbook_engine.cpp
+    soc/test_workflow_automation.cpp
+    soc/test_evidence_collector.cpp
+    soc/test_timeline_builder.cpp
+    soc/test_soc_dashboard.cpp
+    soc/test_alert_triage.cpp
     cloud/test_cloud_manager.cpp
     plugin/test_plugin_manager.cpp
     updates/test_update_manager.cpp

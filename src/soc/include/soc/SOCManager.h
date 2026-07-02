@@ -1,10 +1,18 @@
 #pragma once
 
 #include "soc/ISOCManager.h"
+#include "soc/CaseManager.h"
+#include "soc/IncidentManager.h"
+#include "soc/PlaybookEngine.h"
+#include "soc/WorkflowAutomation.h"
+#include "soc/EvidenceCollector.h"
+#include "soc/TimelineBuilder.h"
+#include "soc/SOCDashboardData.h"
+#include "soc/AlertTriage.h"
 #include "core/Logger.h"
 
 #include <mutex>
-#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -44,20 +52,33 @@ public:
     bool syncTicket(const std::string& ticketId) override;
     [[nodiscard]] std::vector<TicketInfo> getTickets(const std::string& caseId) override;
 
+    // Access to sub-components for advanced usage
+    [[nodiscard]] CaseManager& getCaseManager() { return *caseManager_; }
+    [[nodiscard]] IncidentManager& getIncidentManager() { return *incidentManager_; }
+    [[nodiscard]] PlaybookEngine& getPlaybookEngine() { return *playbookEngine_; }
+    [[nodiscard]] WorkflowAutomation& getWorkflowAutomation() { return *workflowAutomation_; }
+    [[nodiscard]] EvidenceCollector& getEvidenceCollector() { return *evidenceCollector_; }
+    [[nodiscard]] TimelineBuilder& getTimelineBuilder() { return *timelineBuilder_; }
+    [[nodiscard]] SOCDashboardData& getSOCDashboardData() { return *dashboardData_; }
+    [[nodiscard]] AlertTriage& getAlertTriage() { return *alertTriage_; }
+
 private:
+    // Sub-components
+    std::shared_ptr<CaseManager> caseManager_;
+    std::shared_ptr<IncidentManager> incidentManager_;
+    std::shared_ptr<PlaybookEngine> playbookEngine_;
+    std::shared_ptr<WorkflowAutomation> workflowAutomation_;
+    std::shared_ptr<EvidenceCollector> evidenceCollector_;
+    std::shared_ptr<TimelineBuilder> timelineBuilder_;
+    std::shared_ptr<SOCDashboardData> dashboardData_;
+    std::shared_ptr<AlertTriage> alertTriage_;
+
+    // Shift and ticket data (kept locally as they don't need own components yet)
     mutable std::mutex mutex_;
-    std::map<std::string, CaseInfo> cases_;
-    std::map<std::string, std::vector<EvidenceItem>> evidence_;
-    std::map<std::string, Playbook> playbooks_;
-    std::map<std::string, PlaybookExecution> executions_;
     std::map<std::string, ShiftInfo> shifts_;
     std::map<std::string, std::vector<HandoffNote>> handoffNotes_;
     std::map<std::string, TicketInfo> tickets_;
 
-    int nextCaseId_ = 1;
-    int nextEvidenceId_ = 1;
-    int nextPlaybookId_ = 1;
-    int nextExecutionId_ = 1;
     int nextShiftId_ = 1;
     int nextHandoffId_ = 1;
     int nextTicketId_ = 1;
