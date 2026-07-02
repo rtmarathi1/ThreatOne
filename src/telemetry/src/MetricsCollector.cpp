@@ -1,4 +1,6 @@
 #include "telemetry/MetricsCollector.h"
+#include <optional>
+#include <mutex>
 
 #include <algorithm>
 #include <chrono>

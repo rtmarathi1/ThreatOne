@@ -1,4 +1,5 @@
 #include "plugin/PluginSDK.h"
+#include <mutex>
 
 #include <algorithm>
 

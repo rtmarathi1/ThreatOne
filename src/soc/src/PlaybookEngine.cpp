@@ -1,4 +1,5 @@
 #include "soc/PlaybookEngine.h"
+#include <mutex>
 
 namespace ThreatOne::SOC {
 

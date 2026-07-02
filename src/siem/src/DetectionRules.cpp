@@ -1,4 +1,5 @@
 #include "siem/DetectionRules.h"
+#include <mutex>
 
 #include <algorithm>
 

@@ -1,4 +1,6 @@
 #include "siem/SIEMEngine.h"
+#include <memory>
+#include <chrono>
 #include "core/ServiceLocator.h"
 
 #include <algorithm>

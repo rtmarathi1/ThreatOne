@@ -1,4 +1,5 @@
 #include "siem/LogCollector.h"
+#include <mutex>
 
 #include <algorithm>
 

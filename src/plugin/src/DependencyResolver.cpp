@@ -1,4 +1,6 @@
 #include "plugin/DependencyResolver.h"
+#include <unordered_map>
+#include <mutex>
 
 #include <algorithm>
 

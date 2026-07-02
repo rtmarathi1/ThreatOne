@@ -1,4 +1,5 @@
 #include "cloud/CloudPolicyManager.h"
+#include <mutex>
 
 #include <algorithm>
 

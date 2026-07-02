@@ -1,4 +1,5 @@
 #include "monitor/PerformanceMonitor.h"
+#include <mutex>
 
 #include <algorithm>
 #include <chrono>

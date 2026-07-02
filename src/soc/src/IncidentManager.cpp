@@ -1,4 +1,5 @@
 #include "soc/IncidentManager.h"
+#include <mutex>
 
 #include <algorithm>
 

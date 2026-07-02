@@ -1,4 +1,5 @@
 #include "cloud/DeviceManager.h"
+#include <mutex>
 
 #include <algorithm>
 

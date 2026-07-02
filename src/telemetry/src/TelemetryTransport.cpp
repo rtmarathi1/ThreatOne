@@ -1,4 +1,6 @@
 #include "telemetry/TelemetryTransport.h"
+#include <optional>
+#include <mutex>
 
 #include <algorithm>
 #include <chrono>

@@ -1,4 +1,5 @@
 #include "xdr/EmailCorrelation.h"
+#include <mutex>
 
 #include <algorithm>
 #include <set>

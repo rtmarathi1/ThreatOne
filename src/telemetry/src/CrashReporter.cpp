@@ -1,4 +1,7 @@
 #include "telemetry/CrashReporter.h"
+#include <unordered_map>
+#include <optional>
+#include <mutex>
 
 #include <algorithm>
 #include <chrono>

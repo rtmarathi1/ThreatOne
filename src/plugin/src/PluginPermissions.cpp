@@ -1,4 +1,5 @@
 #include "plugin/PluginPermissions.h"
+#include <mutex>
 
 #include <algorithm>
 

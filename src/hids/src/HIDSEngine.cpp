@@ -1,4 +1,5 @@
 #include "hids/HIDSEngine.h"
+#include <memory>
 
 #include <algorithm>
 #include <chrono>

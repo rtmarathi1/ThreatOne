@@ -1,4 +1,5 @@
 #include "monitor/HealthChecker.h"
+#include <mutex>
 
 #include <chrono>
 #include <sstream>

@@ -1,4 +1,5 @@
 #include "soc/AlertTriage.h"
+#include <mutex>
 
 #include <algorithm>
 

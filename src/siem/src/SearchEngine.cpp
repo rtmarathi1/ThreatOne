@@ -1,4 +1,6 @@
 #include "siem/SearchEngine.h"
+#include <unordered_map>
+#include <memory>
 
 namespace ThreatOne::SIEM {
 

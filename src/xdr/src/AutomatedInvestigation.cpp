@@ -1,4 +1,5 @@
 #include "xdr/AutomatedInvestigation.h"
+#include <mutex>
 
 #include <algorithm>
 

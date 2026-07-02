@@ -1,4 +1,5 @@
 #include "siem/SigmaRuleEngine.h"
+#include <mutex>
 
 #include <algorithm>
 #include <sstream>

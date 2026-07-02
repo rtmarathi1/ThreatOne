@@ -1,4 +1,5 @@
 #include "cloud/CloudSyncService.h"
+#include <mutex>
 
 #include <algorithm>
 

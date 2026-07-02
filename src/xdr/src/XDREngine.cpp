@@ -1,4 +1,5 @@
 #include "xdr/XDREngine.h"
+#include <memory>
 
 #include <algorithm>
 #include <sstream>

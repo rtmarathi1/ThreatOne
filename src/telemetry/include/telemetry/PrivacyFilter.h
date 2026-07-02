@@ -1,4 +1,5 @@
 #pragma once
+#include <optional>
 
 #include "telemetry/ITelemetryManager.h"
 #include "core/Logger.h"

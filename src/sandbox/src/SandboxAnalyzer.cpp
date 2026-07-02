@@ -1,4 +1,6 @@
 #include "sandbox/SandboxAnalyzer.h"
+#include <optional>
+#include <mutex>
 
 #include <algorithm>
 #include <chrono>

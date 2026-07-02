@@ -1,4 +1,5 @@
 #include "cloud/CloudManager.h"
+#include <memory>
 
 #include <nlohmann/json.hpp>
 #include <mutex>

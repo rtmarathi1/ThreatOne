@@ -1,4 +1,5 @@
 #include "plugin/PluginManager.h"
+#include <memory>
 
 #include <algorithm>
 #include <sstream>

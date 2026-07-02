@@ -1,4 +1,7 @@
 #include "plugin/PluginMarketplace.h"
+#include <optional>
+#include <algorithm>
+#include <mutex>
 
 namespace ThreatOne::Plugin {
 

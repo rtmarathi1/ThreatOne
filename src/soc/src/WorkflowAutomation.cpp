@@ -1,4 +1,5 @@
 #include "soc/WorkflowAutomation.h"
+#include <mutex>
 
 namespace ThreatOne::SOC {
 

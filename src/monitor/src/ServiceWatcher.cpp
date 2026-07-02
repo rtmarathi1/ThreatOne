@@ -1,4 +1,5 @@
 #include "monitor/ServiceWatcher.h"
+#include <mutex>
 
 #include <chrono>
 #include <sstream>

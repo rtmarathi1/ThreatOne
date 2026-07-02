@@ -1,4 +1,5 @@
 #include "cloud/CloudAssetDiscovery.h"
+#include <mutex>
 
 #include <algorithm>
 #include <cctype>

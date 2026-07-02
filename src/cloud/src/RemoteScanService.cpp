@@ -1,4 +1,5 @@
 #include "cloud/RemoteScanService.h"
+#include <mutex>
 
 #include <algorithm>
 

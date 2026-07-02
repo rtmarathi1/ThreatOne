@@ -1,4 +1,6 @@
 #include "hids/RootkitDetector.h"
+#include <algorithm>
+#include <mutex>
 
 #include <chrono>
 #include <sstream>

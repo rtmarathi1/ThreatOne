@@ -1,4 +1,5 @@
 #pragma once
+#include <unordered_map>
 
 #include "siem/ISIEMEngine.h"
 #include "siem/LogStorage.h"

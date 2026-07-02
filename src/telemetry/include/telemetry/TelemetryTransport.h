@@ -1,4 +1,6 @@
 #pragma once
+#include <unordered_map>
+#include <optional>
 
 #include "telemetry/ITelemetryManager.h"
 #include "core/Logger.h"

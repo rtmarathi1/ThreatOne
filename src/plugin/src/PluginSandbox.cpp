@@ -1,4 +1,5 @@
 #include "plugin/PluginSandbox.h"
+#include <mutex>
 
 #include <algorithm>
 

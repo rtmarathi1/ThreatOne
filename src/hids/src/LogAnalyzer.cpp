@@ -1,4 +1,5 @@
 #include "hids/LogAnalyzer.h"
+#include <mutex>
 
 #include <algorithm>
 #include <chrono>

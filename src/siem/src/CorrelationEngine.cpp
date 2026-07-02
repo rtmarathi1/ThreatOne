@@ -1,4 +1,6 @@
 #include "siem/CorrelationEngine.h"
+#include <memory>
+#include <mutex>
 
 #include <cmath>
 #include <ctime>

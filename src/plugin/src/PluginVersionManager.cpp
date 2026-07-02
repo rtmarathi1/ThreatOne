@@ -1,4 +1,5 @@
 #include "plugin/PluginVersionManager.h"
+#include <mutex>
 
 #include <algorithm>
 #include <sstream>

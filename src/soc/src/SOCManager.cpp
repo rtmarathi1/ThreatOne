@@ -1,4 +1,5 @@
 #include "soc/SOCManager.h"
+#include <memory>
 #include "core/ServiceLocator.h"
 
 #include <algorithm>

@@ -1,4 +1,5 @@
 #include "hids/SystemCallMonitor.h"
+#include <mutex>
 
 #include <algorithm>
 #include <chrono>

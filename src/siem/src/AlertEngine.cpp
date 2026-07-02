@@ -1,4 +1,5 @@
 #include "siem/AlertEngine.h"
+#include <mutex>
 
 #include <algorithm>
 

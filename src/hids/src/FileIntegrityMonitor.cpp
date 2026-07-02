@@ -1,4 +1,6 @@
 #include "hids/FileIntegrityMonitor.h"
+#include <unordered_map>
+#include <mutex>
 
 #include <algorithm>
 #include <chrono>

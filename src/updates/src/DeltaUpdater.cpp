@@ -1,4 +1,6 @@
 #include "updates/DeltaUpdater.h"
+#include <optional>
+#include <mutex>
 
 #include <algorithm>
 #include <chrono>

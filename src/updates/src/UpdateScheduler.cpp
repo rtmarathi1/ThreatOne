@@ -1,4 +1,6 @@
 #include "updates/UpdateScheduler.h"
+#include <optional>
+#include <mutex>
 
 #include <algorithm>
 #include <chrono>

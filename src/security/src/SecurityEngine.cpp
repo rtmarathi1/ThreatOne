@@ -1,4 +1,5 @@
 #include "security/SecurityEngine.h"
+#include <mutex>
 #include "threat_intel/ThreatIntelEngine.h"
 #include "scanner/ScanEngine.h"
 #include "scanner/QuarantineManager.h"

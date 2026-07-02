@@ -1,4 +1,5 @@
 #include "hids/PolicyChecker.h"
+#include <mutex>
 
 #include <chrono>
 #include <sstream>

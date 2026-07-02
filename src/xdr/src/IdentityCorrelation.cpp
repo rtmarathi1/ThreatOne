@@ -1,4 +1,5 @@
 #include "xdr/IdentityCorrelation.h"
+#include <mutex>
 
 #include <algorithm>
 #include <set>

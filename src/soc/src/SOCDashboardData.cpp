@@ -1,4 +1,5 @@
 #include "soc/SOCDashboardData.h"
+#include <mutex>
 
 #include <algorithm>
 #include <numeric>

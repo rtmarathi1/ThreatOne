@@ -1,4 +1,6 @@
 #include "updates/VersionChecker.h"
+#include <optional>
+#include <mutex>
 
 #include <algorithm>
 #include <chrono>

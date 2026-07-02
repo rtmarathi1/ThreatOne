@@ -1,4 +1,5 @@
 #include "xdr/EndpointCorrelation.h"
+#include <mutex>
 
 #include <algorithm>
 #include <sstream>

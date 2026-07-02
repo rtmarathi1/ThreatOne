@@ -1,4 +1,5 @@
 #pragma once
+#include <optional>
 
 #include "sandbox/ISandboxEngine.h"
 #include "core/Logger.h"

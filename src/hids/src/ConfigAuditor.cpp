@@ -1,4 +1,5 @@
 #include "hids/ConfigAuditor.h"
+#include <mutex>
 
 #include <chrono>
 #include <sstream>

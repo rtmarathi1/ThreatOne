@@ -1,4 +1,6 @@
 #include "siem/LogStorage.h"
+#include <unordered_map>
+#include <mutex>
 
 #include <algorithm>
 
