@@ -91,6 +91,15 @@ set(TEST_SOURCES
     vulnerability/test_vulnerability_trends.cpp
     xdr/test_xdr_engine.cpp
     siem/test_siem_engine.cpp
+    siem/test_log_collector.cpp
+    siem/test_log_parser.cpp
+    siem/test_event_normalizer.cpp
+    siem/test_log_storage.cpp
+    siem/test_search_engine.cpp
+    siem/test_detection_rules.cpp
+    siem/test_sigma_rule_engine.cpp
+    siem/test_correlation_engine.cpp
+    siem/test_alert_engine.cpp
     soc/test_soc_manager.cpp
     cloud/test_cloud_manager.cpp
     plugin/test_plugin_manager.cpp

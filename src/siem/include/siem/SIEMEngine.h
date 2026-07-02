@@ -1,10 +1,19 @@
 #pragma once
 
 #include "siem/ISIEMEngine.h"
+#include "siem/LogCollector.h"
+#include "siem/LogParser.h"
+#include "siem/EventNormalizer.h"
+#include "siem/LogStorage.h"
+#include "siem/SearchEngine.h"
+#include "siem/DetectionRules.h"
+#include "siem/SigmaRuleEngine.h"
+#include "siem/CorrelationEngine.h"
+#include "siem/AlertEngine.h"
 #include "core/Logger.h"
 
 #include <mutex>
-#include <map>
+#include <memory>
 #include <chrono>
 #include <string>
 #include <vector>
@@ -31,35 +40,31 @@ public:
     [[nodiscard]] std::vector<LogEntry> search(const SearchQuery& query) override;
     [[nodiscard]] DashboardMetrics getDashboardMetrics() override;
 
+    // Access to sub-components for advanced usage
+    [[nodiscard]] LogCollector& getLogCollector() { return *logCollector_; }
+    [[nodiscard]] LogParser& getLogParser() { return *logParser_; }
+    [[nodiscard]] EventNormalizer& getEventNormalizer() { return *eventNormalizer_; }
+    [[nodiscard]] LogStorage& getLogStorage() { return *logStorage_; }
+    [[nodiscard]] SearchEngine& getSearchEngine() { return *searchEngine_; }
+    [[nodiscard]] DetectionRules& getDetectionRules() { return *detectionRules_; }
+    [[nodiscard]] SigmaRuleEngine& getSigmaRuleEngine() { return *sigmaRuleEngine_; }
+    [[nodiscard]] CorrelationEngine& getCorrelationEngine() { return *correlationEngine_; }
+    [[nodiscard]] AlertEngine& getAlertEngine() { return *alertEngine_; }
+
 private:
-    std::string generateLogId();
-    std::string generateAlertId();
-    std::string generateRuleId();
-    std::string generateCorrelationRuleId();
-
-    std::vector<ParsedField> parseSyslog(const std::string& rawLog) const;
-    std::vector<ParsedField> parseJSON(const std::string& rawLog) const;
-    std::vector<ParsedField> parseCEF(const std::string& rawLog) const;
-    std::vector<ParsedField> parseLEEF(const std::string& rawLog) const;
-    std::vector<ParsedField> parseWindowsEventLog(const std::string& rawLog) const;
-
-    bool matchesCondition(const LogEntry& entry, const std::string& condition) const;
-    bool isWithinTimeRange(const std::string& timestamp, const std::string& start, const std::string& end) const;
-
-    mutable std::mutex mutex_;
-    int nextLogId_ = 1;
-    int nextAlertId_ = 1;
-    int nextRuleId_ = 1;
-    int nextCorrelationRuleId_ = 1;
-
-    std::vector<LogEntry> logs_;
-    std::map<std::string, SIEMAlert> alerts_;
-    std::map<std::string, SIEMRule> rules_;
-    std::map<std::string, CorrelationRule> correlationRules_;
+    // Sub-components
+    std::shared_ptr<LogCollector> logCollector_;
+    std::shared_ptr<LogParser> logParser_;
+    std::shared_ptr<EventNormalizer> eventNormalizer_;
+    std::shared_ptr<LogStorage> logStorage_;
+    std::shared_ptr<SearchEngine> searchEngine_;
+    std::shared_ptr<DetectionRules> detectionRules_;
+    std::shared_ptr<SigmaRuleEngine> sigmaRuleEngine_;
+    std::shared_ptr<CorrelationEngine> correlationEngine_;
+    std::shared_ptr<AlertEngine> alertEngine_;
 
     // Metrics tracking
     std::chrono::steady_clock::time_point startTime_;
-    long totalIngested_ = 0;
 
     ThreatOne::Core::ModuleLogger logger_;
 };
