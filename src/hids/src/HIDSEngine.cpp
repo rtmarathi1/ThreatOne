@@ -11,7 +11,13 @@
 namespace ThreatOne::HIDS {
 
 HIDSEngine::HIDSEngine()
-    : logger_("HIDSEngine") {
+    : fileIntegrityMonitor_(std::make_shared<FileIntegrityMonitor>()),
+      logAnalyzer_(std::make_shared<LogAnalyzer>()),
+      rootkitDetector_(std::make_shared<RootkitDetector>()),
+      policyChecker_(std::make_shared<PolicyChecker>()),
+      systemCallMonitor_(std::make_shared<SystemCallMonitor>()),
+      configAuditor_(std::make_shared<ConfigAuditor>()),
+      logger_("HIDSEngine") {
     logger_.info("HIDS Engine initialized");
 }
 

@@ -1,6 +1,12 @@
 #pragma once
 
 #include "monitor/IMonitorEngine.h"
+#include "monitor/SystemMonitor.h"
+#include "monitor/NetworkMonitor.h"
+#include "monitor/PerformanceMonitor.h"
+#include "monitor/ResourceTracker.h"
+#include "monitor/HealthChecker.h"
+#include "monitor/ServiceWatcher.h"
 #include "core/Logger.h"
 
 #include <memory>
@@ -37,6 +43,14 @@ public:
     std::vector<MonitorFileEvent> getFileEvents() override;
     bool isMonitoring(MonitorType type) const override;
 
+    // Access to sub-components
+    [[nodiscard]] SystemMonitor& getSystemMonitor() { return *systemMonitor_; }
+    [[nodiscard]] NetworkMonitor& getNetworkMonitor() { return *networkMonitor_; }
+    [[nodiscard]] PerformanceMonitor& getPerformanceMonitor() { return *performanceMonitor_; }
+    [[nodiscard]] ResourceTracker& getResourceTracker() { return *resourceTracker_; }
+    [[nodiscard]] HealthChecker& getHealthChecker() { return *healthChecker_; }
+    [[nodiscard]] ServiceWatcher& getServiceWatcher() { return *serviceWatcher_; }
+
 private:
     void checkThresholds(const MonitorMetrics& metrics);
     std::string generateAlertId();
@@ -45,6 +59,14 @@ private:
 
     ThreatOne::Core::ModuleLogger logger_;
     std::shared_ptr<ThreatOne::EDR::EDREngine> edrEngine_;
+
+    // Sub-components
+    std::shared_ptr<SystemMonitor> systemMonitor_;
+    std::shared_ptr<NetworkMonitor> networkMonitor_;
+    std::shared_ptr<PerformanceMonitor> performanceMonitor_;
+    std::shared_ptr<ResourceTracker> resourceTracker_;
+    std::shared_ptr<HealthChecker> healthChecker_;
+    std::shared_ptr<ServiceWatcher> serviceWatcher_;
 
     struct MonitorTypeHash {
         std::size_t operator()(MonitorType t) const noexcept {

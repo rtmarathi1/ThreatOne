@@ -134,6 +134,18 @@ set(TEST_SOURCES
     updates/test_update_manager.cpp
     sandbox/test_sandbox_engine.cpp
     hids/test_hids_engine.cpp
+    hids/test_file_integrity_monitor.cpp
+    hids/test_log_analyzer.cpp
+    hids/test_rootkit_detector.cpp
+    hids/test_policy_checker.cpp
+    hids/test_syscall_monitor.cpp
+    hids/test_config_auditor.cpp
+    monitor/test_system_monitor.cpp
+    monitor/test_network_monitor.cpp
+    monitor/test_performance_monitor.cpp
+    monitor/test_resource_tracker.cpp
+    monitor/test_health_checker.cpp
+    monitor/test_service_watcher.cpp
     telemetry/test_telemetry_manager.cpp
 )
 

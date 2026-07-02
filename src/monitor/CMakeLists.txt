@@ -2,6 +2,12 @@ find_package(Threads REQUIRED)
 
 add_library(threatone_monitor STATIC
     src/MonitorEngine.cpp
+    src/SystemMonitor.cpp
+    src/NetworkMonitor.cpp
+    src/PerformanceMonitor.cpp
+    src/ResourceTracker.cpp
+    src/HealthChecker.cpp
+    src/ServiceWatcher.cpp
 )
 
 target_include_directories(threatone_monitor

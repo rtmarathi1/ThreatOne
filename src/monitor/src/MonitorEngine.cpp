@@ -14,13 +14,25 @@ namespace ThreatOne::Monitor {
 
 MonitorEngine::MonitorEngine()
     : logger_(ThreatOne::Core::Logger::instance().getModuleLogger("MonitorEngine"))
-    , edrEngine_(std::make_shared<ThreatOne::EDR::EDREngine>()) {
+    , edrEngine_(std::make_shared<ThreatOne::EDR::EDREngine>())
+    , systemMonitor_(std::make_shared<SystemMonitor>())
+    , networkMonitor_(std::make_shared<NetworkMonitor>())
+    , performanceMonitor_(std::make_shared<PerformanceMonitor>())
+    , resourceTracker_(std::make_shared<ResourceTracker>())
+    , healthChecker_(std::make_shared<HealthChecker>())
+    , serviceWatcher_(std::make_shared<ServiceWatcher>()) {
     logger_.info("MonitorEngine initialized with internal EDR engine");
 }
 
 MonitorEngine::MonitorEngine(std::shared_ptr<ThreatOne::EDR::EDREngine> edrEngine)
     : logger_(ThreatOne::Core::Logger::instance().getModuleLogger("MonitorEngine"))
-    , edrEngine_(std::move(edrEngine)) {
+    , edrEngine_(std::move(edrEngine))
+    , systemMonitor_(std::make_shared<SystemMonitor>())
+    , networkMonitor_(std::make_shared<NetworkMonitor>())
+    , performanceMonitor_(std::make_shared<PerformanceMonitor>())
+    , resourceTracker_(std::make_shared<ResourceTracker>())
+    , healthChecker_(std::make_shared<HealthChecker>())
+    , serviceWatcher_(std::make_shared<ServiceWatcher>()) {
     logger_.info("MonitorEngine initialized with external EDR engine");
 }
 
@@ -81,6 +93,14 @@ MonitorMetrics MonitorEngine::getMetrics() {
 
     // Active connections count (requires platform-specific socket enumeration)
     metrics.activeConnections = 0;
+
+    // Feed data to performance monitor sub-component
+    PerformanceSample sample;
+    sample.cpuUsage = metrics.cpuUsage;
+    sample.memoryUsage = metrics.memoryUsage;
+    sample.diskReadRate = static_cast<double>(data.diskReadBytes);
+    sample.diskWriteRate = static_cast<double>(data.diskWriteBytes);
+    performanceMonitor_->addSample(sample);
 
     // Check thresholds
     checkThresholds(metrics);

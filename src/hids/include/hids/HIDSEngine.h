@@ -4,9 +4,16 @@
 // File integrity, log monitoring, rootkit detection
 
 #include "hids/IHIDSEngine.h"
+#include "hids/FileIntegrityMonitor.h"
+#include "hids/LogAnalyzer.h"
+#include "hids/RootkitDetector.h"
+#include "hids/PolicyChecker.h"
+#include "hids/SystemCallMonitor.h"
+#include "hids/ConfigAuditor.h"
 #include "core/Logger.h"
 
 #include <mutex>
+#include <memory>
 #include <unordered_map>
 #include <map>
 #include <string>
@@ -51,6 +58,14 @@ public:
     void ingestLogEntry(const SystemLogEntry& entry);
     void addPolicyViolation(const PolicyViolation& violation);
 
+    // Access to sub-components
+    [[nodiscard]] FileIntegrityMonitor& getFileIntegrityMonitor() { return *fileIntegrityMonitor_; }
+    [[nodiscard]] LogAnalyzer& getLogAnalyzer() { return *logAnalyzer_; }
+    [[nodiscard]] RootkitDetector& getRootkitDetector() { return *rootkitDetector_; }
+    [[nodiscard]] PolicyChecker& getPolicyChecker() { return *policyChecker_; }
+    [[nodiscard]] SystemCallMonitor& getSystemCallMonitor() { return *systemCallMonitor_; }
+    [[nodiscard]] ConfigAuditor& getConfigAuditor() { return *configAuditor_; }
+
 private:
     std::string generateEventId();
     std::string generateBaselineId();
@@ -85,6 +100,15 @@ private:
     int nextPatternId_ = 1;
     int nextIndicatorId_ = 1;
     int nextLogEntryId_ = 1;
+
+    // Sub-components
+    std::shared_ptr<FileIntegrityMonitor> fileIntegrityMonitor_;
+    std::shared_ptr<LogAnalyzer> logAnalyzer_;
+    std::shared_ptr<RootkitDetector> rootkitDetector_;
+    std::shared_ptr<PolicyChecker> policyChecker_;
+    std::shared_ptr<SystemCallMonitor> systemCallMonitor_;
+    std::shared_ptr<ConfigAuditor> configAuditor_;
+
     ThreatOne::Core::ModuleLogger logger_;
 };
 
