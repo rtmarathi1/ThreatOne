@@ -1,6 +1,10 @@
 #include "network/ConnectionLogger.h"
 
 #include <algorithm>
+#include <mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Network {
 

@@ -2,6 +2,7 @@
 #include <reporting/ExportEngine.h>
 
 #include <nlohmann/json.hpp>
+#include <string>
 
 using namespace ThreatOne::Reporting;
 

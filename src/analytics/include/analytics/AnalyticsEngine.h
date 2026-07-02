@@ -7,6 +7,9 @@
 #include <mutex>
 #include <deque>
 #include <chrono>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Analytics {
 

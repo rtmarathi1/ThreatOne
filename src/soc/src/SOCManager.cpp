@@ -1,6 +1,9 @@
 #include "soc/SOCManager.h"
 
 #include <algorithm>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::SOC {
 

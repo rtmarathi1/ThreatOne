@@ -12,6 +12,8 @@
 
 #include <core/Error.h>
 #include <core/Logger.h>
+#include <cstdint>
+#include <utility>
 
 #ifdef HAS_YARA
 #include <yara.h>

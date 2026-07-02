@@ -6,6 +6,10 @@
 #include <sstream>
 #include <iomanip>
 #include <nlohmann/json.hpp>
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Scanner {
 

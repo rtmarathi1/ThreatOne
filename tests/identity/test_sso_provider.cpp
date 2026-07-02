@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <identity/SSOProvider.h>
+#include <string>
 
 using namespace ThreatOne::Identity;
 

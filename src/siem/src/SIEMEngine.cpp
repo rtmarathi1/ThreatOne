@@ -6,6 +6,11 @@
 #include <iomanip>
 #include <regex>
 #include <cmath>
+#include <chrono>
+#include <map>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::SIEM {
 

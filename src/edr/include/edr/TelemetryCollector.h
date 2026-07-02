@@ -7,6 +7,8 @@
 #include <deque>
 
 #include "core/Logger.h"
+#include <cstdint>
+#include <utility>
 
 namespace ThreatOne::EDR {
 

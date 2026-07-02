@@ -1,5 +1,7 @@
 #include <doctest/doctest.h>
 #include <identity/AuditLogger.h>
+#include <chrono>
+#include <string>
 
 using namespace ThreatOne::Identity;
 

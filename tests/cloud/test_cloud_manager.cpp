@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <cloud/CloudManager.h>
+#include <string>
 
 using namespace ThreatOne::Cloud;
 

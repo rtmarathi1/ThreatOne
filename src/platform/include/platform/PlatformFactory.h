@@ -5,6 +5,7 @@
 
 #include <memory>
 #include "platform/IPlatformDriver.h"
+#include <string>
 
 namespace ThreatOne::Platform {
 

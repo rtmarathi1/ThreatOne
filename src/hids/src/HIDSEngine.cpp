@@ -4,6 +4,9 @@
 #include <chrono>
 #include <regex>
 #include <sstream>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::HIDS {
 

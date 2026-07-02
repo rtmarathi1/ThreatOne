@@ -16,6 +16,8 @@
 #include <atomic>
 #include <thread>
 #include <mutex>
+#include <cstdint>
+#include <memory>
 
 // Forward declarations for macOS types (avoid including heavy headers)
 typedef struct __FSEventStream* FSEventStreamRef;

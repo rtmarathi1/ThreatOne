@@ -1,5 +1,9 @@
 #include "security/SecurityEngine.h"
 #include "threat_intel/ThreatIntelEngine.h"
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Security {
 

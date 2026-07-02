@@ -4,6 +4,9 @@
 #include <sstream>
 #include <algorithm>
 #include <numeric>
+#include <cstdint>
+#include <mutex>
+#include <string>
 
 namespace ThreatOne::AI {
 

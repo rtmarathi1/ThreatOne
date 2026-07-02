@@ -5,6 +5,14 @@
 #include <cmath>
 #include <algorithm>
 #include <numeric>
+#include <cctype>
+#include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::EDR {
 

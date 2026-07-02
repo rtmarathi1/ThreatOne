@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <updates/UpdateManager.h>
+#include <string>
 
 using namespace ThreatOne::Updates;
 

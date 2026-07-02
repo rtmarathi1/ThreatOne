@@ -3,6 +3,8 @@
 // This file provides any non-template support functions.
 
 #include <database/Model.h>
+#include <chrono>
+#include <string>
 
 namespace ThreatOne::Database {
 

@@ -2,6 +2,11 @@
 
 #include <algorithm>
 #include <optional>
+#include <chrono>
+#include <mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::EDR {
 

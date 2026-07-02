@@ -1,4 +1,6 @@
 #include "identity/RBACManager.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Identity {
 

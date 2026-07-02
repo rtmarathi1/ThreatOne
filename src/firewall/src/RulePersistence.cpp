@@ -1,5 +1,9 @@
 #include "firewall/RulePersistence.h"
 #include "database/models/FirewallRule.h"
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Firewall {
 

@@ -5,6 +5,8 @@
 
 #include <memory>
 #include <string>
+#include <cstdint>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
     class ThreatIntelEngine;

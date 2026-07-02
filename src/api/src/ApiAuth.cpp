@@ -4,6 +4,12 @@
 #include <sstream>
 #include <iomanip>
 #include <nlohmann/json.hpp>
+#include <chrono>
+#include <cstdint>
+#include <mutex>
+#include <optional>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Api {
 

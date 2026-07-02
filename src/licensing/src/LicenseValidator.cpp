@@ -5,6 +5,9 @@
 #include <sstream>
 #include <ctime>
 #include <iomanip>
+#include <optional>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Licensing {
 

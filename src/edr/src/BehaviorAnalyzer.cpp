@@ -2,6 +2,11 @@
 
 #include <algorithm>
 #include <unordered_map>
+#include <chrono>
+#include <cstdint>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::EDR {
 

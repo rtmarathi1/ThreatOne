@@ -1,5 +1,7 @@
 #include <doctest/doctest.h>
 #include <fleet/DeploymentManager.h>
+#include <string>
+#include <vector>
 
 using namespace ThreatOne::Fleet;
 

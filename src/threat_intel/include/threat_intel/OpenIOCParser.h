@@ -4,6 +4,9 @@
 // Parses OpenIOC-like XML format using simple string parsing (no external XML lib)
 
 #include "IFeedParser.h"
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

@@ -1,6 +1,9 @@
 #include "ai/RecommendationEngine.h"
 
 #include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::AI {
 

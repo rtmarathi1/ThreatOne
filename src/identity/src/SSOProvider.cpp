@@ -1,4 +1,7 @@
 #include "identity/SSOProvider.h"
+#include <chrono>
+#include <cstddef>
+#include <string>
 
 namespace ThreatOne::Identity {
 

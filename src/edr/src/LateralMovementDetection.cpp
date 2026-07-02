@@ -4,6 +4,10 @@
 #include <chrono>
 #include <sstream>
 #include <iomanip>
+#include <cstdint>
+#include <mutex>
+#include <optional>
+#include <string>
 
 namespace ThreatOne::EDR {
 

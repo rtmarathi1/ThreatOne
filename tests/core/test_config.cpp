@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <core/Config.h>
+#include <string>
 
 using namespace ThreatOne::Core;
 

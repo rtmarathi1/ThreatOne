@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <plugin/PluginManager.h>
+#include <vector>
 
 using namespace ThreatOne::Plugin;
 

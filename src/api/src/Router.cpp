@@ -1,6 +1,10 @@
 #include "api/Router.h"
 #include <sstream>
 #include <algorithm>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Api {
 

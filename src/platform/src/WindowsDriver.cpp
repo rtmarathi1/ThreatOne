@@ -9,6 +9,14 @@
 #include <tlhelp32.h>
 #include <psapi.h>
 #include <fwpmu.h>
+#include <algorithm>
+#include <cstdint>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <thread>
+#include <utility>
+#include <vector>
 
 #pragma comment(lib, "Advapi32.lib")
 #pragma comment(lib, "Fwpuclnt.lib")

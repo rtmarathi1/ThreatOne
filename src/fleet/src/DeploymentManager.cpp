@@ -3,6 +3,12 @@
 #include <algorithm>
 #include <sstream>
 #include <cmath>
+#include <chrono>
+#include <mutex>
+#include <optional>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace ThreatOne::Fleet {
 

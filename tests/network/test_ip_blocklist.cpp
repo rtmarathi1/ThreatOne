@@ -1,5 +1,7 @@
 #include <doctest/doctest.h>
 #include <network/IPBlocklist.h>
+#include <string>
+#include <vector>
 
 using namespace ThreatOne::Network;
 

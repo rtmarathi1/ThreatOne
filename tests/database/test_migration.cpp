@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <utility>
 
 using namespace ThreatOne::Database;
 using namespace ThreatOne::Core;

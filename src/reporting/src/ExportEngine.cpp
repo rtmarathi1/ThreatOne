@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <nlohmann/json.hpp>
+#include <string>
 
 namespace ThreatOne::Reporting {
 

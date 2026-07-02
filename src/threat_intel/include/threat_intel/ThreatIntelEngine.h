@@ -20,6 +20,7 @@
 #include "ThreatScoring.h"
 #include "IntelReportGenerator.h"
 #include "EnrichmentService.h"
+#include <cstdint>
 
 namespace ThreatOne::ThreatIntel {
 

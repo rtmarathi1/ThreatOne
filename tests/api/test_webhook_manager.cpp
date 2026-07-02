@@ -1,5 +1,7 @@
 #include <doctest/doctest.h>
 #include <api/WebhookManager.h>
+#include <map>
+#include <string>
 
 using namespace ThreatOne::Api;
 

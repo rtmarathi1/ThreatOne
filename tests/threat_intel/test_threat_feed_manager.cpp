@@ -3,6 +3,8 @@
 
 #include <memory>
 #include <chrono>
+#include <cstdint>
+#include <string>
 
 using namespace ThreatOne::ThreatIntel;
 

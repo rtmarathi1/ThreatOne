@@ -1,6 +1,7 @@
 #include <doctest/doctest.h>
 #include <reporting/ReportStorage.h>
 #include <chrono>
+#include <string>
 
 using namespace ThreatOne::Reporting;
 

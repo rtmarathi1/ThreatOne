@@ -1,6 +1,8 @@
 // ThreatOne App - UsersViewModel Implementation
 
 #include "app/viewmodels/UsersViewModel.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::App {
 

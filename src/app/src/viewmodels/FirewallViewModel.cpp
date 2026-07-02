@@ -3,6 +3,8 @@
 #include "app/viewmodels/FirewallViewModel.h"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::App {
 

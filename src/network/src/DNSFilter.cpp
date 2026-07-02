@@ -1,6 +1,9 @@
 #include "network/DNSFilter.h"
 
 #include <algorithm>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Network {
 

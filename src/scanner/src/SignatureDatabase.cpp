@@ -2,6 +2,12 @@
 
 #include <fstream>
 #include <iterator>
+#include <cstdint>
+#include <mutex>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Scanner {
 

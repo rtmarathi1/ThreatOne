@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <xdr/XDREngine.h>
+#include <string>
 
 using namespace ThreatOne::XDR;
 

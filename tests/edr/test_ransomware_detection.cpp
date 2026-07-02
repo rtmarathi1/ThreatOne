@@ -4,6 +4,11 @@
 #include <filesystem>
 #include <fstream>
 #include <random>
+#include <chrono>
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <vector>
 
 namespace fs = std::filesystem;
 using namespace ThreatOne::EDR;

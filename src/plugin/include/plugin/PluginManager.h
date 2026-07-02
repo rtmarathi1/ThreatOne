@@ -10,6 +10,9 @@
 #include <unordered_map>
 #include <map>
 #include <set>
+#include <optional>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Plugin {
 

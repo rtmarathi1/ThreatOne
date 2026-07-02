@@ -1,6 +1,8 @@
 // ThreatOne App - DashboardViewModel Implementation
 
 #include "app/viewmodels/DashboardViewModel.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::App {
 

@@ -1,6 +1,8 @@
 // ThreatOne App - ScannerViewModel Implementation
 
 #include "app/viewmodels/ScannerViewModel.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::App {
 

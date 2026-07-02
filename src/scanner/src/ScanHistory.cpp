@@ -1,4 +1,8 @@
 #include "scanner/ScanHistory.h"
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Scanner {
 

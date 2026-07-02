@@ -2,6 +2,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <chrono>
+#include <string>
+#include <unordered_map>
 
 namespace ThreatOne::ThreatIntel {
 

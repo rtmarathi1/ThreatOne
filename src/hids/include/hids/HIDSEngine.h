@@ -9,6 +9,8 @@
 #include <mutex>
 #include <unordered_map>
 #include <map>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::HIDS {
 

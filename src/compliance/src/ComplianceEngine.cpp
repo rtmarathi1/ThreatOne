@@ -1,6 +1,8 @@
 #include "compliance/ComplianceEngine.h"
 
 #include <sstream>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Compliance {
 

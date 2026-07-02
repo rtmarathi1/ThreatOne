@@ -3,6 +3,10 @@
 
 #include <database/Schema.h>
 #include <sstream>
+#include <cstddef>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Database {
 

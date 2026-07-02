@@ -5,6 +5,8 @@
 
 #include <mutex>
 #include <map>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::SOC {
 

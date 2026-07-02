@@ -9,6 +9,8 @@
 #include "compliance/EvidenceCollector.h"
 #include "compliance/RemediationTracker.h"
 #include "core/Logger.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Compliance {
 

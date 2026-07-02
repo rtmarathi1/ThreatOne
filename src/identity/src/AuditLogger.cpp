@@ -3,6 +3,10 @@
 
 #include <algorithm>
 #include <sstream>
+#include <chrono>
+#include <cstddef>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Identity {
 

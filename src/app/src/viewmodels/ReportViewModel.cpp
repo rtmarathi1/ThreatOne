@@ -1,6 +1,8 @@
 // ThreatOne App - ReportViewModel Implementation
 
 #include "app/viewmodels/ReportViewModel.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::App {
 

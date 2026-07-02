@@ -1,4 +1,9 @@
 #include "network/ApplicationControl.h"
+#include <mutex>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Network {
 

@@ -2,6 +2,7 @@
 #include <ai/ThreatClassifier.h>
 
 #include <string>
+#include <vector>
 
 using namespace ThreatOne::AI;
 

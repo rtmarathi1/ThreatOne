@@ -5,6 +5,7 @@
 
 #include <string>
 #include <chrono>
+#include <cstdint>
 
 namespace ThreatOne::ThreatIntel {
 

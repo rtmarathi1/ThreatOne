@@ -1,5 +1,8 @@
 #include <doctest/doctest.h>
 #include <edr/MemoryMonitor.h>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 #ifdef _WIN32
 #include <process.h>

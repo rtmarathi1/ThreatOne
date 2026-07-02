@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <sstream>
 #include <set>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::AI {
 

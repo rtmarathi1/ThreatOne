@@ -4,6 +4,7 @@
 #include <fstream>
 #include <filesystem>
 #include <algorithm>
+#include <vector>
 
 using namespace ThreatOne::Scanner;
 

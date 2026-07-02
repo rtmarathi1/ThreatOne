@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <sstream>
 #include <cctype>
+#include <cstdio>
 
 namespace ThreatOne::Utils {
 

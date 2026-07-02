@@ -10,6 +10,9 @@
 #include <vector>
 #include <atomic>
 #include <functional>
+#include <cstddef>
+#include <cstdint>
+#include <string>
 
 namespace ThreatOne::EDR {
 class EDREngine;

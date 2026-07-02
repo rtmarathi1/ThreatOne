@@ -1,6 +1,11 @@
 #include "threat_intel/EnrichmentService.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

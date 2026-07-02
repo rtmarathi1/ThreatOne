@@ -3,6 +3,14 @@
 #include <algorithm>
 #include <sstream>
 #include <cmath>
+#include <chrono>
+#include <cstdint>
+#include <mutex>
+#include <shared_mutex>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

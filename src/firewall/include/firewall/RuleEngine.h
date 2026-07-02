@@ -7,6 +7,7 @@
 #include <string>
 #include <mutex>
 #include <cstdint>
+#include <utility>
 
 namespace ThreatOne::Firewall {
 

@@ -3,6 +3,14 @@
 #include "threat_intel/CsvParser.h"
 #include "threat_intel/PlainTextParser.h"
 #include "threat_intel/OpenIOCParser.h"
+#include <chrono>
+#include <cstdint>
+#include <memory>
+#include <mutex>
+#include <shared_mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

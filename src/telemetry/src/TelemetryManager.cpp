@@ -3,6 +3,12 @@
 #include <algorithm>
 #include <chrono>
 #include <sstream>
+#include <cstdint>
+#include <mutex>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Telemetry {
 

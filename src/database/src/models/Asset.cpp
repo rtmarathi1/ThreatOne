@@ -1,6 +1,10 @@
 // ThreatOne Database Model - Asset Implementation
 
 #include <database/models/Asset.h>
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Database::Models {
 

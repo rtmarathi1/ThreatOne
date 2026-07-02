@@ -4,6 +4,10 @@
 #include <sstream>
 #include <ctime>
 #include <iomanip>
+#include <map>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::XDR {
 

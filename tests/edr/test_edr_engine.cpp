@@ -2,6 +2,7 @@
 #include <edr/EDREngine.h>
 
 #include <algorithm>
+#include <cstdint>
 #ifdef _WIN32
 #include <process.h>
 #define getpid _getpid

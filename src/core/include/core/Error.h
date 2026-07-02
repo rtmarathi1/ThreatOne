@@ -9,6 +9,7 @@
 #include <utility>
 #include <type_traits>
 #include <source_location>
+#include <tuple>
 
 namespace ThreatOne::Core {
 

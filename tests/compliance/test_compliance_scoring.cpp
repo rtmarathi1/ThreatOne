@@ -2,6 +2,8 @@
 #include <compliance/ComplianceScoring.h>
 #include <compliance/ComplianceFramework.h>
 #include <compliance/ComplianceScanner.h>
+#include <string>
+#include <vector>
 
 using namespace ThreatOne::Compliance;
 

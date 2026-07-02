@@ -1,6 +1,10 @@
 // ThreatOne Database Model - FirewallRule Implementation
 
 #include <database/models/FirewallRule.h>
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Database::Models {
 

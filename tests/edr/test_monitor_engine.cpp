@@ -3,6 +3,7 @@
 #include <edr/EDREngine.h>
 
 #include <memory>
+#include <vector>
 
 using namespace ThreatOne::Monitor;
 

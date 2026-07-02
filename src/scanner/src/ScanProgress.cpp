@@ -1,4 +1,8 @@
 #include "scanner/ScanProgress.h"
+#include <chrono>
+#include <cstdint>
+#include <mutex>
+#include <string>
 
 namespace ThreatOne::Scanner {
 

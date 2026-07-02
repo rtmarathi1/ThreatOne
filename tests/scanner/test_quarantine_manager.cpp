@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <filesystem>
+#include <string>
 
 using namespace ThreatOne::Scanner;
 

@@ -5,6 +5,10 @@
 #include <cmath>
 #include <array>
 #include <algorithm>
+#include <cstdint>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::EDR {
 

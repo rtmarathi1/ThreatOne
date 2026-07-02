@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <edr/DetectionRulesEngine.h>
+#include <string>
 
 using namespace ThreatOne::EDR;
 

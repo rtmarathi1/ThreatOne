@@ -4,6 +4,13 @@
 #include <sstream>
 #include <cctype>
 #include <numeric>
+#include <cstdint>
+#include <map>
+#include <regex>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::AI {
 

@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <chrono>
 #include <cstdint>
+#include <cstddef>
 
 namespace ThreatOne::Identity {
 

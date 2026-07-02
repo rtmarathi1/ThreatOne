@@ -5,6 +5,11 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <cstdint>
+#include <mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Firewall {
 

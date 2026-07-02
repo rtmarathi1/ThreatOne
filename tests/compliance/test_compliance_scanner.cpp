@@ -1,6 +1,7 @@
 #include <doctest/doctest.h>
 #include <compliance/ComplianceScanner.h>
 #include <compliance/ComplianceFramework.h>
+#include <string>
 
 using namespace ThreatOne::Compliance;
 

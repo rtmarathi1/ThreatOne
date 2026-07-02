@@ -1,6 +1,9 @@
 #include "identity/CloudIdentityProvider.h"
 
 #include <algorithm>
+#include <chrono>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Identity {
 

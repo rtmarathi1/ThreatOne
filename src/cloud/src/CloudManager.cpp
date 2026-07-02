@@ -2,6 +2,9 @@
 
 #include <algorithm>
 #include <nlohmann/json.hpp>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Cloud {
 

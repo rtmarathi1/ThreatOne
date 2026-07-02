@@ -6,6 +6,8 @@
 #include "core/Logger.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Licensing {
 

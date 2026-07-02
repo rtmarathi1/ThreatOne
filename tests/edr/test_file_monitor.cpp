@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <thread>
 #include <chrono>
+#include <string>
 
 using namespace ThreatOne::EDR;
 namespace fs = std::filesystem;

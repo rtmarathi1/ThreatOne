@@ -5,6 +5,9 @@
 #include <cmath>
 #include <set>
 #include <numeric>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::AI {
 

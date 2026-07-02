@@ -1,4 +1,7 @@
 #include "network/NetworkIsolation.h"
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Network {
 

@@ -10,6 +10,8 @@
 #include <unordered_map>
 
 #include "core/Types.h"
+#include <stdexcept>
+#include <utility>
 
 namespace ThreatOne::Core {
 

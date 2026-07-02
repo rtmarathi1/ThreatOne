@@ -1,6 +1,8 @@
 #include "identity/LDAPConnector.h"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Identity {
 

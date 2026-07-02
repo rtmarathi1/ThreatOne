@@ -1,6 +1,8 @@
 // ThreatOne App - AssetViewModel Implementation
 
 #include "app/viewmodels/AssetViewModel.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::App {
 

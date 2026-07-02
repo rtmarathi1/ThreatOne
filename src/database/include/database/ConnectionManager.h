@@ -16,6 +16,9 @@
 #include <atomic>
 
 #include <core/Error.h>
+#include <cstddef>
+#include <cstdint>
+#include <utility>
 
 struct sqlite3;
 

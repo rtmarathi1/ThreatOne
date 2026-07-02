@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <database/Model.h>
+#include <utility>
 
 namespace ThreatOne::Database::Models {
 

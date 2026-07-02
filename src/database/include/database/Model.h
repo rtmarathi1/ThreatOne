@@ -15,6 +15,8 @@
 #include <nlohmann/json.hpp>
 #include "ConnectionManager.h"
 #include "QueryBuilder.h"
+#include <cstdint>
+#include <utility>
 
 namespace ThreatOne::Database {
 

@@ -1,5 +1,7 @@
 #include <doctest/doctest.h>
 #include <threat_intel/IOCMatcher.h>
+#include <cstdint>
+#include <unordered_map>
 
 using namespace ThreatOne::ThreatIntel;
 

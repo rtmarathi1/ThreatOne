@@ -9,6 +9,7 @@
 
 #include "ai/IMLModel.h"
 #include "core/Logger.h"
+#include <cstdint>
 
 namespace ThreatOne::AI {
 

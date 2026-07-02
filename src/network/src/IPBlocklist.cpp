@@ -3,6 +3,10 @@
 #include <algorithm>
 #include <sstream>
 #include <stdexcept>
+#include <cstdint>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Network {
 

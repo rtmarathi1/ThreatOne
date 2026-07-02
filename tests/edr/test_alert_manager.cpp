@@ -4,6 +4,7 @@
 
 #include <thread>
 #include <chrono>
+#include <string>
 
 using namespace ThreatOne::EDR;
 using namespace ThreatOne::Core;

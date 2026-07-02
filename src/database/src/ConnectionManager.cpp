@@ -5,6 +5,15 @@
 #include <sqlite3.h>
 #include <stdexcept>
 #include <algorithm>
+#include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Database {
 

@@ -1,6 +1,11 @@
 #include "network/BandwidthMonitor.h"
 
 #include <algorithm>
+#include <chrono>
+#include <cstdint>
+#include <mutex>
+#include <string>
+#include <unordered_map>
 
 namespace ThreatOne::Network {
 

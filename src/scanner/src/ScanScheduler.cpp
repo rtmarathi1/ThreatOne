@@ -1,4 +1,11 @@
 #include "scanner/ScanScheduler.h"
+#include <algorithm>
+#include <functional>
+#include <mutex>
+#include <queue>
+#include <thread>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Scanner {
 

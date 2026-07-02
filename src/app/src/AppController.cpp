@@ -45,6 +45,9 @@
 #include "sandbox/SandboxEngine.h"
 #include "plugin/IPluginManager.h"
 #include "plugin/PluginManager.h"
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::App {
 

@@ -8,6 +8,8 @@
 #include <mutex>
 
 #include "core/Logger.h"
+#include <cstdint>
+#include <utility>
 
 namespace ThreatOne::AI {
 

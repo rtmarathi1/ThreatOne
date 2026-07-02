@@ -7,6 +7,7 @@
 
 #include "compliance/IComplianceEngine.h"
 #include "core/Logger.h"
+#include <optional>
 
 namespace ThreatOne::Compliance {
 

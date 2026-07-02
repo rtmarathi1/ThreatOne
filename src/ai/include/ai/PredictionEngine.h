@@ -5,6 +5,7 @@
 #include <mutex>
 
 #include "core/Logger.h"
+#include <utility>
 
 namespace ThreatOne::AI {
 

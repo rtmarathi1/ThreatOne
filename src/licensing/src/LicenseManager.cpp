@@ -4,6 +4,8 @@
 #include <sstream>
 #include <iomanip>
 #include <cmath>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Licensing {
 

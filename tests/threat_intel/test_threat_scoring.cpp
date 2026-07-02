@@ -2,6 +2,8 @@
 #include <threat_intel/ThreatScoring.h>
 
 #include <chrono>
+#include <string>
+#include <unordered_map>
 
 using namespace ThreatOne::ThreatIntel;
 

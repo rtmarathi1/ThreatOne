@@ -4,6 +4,11 @@
 #include <chrono>
 #include <sstream>
 #include <numeric>
+#include <cstdint>
+#include <mutex>
+#include <optional>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Compliance {
 

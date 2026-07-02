@@ -1,6 +1,8 @@
 // ThreatOne App - ThreatIntelViewModel Implementation
 
 #include "app/viewmodels/ThreatIntelViewModel.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::App {
 

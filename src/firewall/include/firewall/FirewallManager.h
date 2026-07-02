@@ -8,6 +8,8 @@
 
 #include <memory>
 #include <atomic>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Firewall {
 

@@ -4,6 +4,13 @@
 #include <sstream>
 #include <queue>
 #include <unordered_set>
+#include <cctype>
+#include <mutex>
+#include <optional>
+#include <set>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace ThreatOne::Plugin {
 

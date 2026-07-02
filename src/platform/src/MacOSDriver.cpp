@@ -14,6 +14,14 @@
 #include <cstring>
 #include <array>
 #include <sstream>
+#include <algorithm>
+#include <cstdint>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <thread>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Platform {
 

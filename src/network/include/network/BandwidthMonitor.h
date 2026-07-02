@@ -9,6 +9,7 @@
 
 #include "network/INetworkManager.h"
 #include "core/Logger.h"
+#include <utility>
 
 namespace ThreatOne::Network {
 

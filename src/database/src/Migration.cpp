@@ -7,6 +7,11 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Database {
 

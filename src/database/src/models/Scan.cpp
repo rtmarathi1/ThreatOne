@@ -1,6 +1,10 @@
 // ThreatOne Database Model - Scan Implementation
 
 #include <database/models/Scan.h>
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Database::Models {
 

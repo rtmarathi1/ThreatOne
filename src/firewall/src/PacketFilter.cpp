@@ -1,4 +1,6 @@
 #include "firewall/PacketFilter.h"
+#include <mutex>
+#include <string>
 
 namespace ThreatOne::Firewall {
 

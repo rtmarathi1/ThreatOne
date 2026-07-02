@@ -6,6 +6,11 @@
 #include <iomanip>
 #include <random>
 #include <sstream>
+#include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Identity {
 

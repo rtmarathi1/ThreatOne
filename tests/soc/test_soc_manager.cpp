@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <soc/SOCManager.h>
+#include <string>
 
 using namespace ThreatOne::SOC;
 

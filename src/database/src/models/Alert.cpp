@@ -1,6 +1,10 @@
 // ThreatOne Database Model - Alert Implementation
 
 #include <database/models/Alert.h>
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Database::Models {
 

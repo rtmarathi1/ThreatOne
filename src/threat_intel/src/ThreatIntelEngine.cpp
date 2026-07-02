@@ -1,4 +1,9 @@
 #include "threat_intel/ThreatIntelEngine.h"
+#include <chrono>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
 
 namespace ThreatOne::ThreatIntel {
 

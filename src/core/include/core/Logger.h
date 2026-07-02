@@ -10,6 +10,8 @@
 #include <mutex>
 
 #include <spdlog/spdlog.h>
+#include <cstddef>
+#include <utility>
 
 namespace ThreatOne::Core {
 

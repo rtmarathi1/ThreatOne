@@ -9,6 +9,7 @@
 
 #include "edr/IEDREngine.h"
 #include "core/Logger.h"
+#include <cstdint>
 
 namespace ThreatOne::EDR {
 

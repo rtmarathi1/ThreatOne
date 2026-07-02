@@ -1,6 +1,13 @@
 #include "threat_intel/IOCManager.h"
 
 #include <algorithm>
+#include <chrono>
+#include <cstdint>
+#include <mutex>
+#include <shared_mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

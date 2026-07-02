@@ -14,6 +14,8 @@
 #include <stdexcept>
 
 #include "core/Types.h"
+#include <type_traits>
+#include <utility>
 
 namespace ThreatOne::Core {
 

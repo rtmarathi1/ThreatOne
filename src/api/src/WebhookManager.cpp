@@ -1,6 +1,13 @@
 #include "api/WebhookManager.h"
 #include <algorithm>
 #include <random>
+#include <chrono>
+#include <map>
+#include <mutex>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Api {
 

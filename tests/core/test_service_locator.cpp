@@ -1,6 +1,9 @@
 #include <doctest/doctest.h>
 #include <core/ServiceLocator.h>
 #include <memory>
+#include <stdexcept>
+#include <string>
+#include <utility>
 
 using namespace ThreatOne::Core;
 

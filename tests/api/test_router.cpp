@@ -1,5 +1,7 @@
 #include <doctest/doctest.h>
 #include <api/Router.h>
+#include <string>
+#include <vector>
 
 using namespace ThreatOne::Api;
 

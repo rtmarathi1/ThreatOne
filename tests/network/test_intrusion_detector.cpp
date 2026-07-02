@@ -1,5 +1,8 @@
 #include <doctest/doctest.h>
 #include <network/IntrusionDetector.h>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 using namespace ThreatOne::Network;
 

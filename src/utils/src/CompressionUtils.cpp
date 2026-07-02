@@ -1,4 +1,8 @@
 #include "utils/CompressionUtils.h"
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 #ifdef HAS_ZSTD
 #include <zstd.h>

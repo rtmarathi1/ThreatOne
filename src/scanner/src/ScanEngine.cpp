@@ -1,6 +1,14 @@
 #include "scanner/ScanEngine.h"
 
 #include <utils/CryptoUtils.h>
+#include <chrono>
+#include <cstdint>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <thread>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Scanner {
 

@@ -5,6 +5,13 @@
 #include <cmath>
 #include <numeric>
 #include <sstream>
+#include <chrono>
+#include <cstddef>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::AI {
 

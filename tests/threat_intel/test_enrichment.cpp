@@ -2,6 +2,9 @@
 #include <threat_intel/EnrichmentService.h>
 
 #include <chrono>
+#include <cstdint>
+#include <memory>
+#include <vector>
 
 using namespace ThreatOne::ThreatIntel;
 

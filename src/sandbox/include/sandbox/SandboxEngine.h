@@ -9,6 +9,9 @@
 #include <mutex>
 #include <unordered_map>
 #include <map>
+#include <optional>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Sandbox {
 

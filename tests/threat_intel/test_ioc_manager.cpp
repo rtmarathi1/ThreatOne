@@ -4,6 +4,7 @@
 #include <thread>
 #include <vector>
 #include <chrono>
+#include <cstdint>
 
 using namespace ThreatOne::ThreatIntel;
 

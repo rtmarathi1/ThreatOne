@@ -4,6 +4,8 @@
 // Parses STIX 2.1 bundles and extracts indicator objects
 
 #include "IFeedParser.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

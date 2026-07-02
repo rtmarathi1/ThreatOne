@@ -2,6 +2,8 @@
 
 #include "identity/IIdentityManager.h"
 #include "core/Logger.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Identity {
 

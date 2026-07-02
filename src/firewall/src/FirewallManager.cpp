@@ -1,6 +1,9 @@
 #include "firewall/FirewallManager.h"
 
 #include <algorithm>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Firewall {
 

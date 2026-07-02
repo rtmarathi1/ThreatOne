@@ -1,5 +1,11 @@
 #include "compliance/ComplianceFramework.h"
 #include <sstream>
+#include <cstdint>
+#include <mutex>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Compliance {
 

@@ -1,6 +1,10 @@
 // ThreatOne Database Model - License Implementation
 
 #include <database/models/License.h>
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Database::Models {
 

@@ -10,6 +10,7 @@
 #include "reporting/IReportEngine.h"
 #include "core/Logger.h"
 #include "core/Error.h"
+#include <chrono>
 
 namespace ThreatOne::Reporting {
 

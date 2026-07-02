@@ -1,6 +1,7 @@
 // ThreatOne App - SettingsViewModel Implementation
 
 #include "app/viewmodels/SettingsViewModel.h"
+#include <string>
 
 namespace ThreatOne::App {
 

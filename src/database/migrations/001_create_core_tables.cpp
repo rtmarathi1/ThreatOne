@@ -1,6 +1,8 @@
 // ThreatOne Database Migration 001 - Create Core Tables Implementation
 
 #include "001_create_core_tables.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Database::Migrations {
 

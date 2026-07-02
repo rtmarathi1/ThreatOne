@@ -1,6 +1,7 @@
 #include <doctest/doctest.h>
 #include <database/QueryBuilder.h>
 #include <string>
+#include <vector>
 
 using namespace ThreatOne::Database;
 

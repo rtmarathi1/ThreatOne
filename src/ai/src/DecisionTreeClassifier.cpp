@@ -1,6 +1,8 @@
 #include "ai/DecisionTreeClassifier.h"
 
 #include <sstream>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::AI {
 

@@ -5,6 +5,7 @@
 
 #include <database/Migration.h>
 #include <database/Schema.h>
+#include <string>
 
 namespace ThreatOne::Database::Migrations {
 

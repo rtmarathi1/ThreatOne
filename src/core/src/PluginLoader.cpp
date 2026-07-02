@@ -9,6 +9,12 @@
 #include <algorithm>
 #include <queue>
 #include <set>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Core {
 

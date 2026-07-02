@@ -4,6 +4,13 @@
 #include <sstream>
 #include <cstdlib>
 #include <algorithm>
+#include <cctype>
+#include <cstdint>
+#include <mutex>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Core {
 

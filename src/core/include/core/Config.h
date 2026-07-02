@@ -15,6 +15,8 @@
 
 #include <nlohmann/json.hpp>
 #include "core/Error.h"
+#include <cstdint>
+#include <utility>
 
 namespace ThreatOne::Core {
 

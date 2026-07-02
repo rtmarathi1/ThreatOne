@@ -1,5 +1,6 @@
 #include "api/Controllers.h"
 #include <nlohmann/json.hpp>
+#include <string>
 
 namespace ThreatOne::Api {
 

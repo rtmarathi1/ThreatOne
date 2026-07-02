@@ -1,5 +1,7 @@
 #include <doctest/doctest.h>
 #include <siem/SIEMEngine.h>
+#include <string>
+#include <vector>
 
 using namespace ThreatOne::SIEM;
 

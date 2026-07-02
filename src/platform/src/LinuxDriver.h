@@ -12,6 +12,9 @@
 #include <unordered_map>
 #include <thread>
 #include <atomic>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Platform {
 

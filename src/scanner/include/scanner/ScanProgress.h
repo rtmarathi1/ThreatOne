@@ -9,6 +9,7 @@
 #include <chrono>
 
 #include <core/Logger.h>
+#include <cstdint>
 
 namespace ThreatOne::Scanner {
 

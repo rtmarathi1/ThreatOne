@@ -1,4 +1,8 @@
 #include "scanner/FileEnumerator.h"
+#include <functional>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Scanner {
 

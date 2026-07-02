@@ -3,6 +3,8 @@
 
 #include <thread>
 #include <chrono>
+#include <optional>
+#include <string>
 
 using namespace ThreatOne::Telemetry;
 

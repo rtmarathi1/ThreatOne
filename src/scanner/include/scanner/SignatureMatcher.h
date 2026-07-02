@@ -10,6 +10,8 @@
 #include <core/Error.h>
 #include "scanner/FileHasher.h"
 #include "scanner/SignatureDatabase.h"
+#include <cstdint>
+#include <vector>
 
 namespace ThreatOne::Scanner {
 

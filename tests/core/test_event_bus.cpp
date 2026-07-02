@@ -1,6 +1,9 @@
 #include <doctest/doctest.h>
 #include <core/EventBus.h>
 #include <core/Event.h>
+#include <chrono>
+#include <string>
+#include <utility>
 
 using namespace ThreatOne::Core;
 

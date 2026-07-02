@@ -1,6 +1,8 @@
 // ThreatOne App - IncidentViewModel Implementation
 
 #include "app/viewmodels/IncidentViewModel.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::App {
 

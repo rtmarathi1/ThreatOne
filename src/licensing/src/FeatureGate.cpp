@@ -1,4 +1,8 @@
 #include "licensing/FeatureGate.h"
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Licensing {
 

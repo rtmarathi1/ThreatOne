@@ -8,6 +8,7 @@
 #include <mutex>
 
 #include "core/Logger.h"
+#include <memory>
 
 namespace ThreatOne::Network {
 

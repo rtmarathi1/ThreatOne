@@ -8,6 +8,7 @@
 #include <optional>
 #include <cstdint>
 #include <cinttypes>
+#include <cstdio>
 
 namespace ThreatOne::Utils {
 

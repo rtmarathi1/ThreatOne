@@ -13,6 +13,7 @@
 
 #include <core/Error.h>
 #include "ConnectionManager.h"
+#include <utility>
 
 namespace ThreatOne::Database {
 

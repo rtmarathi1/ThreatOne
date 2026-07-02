@@ -6,6 +6,8 @@
 #include <mutex>
 #include <map>
 #include <chrono>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::SIEM {
 

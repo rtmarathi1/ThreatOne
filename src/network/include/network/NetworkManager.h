@@ -13,6 +13,8 @@
 
 #include <memory>
 #include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Network {
 

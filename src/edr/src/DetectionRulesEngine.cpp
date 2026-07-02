@@ -4,6 +4,9 @@
 #include <regex>
 #include <sstream>
 #include <algorithm>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::EDR {
 

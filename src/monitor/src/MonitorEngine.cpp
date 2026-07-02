@@ -4,6 +4,11 @@
 #include <chrono>
 #include <sstream>
 #include <iomanip>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Monitor {
 

@@ -4,6 +4,10 @@
 #include <cmath>
 #include <numeric>
 #include <set>
+#include <chrono>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Analytics {
 

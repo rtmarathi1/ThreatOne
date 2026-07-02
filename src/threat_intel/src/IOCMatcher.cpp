@@ -1,6 +1,13 @@
 #include "threat_intel/IOCMatcher.h"
 
 #include <algorithm>
+#include <cctype>
+#include <cstdint>
+#include <memory>
+#include <mutex>
+#include <shared_mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <firewall/RuleEngine.h>
+#include <cstdint>
 
 using namespace ThreatOne::Firewall;
 

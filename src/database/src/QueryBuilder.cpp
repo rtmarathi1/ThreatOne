@@ -4,6 +4,11 @@
 #include <database/QueryBuilder.h>
 #include <sstream>
 #include <stdexcept>
+#include <cstddef>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Database {
 

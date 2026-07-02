@@ -3,6 +3,12 @@
 #include <fstream>
 #include <sstream>
 #include <regex>
+#include <cctype>
+#include <cstdint>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Scanner {
 

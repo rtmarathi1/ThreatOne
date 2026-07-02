@@ -3,6 +3,7 @@
 
 #include <thread>
 #include <chrono>
+#include <string>
 
 using namespace ThreatOne::Api;
 

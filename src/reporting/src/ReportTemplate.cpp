@@ -2,6 +2,11 @@
 
 #include <algorithm>
 #include <sstream>
+#include <map>
+#include <mutex>
+#include <optional>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Reporting {
 

@@ -3,6 +3,9 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace fs = std::filesystem;
 

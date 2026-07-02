@@ -12,6 +12,7 @@
 #include <core/Error.h>
 #include <core/Logger.h>
 #include "IOCTypes.h"
+#include <cstdint>
 
 namespace ThreatOne::ThreatIntel {
 

@@ -16,6 +16,9 @@
 #include <atomic>
 
 #include "core/Event.h"
+#include <mutex>
+#include <type_traits>
+#include <utility>
 
 namespace ThreatOne::Core {
 

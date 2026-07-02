@@ -1,6 +1,12 @@
 #include "threat_intel/CVEDatabase.h"
 
 #include <algorithm>
+#include <cctype>
+#include <chrono>
+#include <mutex>
+#include <shared_mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

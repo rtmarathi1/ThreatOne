@@ -9,6 +9,8 @@
 #include <set>
 
 #include "core/Logger.h"
+#include <cstdint>
+#include <utility>
 
 namespace ThreatOne::Analytics {
 

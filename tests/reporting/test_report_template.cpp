@@ -1,5 +1,8 @@
 #include <doctest/doctest.h>
 #include <reporting/ReportTemplate.h>
+#include <map>
+#include <string>
+#include <vector>
 
 using namespace ThreatOne::Reporting;
 

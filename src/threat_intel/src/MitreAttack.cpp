@@ -1,6 +1,11 @@
 #include "threat_intel/MitreAttack.h"
 
 #include <algorithm>
+#include <cctype>
+#include <mutex>
+#include <shared_mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

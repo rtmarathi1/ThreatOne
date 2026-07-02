@@ -2,6 +2,7 @@
 #include <threat_intel/ThreatCorrelation.h>
 
 #include <chrono>
+#include <vector>
 
 using namespace ThreatOne::ThreatIntel;
 

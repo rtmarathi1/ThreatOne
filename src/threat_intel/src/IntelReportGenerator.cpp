@@ -4,6 +4,11 @@
 #include <algorithm>
 #include <chrono>
 #include <sstream>
+#include <cstdint>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

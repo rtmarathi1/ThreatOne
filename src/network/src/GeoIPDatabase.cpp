@@ -2,6 +2,12 @@
 
 #include <sstream>
 #include <algorithm>
+#include <cstdint>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Network {
 

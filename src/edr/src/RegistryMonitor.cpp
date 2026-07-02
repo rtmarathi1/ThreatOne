@@ -5,6 +5,10 @@
 #include <chrono>
 #include <algorithm>
 #include <functional>
+#include <mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::EDR {
 

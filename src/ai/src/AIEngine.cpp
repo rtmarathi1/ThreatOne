@@ -1,6 +1,10 @@
 #include "ai/AIEngine.h"
 
 #include <sstream>
+#include <algorithm>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::AI {
 

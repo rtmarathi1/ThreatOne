@@ -4,6 +4,8 @@
 // Parses one-indicator-per-line text, auto-detecting IOC type
 
 #include "IFeedParser.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

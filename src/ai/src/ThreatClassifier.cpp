@@ -2,6 +2,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::AI {
 

@@ -3,6 +3,11 @@
 #include <algorithm>
 #include <sstream>
 #include <cstring>
+#include <cstdint>
+#include <mutex>
+#include <string>
+#include <utility>
+#include <vector>
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>

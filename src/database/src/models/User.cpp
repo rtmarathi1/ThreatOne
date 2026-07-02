@@ -1,6 +1,10 @@
 // ThreatOne Database Model - User Implementation
 
 #include <database/models/User.h>
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Database::Models {
 

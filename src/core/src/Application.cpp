@@ -9,6 +9,8 @@
 #include <csignal>
 #include <thread>
 #include <chrono>
+#include <mutex>
+#include <utility>
 
 namespace ThreatOne::Core {
 

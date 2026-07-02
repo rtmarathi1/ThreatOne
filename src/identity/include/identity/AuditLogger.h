@@ -4,6 +4,8 @@
 #include <vector>
 #include <chrono>
 #include <functional>
+#include <cstddef>
+#include <cstdint>
 
 namespace ThreatOne::Identity {
 

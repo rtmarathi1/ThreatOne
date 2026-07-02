@@ -3,6 +3,10 @@
 #include <algorithm>
 #include <chrono>
 #include <sstream>
+#include <mutex>
+#include <optional>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Reporting {
 

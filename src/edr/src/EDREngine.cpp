@@ -5,6 +5,9 @@
 #include <chrono>
 #include <sstream>
 #include <iomanip>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::EDR {
 

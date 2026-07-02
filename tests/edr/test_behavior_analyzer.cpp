@@ -2,6 +2,7 @@
 #include <edr/BehaviorAnalyzer.h>
 
 #include <chrono>
+#include <string>
 
 using namespace ThreatOne::EDR;
 

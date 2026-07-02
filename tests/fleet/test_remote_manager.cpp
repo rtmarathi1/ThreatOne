@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <fleet/RemoteManager.h>
+#include <string>
 
 using namespace ThreatOne::Fleet;
 

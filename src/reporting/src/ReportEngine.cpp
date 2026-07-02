@@ -1,4 +1,6 @@
 #include "reporting/ReportEngine.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Reporting {
 

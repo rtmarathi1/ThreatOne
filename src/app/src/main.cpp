@@ -14,6 +14,7 @@
 #include "core/EventBus.h"
 #include "core/Types.h"
 #include "app/AppController.h"
+#include <memory>
 
 #ifdef ENABLE_QT_BUILD
 #include <QGuiApplication>

@@ -13,6 +13,7 @@
 #include <core/Logger.h>
 #include "IOCTypes.h"
 #include "IOCManager.h"
+#include <cstdint>
 
 namespace ThreatOne::ThreatIntel {
 

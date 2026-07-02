@@ -4,6 +4,10 @@
 #include <numeric>
 #include <ctime>
 #include <map>
+#include <chrono>
+#include <mutex>
+#include <string>
+#include <vector>
 
 namespace ThreatOne::Analytics {
 

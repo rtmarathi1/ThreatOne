@@ -1,6 +1,10 @@
 // ThreatOne Database Model - Threat Implementation
 
 #include <database/models/Threat.h>
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Database::Models {
 

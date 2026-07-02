@@ -1,6 +1,8 @@
 // ThreatOne App - EDRViewModel Implementation
 
 #include "app/viewmodels/EDRViewModel.h"
+#include <string>
+#include <vector>
 
 namespace ThreatOne::App {
 

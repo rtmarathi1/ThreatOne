@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <licensing/LicenseValidator.h>
+#include <string>
 
 using namespace ThreatOne::Licensing;
 

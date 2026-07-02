@@ -1,4 +1,6 @@
 #include "core/ServiceLocator.h"
+#include <mutex>
+#include <shared_mutex>
 
 namespace ThreatOne::Core {
 

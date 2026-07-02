@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <firewall/ConnectionTracker.h>
+#include <string>
 
 using namespace ThreatOne::Firewall;
 

@@ -4,6 +4,9 @@
 #include <regex>
 #include <chrono>
 #include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

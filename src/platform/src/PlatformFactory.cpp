@@ -3,6 +3,8 @@
 
 #include "platform/PlatformFactory.h"
 #include "core/Logger.h"
+#include <memory>
+#include <string>
 
 #ifdef __linux__
 #include "LinuxDriver.h"

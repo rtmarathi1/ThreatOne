@@ -5,6 +5,10 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #include <filesystem>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <utility>
 
 namespace ThreatOne::Core {
 

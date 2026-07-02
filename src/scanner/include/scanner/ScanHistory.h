@@ -11,6 +11,7 @@
 #include <database/ConnectionManager.h>
 #include <database/models/Scan.h>
 #include <database/models/Threat.h>
+#include <cstdint>
 
 namespace ThreatOne::Scanner {
 

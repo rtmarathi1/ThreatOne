@@ -7,6 +7,7 @@
 #include <vector>
 #include <set>
 #include <optional>
+#include <cstdint>
 
 namespace ThreatOne::Plugin {
 

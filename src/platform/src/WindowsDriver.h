@@ -18,6 +18,8 @@
 #include <atomic>
 #include <thread>
 #include <mutex>
+#include <cstdint>
+#include <memory>
 
 namespace ThreatOne::Platform {
 

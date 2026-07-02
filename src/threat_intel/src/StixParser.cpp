@@ -3,6 +3,9 @@
 #include <nlohmann/json.hpp>
 #include <chrono>
 #include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::ThreatIntel {
 

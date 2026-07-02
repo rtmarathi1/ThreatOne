@@ -14,6 +14,12 @@
 #include <sstream>
 #include <filesystem>
 #include <array>
+#include <chrono>
+#include <cstdint>
+#include <string>
+#include <thread>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Platform {
 

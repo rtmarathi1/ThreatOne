@@ -3,6 +3,8 @@
 
 #include <fstream>
 #include <filesystem>
+#include <cstdint>
+#include <vector>
 
 using namespace ThreatOne::Scanner;
 

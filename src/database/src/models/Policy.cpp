@@ -1,6 +1,10 @@
 // ThreatOne Database Model - Policy Implementation
 
 #include <database/models/Policy.h>
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace ThreatOne::Database::Models {
 
