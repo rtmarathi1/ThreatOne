@@ -157,6 +157,21 @@ std::vector<SIEMAlert> CorrelationEngine::evaluate() {
 
             newAlerts.push_back(alert);
 
+            // Publish SecurityEvent via EventBus for cross-module notification
+            Core::SecurityEvent::Severity evtSev = Core::SecurityEvent::Severity::Medium;
+            if (rule.severity == "critical") evtSev = Core::SecurityEvent::Severity::Critical;
+            else if (rule.severity == "high") evtSev = Core::SecurityEvent::Severity::High;
+            else if (rule.severity == "low") evtSev = Core::SecurityEvent::Severity::Low;
+
+            Core::SecurityEvent event(
+                Core::SecurityEvent::Type::Anomaly,
+                evtSev,
+                "Correlation triggered: " + rule.name + " (" + std::to_string(matchedIds.size()) + " matches)");
+            event.setSource("CorrelationEngine");
+            event.setData("ruleId", ruleId);
+            event.setData("matchCount", static_cast<int>(matchedIds.size()));
+            Core::EventBus::instance().publish(event);
+
             logger_.info("Correlation rule fired: rule={}, matches={}", rule.name, matchedIds.size());
         }
     }

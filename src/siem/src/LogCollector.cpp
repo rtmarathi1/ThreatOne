@@ -84,6 +84,14 @@ bool LogCollector::collect(const LogEntry& entry) {
         callback(entry);
     }
 
+    // Publish event via EventBus for cross-module notification
+    Core::SecurityEvent event(
+        Core::SecurityEvent::Type::ScanStarted,
+        Core::SecurityEvent::Severity::Info,
+        "Log ingested from source: " + entry.source);
+    event.setSource("LogCollector");
+    Core::EventBus::instance().publish(event);
+
     logger_.debug("Collected log from source: {}", entry.source);
     return true;
 }

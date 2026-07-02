@@ -1,4 +1,5 @@
 #include "siem/SIEMEngine.h"
+#include "core/ServiceLocator.h"
 
 #include <algorithm>
 #include <map>
@@ -18,6 +19,13 @@ SIEMEngine::SIEMEngine()
     sigmaRuleEngine_ = std::make_shared<SigmaRuleEngine>();
     correlationEngine_ = std::make_shared<CorrelationEngine>(logStorage_);
     alertEngine_ = std::make_shared<AlertEngine>();
+
+    // Register key sub-components with ServiceLocator for cross-module access
+    auto& locator = Core::ServiceLocator::instance();
+    locator.registerService<AlertEngine>(alertEngine_);
+    locator.registerService<CorrelationEngine>(correlationEngine_);
+    locator.registerService<LogStorage>(logStorage_);
+    locator.registerService<LogCollector>(logCollector_);
 
     logger_.info("SIEMEngine initialized with all sub-components");
 }

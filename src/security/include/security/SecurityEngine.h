@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <vector>
 #include <mutex>
+#include <atomic>
 #include <unordered_map>
 
 namespace ThreatOne::ThreatIntel {
@@ -55,7 +56,7 @@ private:
     mutable std::mutex threatsMutex_;
     std::vector<ThreatInfo> detectedThreats_;
     std::unordered_map<std::string, size_t> threatIndex_; // id -> index in detectedThreats_
-    uint64_t nextThreatId_ = 1;
+    std::atomic<uint64_t> nextThreatId_{1};
 };
 
 } // namespace ThreatOne::Security

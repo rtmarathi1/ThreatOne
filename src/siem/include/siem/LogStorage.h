@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 #include <deque>
-#include <unordered_map>
 #include <chrono>
 #include <atomic>
 
@@ -70,7 +69,6 @@ public:
 private:
     mutable std::mutex mutex_;
     std::deque<LogEntry> entries_;
-    std::unordered_map<std::string, size_t> idIndex_;  // id -> position in deque
     RetentionPolicy policy_;
     std::atomic<int> nextLogId_{1};
     std::atomic<long> totalIngested_{0};

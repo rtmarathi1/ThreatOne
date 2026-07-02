@@ -2,6 +2,8 @@
 
 #include "soc/ISOCManager.h"
 #include "core/Logger.h"
+#include "core/EventBus.h"
+#include "core/Event.h"
 
 #include <mutex>
 #include <map>

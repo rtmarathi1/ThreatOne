@@ -4,6 +4,8 @@
 #include "siem/LogStorage.h"
 #include "siem/DetectionRules.h"
 #include "core/Logger.h"
+#include "core/EventBus.h"
+#include "core/Event.h"
 
 #include <memory>
 #include <mutex>

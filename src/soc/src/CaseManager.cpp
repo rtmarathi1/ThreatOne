@@ -19,6 +19,16 @@ std::string CaseManager::createCase(const CaseInfo& caseInfo) {
     cases_[id] = stored;
 
     logger_.info("Created case: id={}, title={}", id, caseInfo.title);
+
+    // Publish SecurityEvent via EventBus for cross-module notification
+    Core::SecurityEvent event(
+        Core::SecurityEvent::Type::Anomaly,
+        Core::SecurityEvent::Severity::Medium,
+        "SOC case created: " + caseInfo.title);
+    event.setSource("CaseManager");
+    event.setData("caseId", id);
+    Core::EventBus::instance().publish(event);
+
     return id;
 }
 
@@ -48,6 +58,17 @@ bool CaseManager::escalate(const std::string& caseId, const std::string& reason)
     it->second.status = CaseStatus::Escalated;
     it->second.escalationReason = reason;
     logger_.info("Escalated case {}: {}", caseId, reason);
+
+    // Publish SecurityEvent via EventBus for cross-module notification
+    Core::SecurityEvent event(
+        Core::SecurityEvent::Type::PolicyViolation,
+        Core::SecurityEvent::Severity::High,
+        "SOC case escalated: " + caseId + " - " + reason);
+    event.setSource("CaseManager");
+    event.setData("caseId", caseId);
+    event.setData("reason", reason);
+    Core::EventBus::instance().publish(event);
+
     return true;
 }
 

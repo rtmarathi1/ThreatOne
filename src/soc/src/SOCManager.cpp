@@ -1,4 +1,5 @@
 #include "soc/SOCManager.h"
+#include "core/ServiceLocator.h"
 
 #include <algorithm>
 #include <mutex>
@@ -18,6 +19,12 @@ SOCManager::SOCManager()
     timelineBuilder_ = std::make_shared<TimelineBuilder>();
     dashboardData_ = std::make_shared<SOCDashboardData>();
     alertTriage_ = std::make_shared<AlertTriage>();
+
+    // Register key sub-components with ServiceLocator for cross-module access
+    auto& locator = Core::ServiceLocator::instance();
+    locator.registerService<CaseManager>(caseManager_);
+    locator.registerService<IncidentManager>(incidentManager_);
+    locator.registerService<PlaybookEngine>(playbookEngine_);
 
     logger_.info("SOCManager initialized with all sub-components");
 }

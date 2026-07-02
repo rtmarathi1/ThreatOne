@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-008",
+  "type": "fix",
+  "description": "Address semantic review issues: fix SecurityEngine data race on nextThreatId_, remove stale idIndex_ from LogStorage, and add EventBus/ServiceLocator integration to key sub-components",
+  "status": "in_progress",
+  "steps": [
+    "Make SecurityEngine::nextThreatId_ std::atomic<uint64_t> to fix data race in generateThreatId()",
+    "Remove dead idIndex_ from LogStorage since getById already does linear scan and the index is stale after eviction",
+    "Add EventBus publishing to AlertEngine::createAlert (publish SecurityEvent when alerts are created)",
+    "Add EventBus publishing to CorrelationEngine::evaluate (publish SecurityEvent when correlations fire)",
+    "Add EventBus publishing to LogCollector::collect (publish SecurityEvent on ingestion)",
+    "Add EventBus publishing to CaseManager::createCase and CaseManager::escalate (publish SecurityEvent)",
+    "Register key engines (SIEMEngine, SOCManager) with ServiceLocator in their constructors",
+    "Rebuild and run all tests to confirm all 1618 tests still pass"
+  ],
+  "acceptance_criteria": [
+    "SecurityEngine::nextThreatId_ is std::atomic<uint64_t> - no data race possible",
+    "LogStorage has no idIndex_ - dead code removed",
+    "AlertEngine publishes SecurityEvent via EventBus when creating alerts",
+    "CorrelationEngine publishes SecurityEvent via EventBus when correlations fire",
+    "LogCollector publishes SecurityEvent via EventBus on ingestion",
+    "CaseManager publishes SecurityEvent via EventBus on case creation and escalation",
+    "Key engines registered with ServiceLocator in facade constructors",
+    "Build succeeds, all 1618 tests pass"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ./tests/threatone_tests"
+  ],
+  "blocked_reason": null,
+  "findings": null
+}

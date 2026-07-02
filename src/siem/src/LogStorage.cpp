@@ -27,14 +27,11 @@ std::string LogStorage::store(const LogEntry& entry) {
     // Apply retention if needed
     if (entries_.size() >= policy_.maxEntries && policy_.evictOldest) {
         if (!entries_.empty()) {
-            idIndex_.erase(entries_.front().id);
             entries_.pop_front();
         }
     }
 
-    size_t pos = entries_.size();
     entries_.push_back(stored);
-    idIndex_[stored.id] = pos;
     totalIngested_++;
 
     logger_.debug("Stored log: id={}, source={}", stored.id, stored.source);
@@ -56,14 +53,11 @@ std::vector<std::string> LogStorage::storeBatch(const std::vector<LogEntry>& ent
         // Apply retention if needed
         if (entries_.size() >= policy_.maxEntries && policy_.evictOldest) {
             if (!entries_.empty()) {
-                idIndex_.erase(entries_.front().id);
                 entries_.pop_front();
             }
         }
 
-        size_t pos = entries_.size();
         entries_.push_back(stored);
-        idIndex_[stored.id] = pos;
         totalIngested_++;
         ids.push_back(stored.id);
     }
@@ -134,7 +128,6 @@ size_t LogStorage::applyRetention() {
 
     size_t evicted = 0;
     while (entries_.size() > policy_.maxEntries) {
-        idIndex_.erase(entries_.front().id);
         entries_.pop_front();
         evicted++;
     }

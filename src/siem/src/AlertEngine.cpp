@@ -22,6 +22,23 @@ std::string AlertEngine::createAlert(const SIEMAlert& alert) {
     }
     alerts_[stored.id] = stored;
     logger_.info("Created alert: id={}, title={}", stored.id, stored.title);
+
+    // Publish SecurityEvent via EventBus
+    Core::SecurityEvent::Severity severity = Core::SecurityEvent::Severity::Medium;
+    if (stored.severity == "critical") severity = Core::SecurityEvent::Severity::Critical;
+    else if (stored.severity == "high") severity = Core::SecurityEvent::Severity::High;
+    else if (stored.severity == "low") severity = Core::SecurityEvent::Severity::Low;
+    else if (stored.severity == "info") severity = Core::SecurityEvent::Severity::Info;
+
+    Core::SecurityEvent event(
+        Core::SecurityEvent::Type::ThreatDetected,
+        severity,
+        "SIEM Alert: " + stored.title);
+    event.setSource("AlertEngine");
+    event.setData("alertId", stored.id);
+    event.setData("ruleId", stored.ruleId);
+    Core::EventBus::instance().publish(event);
+
     return stored.id;
 }
 
