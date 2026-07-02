@@ -26,7 +26,9 @@ Rectangle {
                 { title: "Dashboard", icon: "\u2302", page: "pages/dashboard/DashboardPage.qml", badge: 0 },
                 { title: "Scanner", icon: "\u2315", page: "pages/scanner/ScannerPage.qml", badge: 0 },
                 { title: "Firewall", icon: "\u2616", page: "pages/firewall/FirewallPage.qml", badge: 2 },
-                { title: "EDR", icon: "\u2699", page: "pages/edr/EDRPage.qml", badge: 5 }
+                { title: "EDR", icon: "\u2699", page: "pages/edr/EDRPage.qml", badge: 5 },
+                { title: "SIEM", icon: "\u2261", page: "pages/siem/SIEMPage.qml", badge: 8 },
+                { title: "XDR", icon: "\u2604", page: "pages/xdr/XDRPage.qml", badge: 2 }
             ]
         },
         {
@@ -42,6 +44,7 @@ Rectangle {
             items: [
                 { title: "Assets", icon: "\u2316", page: "pages/assets/AssetsPage.qml", badge: 0 },
                 { title: "Users", icon: "\u263A", page: "pages/users/UsersPage.qml", badge: 0 },
+                { title: "Monitor", icon: "\u2316", page: "pages/monitor/MonitorPage.qml", badge: 0 },
                 { title: "Settings", icon: "\u2699", page: "pages/settings/SettingsPage.qml", badge: 0 }
             ]
         }

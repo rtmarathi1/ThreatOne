@@ -1,0 +1,28 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Add the missing SIEM, XDR, and Monitor pages with real-time data simulation and professional visuals, update the NavigationSidebar to include all new sections, and register new files in qml.qrc.",
+  "status": "in_progress",
+  "steps": [
+    "1. CREATE SIEM PAGE (qml/pages/siem/SIEMPage.qml): Create a professional SIEM page following the existing page pattern (import themes, widgets, use Rectangle root with objectName, local QtObject viewModel). Include: (a) Header with title 'SIEM Analytics' and subtitle. (b) Real-time stats row with StatCards for Events/sec (updating via Timer every 1.5s, range 1200-3500), Alerts Generated, Correlation Rules Active, Log Sources. (c) A live event log section using ListView with a Timer (1000ms) that prepends new simulated log events (varying severities, sources like 'Firewall', 'Endpoint', 'DNS', 'Auth', random IPs). (d) A correlation rules status section. (e) A ThreatChart showing events-per-minute with rolling data (Timer 2000ms).",
+    "2. CREATE XDR PAGE (qml/pages/xdr/XDRPage.qml): Create a professional XDR (Extended Detection & Response) page. Include: (a) Header with title 'XDR Platform'. (b) Stats row: Active Investigations, Automated Responses, Data Sources Connected, Mean Time to Respond. (c) Investigation queue using a DataTable or custom ListView showing active investigations with severity, status, affected assets, analyst assigned. (d) A kill chain visualization showing stages (Reconnaissance through Impact) with colored indicators showing detections at each stage. (e) Timer-based updates: new investigations appearing, status changes, response time counter ticking.",
+    "3. CREATE MONITOR PAGE (qml/pages/monitor/MonitorPage.qml): Create a system monitoring page. Include: (a) Header 'System Monitor'. (b) Real-time resource gauges: CPU, Memory, Disk, Network I/O - each with a ProgressRing or bar that updates via Timer (1500ms). (c) A live network traffic chart (ThreatChart with rolling data). (d) Service health grid showing services (Agent, Scanner Engine, Firewall, SIEM Collector, XDR Correlator, Update Service, etc.) with green/yellow/red status dots that occasionally flicker. (e) Uptime counters and throughput metrics.",
+    "4. UPDATE NAVIGATION SIDEBAR (qml/components/NavigationSidebar.qml): Add new items to the sections array. Add 'SIEM' (icon '\\u2261', page 'pages/siem/SIEMPage.qml', badge 8) and 'XDR' (icon '\\u2604', page 'pages/xdr/XDRPage.qml', badge 2) to the 'Security' section after EDR. Add 'Monitor' (icon '\\u2316', page 'pages/monitor/MonitorPage.qml', badge 0) to the 'Management' section before Settings. Adjust keyboard shortcut count in main.qml if needed to cover new pages.",
+    "5. UPDATE QML.QRC (src/app/qml.qrc): Add entries for all three new pages with proper aliases: qml/pages/siem/SIEMPage.qml, qml/pages/xdr/XDRPage.qml, qml/pages/monitor/MonitorPage.qml."
+  ],
+  "acceptance_criteria": [
+    "Three new QML page files exist: qml/pages/siem/SIEMPage.qml, qml/pages/xdr/XDRPage.qml, qml/pages/monitor/MonitorPage.qml",
+    "Each new page has Timer-based real-time data updates",
+    "NavigationSidebar sections array includes SIEM, XDR, and Monitor entries",
+    "src/app/qml.qrc includes aliases for all three new pages",
+    "New pages follow existing patterns: import themes/widgets, Rectangle root, objectName, local QtObject viewModel",
+    "Non-Qt Linux build still succeeds",
+    "All 1618 existing tests still pass"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ./tests/threatone_tests"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

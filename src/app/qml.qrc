@@ -27,6 +27,9 @@
         <file alias="qml/pages/reports/ReportsPage.qml">../../qml/pages/reports/ReportsPage.qml</file>
         <file alias="qml/pages/scanner/ScannerPage.qml">../../qml/pages/scanner/ScannerPage.qml</file>
         <file alias="qml/pages/settings/SettingsPage.qml">../../qml/pages/settings/SettingsPage.qml</file>
+        <file alias="qml/pages/siem/SIEMPage.qml">../../qml/pages/siem/SIEMPage.qml</file>
+        <file alias="qml/pages/xdr/XDRPage.qml">../../qml/pages/xdr/XDRPage.qml</file>
+        <file alias="qml/pages/monitor/MonitorPage.qml">../../qml/pages/monitor/MonitorPage.qml</file>
         <file alias="qml/pages/threat_intel/ThreatIntelPage.qml">../../qml/pages/threat_intel/ThreatIntelPage.qml</file>
         <file alias="qml/pages/users/UsersPage.qml">../../qml/pages/users/UsersPage.qml</file>
 
