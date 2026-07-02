@@ -1,6 +1,7 @@
 #include "updates/UpdateManager.h"
 
 #include <algorithm>
+#include <memory>
 #include <sstream>
 #include <chrono>
 #include <iomanip>
@@ -13,7 +14,13 @@
 namespace ThreatOne::Updates {
 
 UpdateManager::UpdateManager()
-    : logger_("UpdateManager") {
+    : versionChecker_(std::make_shared<VersionChecker>()),
+      deltaUpdater_(std::make_shared<DeltaUpdater>()),
+      rollbackManager_(std::make_shared<RollbackManager>()),
+      updateVerifier_(std::make_shared<UpdateVerifier>()),
+      channelManager_(std::make_shared<ChannelManager>()),
+      updateScheduler_(std::make_shared<UpdateScheduler>()),
+      logger_("UpdateManager") {
     logger_.info("Update Manager initialized");
 }
 

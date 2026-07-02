@@ -4,9 +4,16 @@
 // Metrics collection, health monitoring, heartbeat, feature usage tracking
 
 #include "telemetry/ITelemetryManager.h"
+#include "telemetry/MetricsCollector.h"
+#include "telemetry/CrashReporter.h"
+#include "telemetry/UsageAnalytics.h"
+#include "telemetry/DiagnosticsEngine.h"
+#include "telemetry/TelemetryTransport.h"
+#include "telemetry/PrivacyFilter.h"
 #include "core/Logger.h"
 
 #include <chrono>
+#include <memory>
 #include <mutex>
 #include <unordered_map>
 #include <map>
@@ -55,6 +62,14 @@ public:
     // Uptime
     [[nodiscard]] double getUptimeSeconds() const override;
 
+    // Access to sub-components
+    [[nodiscard]] MetricsCollector& getMetricsCollector() { return *metricsCollector_; }
+    [[nodiscard]] CrashReporter& getCrashReporter() { return *crashReporter_; }
+    [[nodiscard]] UsageAnalytics& getUsageAnalytics() { return *usageAnalytics_; }
+    [[nodiscard]] DiagnosticsEngine& getDiagnosticsEngine() { return *diagnosticsEngine_; }
+    [[nodiscard]] TelemetryTransport& getTelemetryTransport() { return *telemetryTransport_; }
+    [[nodiscard]] PrivacyFilter& getPrivacyFilter() { return *privacyFilter_; }
+
 private:
     std::string generateCheckId();
     std::string getCurrentTimestamp() const;
@@ -85,6 +100,14 @@ private:
 
     // ID generation
     int nextCheckId_ = 1;
+
+    // Sub-components
+    std::shared_ptr<MetricsCollector> metricsCollector_;
+    std::shared_ptr<CrashReporter> crashReporter_;
+    std::shared_ptr<UsageAnalytics> usageAnalytics_;
+    std::shared_ptr<DiagnosticsEngine> diagnosticsEngine_;
+    std::shared_ptr<TelemetryTransport> telemetryTransport_;
+    std::shared_ptr<PrivacyFilter> privacyFilter_;
 };
 
 } // namespace ThreatOne::Telemetry

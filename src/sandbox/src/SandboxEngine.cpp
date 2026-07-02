@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <memory>
 #include <sstream>
 #include <mutex>
 #include <optional>
@@ -11,7 +12,13 @@
 namespace ThreatOne::Sandbox {
 
 SandboxEngine::SandboxEngine()
-    : logger_("SandboxEngine") {
+    : processSandbox_(std::make_shared<ProcessSandbox>()),
+      networkSandbox_(std::make_shared<NetworkSandbox>()),
+      behaviorRecorder_(std::make_shared<BehaviorRecorder>()),
+      sandboxAnalyzer_(std::make_shared<SandboxAnalyzer>()),
+      malwareDetonation_(std::make_shared<MalwareDetonation>()),
+      sandboxReporter_(std::make_shared<SandboxReporter>()),
+      logger_("SandboxEngine") {
     initDefaultProfiles();
     logger_.info("Sandbox Engine initialized");
 }

@@ -4,9 +4,16 @@
 // Full update lifecycle, channels, staged rollouts, signature updates
 
 #include "updates/IUpdateManager.h"
+#include "updates/VersionChecker.h"
+#include "updates/DeltaUpdater.h"
+#include "updates/RollbackManager.h"
+#include "updates/UpdateVerifier.h"
+#include "updates/ChannelManager.h"
+#include "updates/UpdateScheduler.h"
 #include "core/Logger.h"
 
 #include <mutex>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 #include <optional>
@@ -54,6 +61,14 @@ public:
     void setCurrentVersion(const std::string& version);
     void setCompatibilityMatrix(const std::string& version, const VersionCompatibility& compat);
 
+    // Access to sub-components
+    [[nodiscard]] VersionChecker& getVersionChecker() { return *versionChecker_; }
+    [[nodiscard]] DeltaUpdater& getDeltaUpdater() { return *deltaUpdater_; }
+    [[nodiscard]] RollbackManager& getRollbackManager() { return *rollbackManager_; }
+    [[nodiscard]] UpdateVerifier& getUpdateVerifier() { return *updateVerifier_; }
+    [[nodiscard]] ChannelManager& getChannelManager() { return *channelManager_; }
+    [[nodiscard]] UpdateScheduler& getUpdateScheduler() { return *updateScheduler_; }
+
 private:
     std::string generateId();
     std::string getCurrentTimestamp() const;
@@ -70,6 +85,15 @@ private:
     std::unordered_map<std::string, VersionCompatibility> compatibilityMatrix_;
     std::vector<UpdateHistoryEntry> history_;
     int nextId_ = 1;
+
+    // Sub-components
+    std::shared_ptr<VersionChecker> versionChecker_;
+    std::shared_ptr<DeltaUpdater> deltaUpdater_;
+    std::shared_ptr<RollbackManager> rollbackManager_;
+    std::shared_ptr<UpdateVerifier> updateVerifier_;
+    std::shared_ptr<ChannelManager> channelManager_;
+    std::shared_ptr<UpdateScheduler> updateScheduler_;
+
     ThreatOne::Core::ModuleLogger logger_;
 };
 

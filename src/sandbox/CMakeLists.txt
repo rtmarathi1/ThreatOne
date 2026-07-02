@@ -1,5 +1,13 @@
+find_package(Threads REQUIRED)
+
 add_library(threatone_sandbox STATIC
     src/SandboxEngine.cpp
+    src/ProcessSandbox.cpp
+    src/NetworkSandbox.cpp
+    src/BehaviorRecorder.cpp
+    src/SandboxAnalyzer.cpp
+    src/MalwareDetonation.cpp
+    src/SandboxReporter.cpp
 )
 
 target_include_directories(threatone_sandbox
@@ -13,4 +21,5 @@ target_link_libraries(threatone_sandbox
     PUBLIC
         threatone_compiler_options
         threatone_core
+        Threads::Threads
 )

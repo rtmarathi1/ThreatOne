@@ -132,7 +132,19 @@ set(TEST_SOURCES
     plugin/test_plugin_permissions.cpp
     plugin/test_plugin_version_manager.cpp
     updates/test_update_manager.cpp
+    updates/test_version_checker.cpp
+    updates/test_delta_updater.cpp
+    updates/test_rollback_manager.cpp
+    updates/test_update_verifier.cpp
+    updates/test_channel_manager.cpp
+    updates/test_update_scheduler.cpp
     sandbox/test_sandbox_engine.cpp
+    sandbox/test_process_sandbox.cpp
+    sandbox/test_network_sandbox.cpp
+    sandbox/test_behavior_recorder.cpp
+    sandbox/test_sandbox_analyzer.cpp
+    sandbox/test_malware_detonation.cpp
+    sandbox/test_sandbox_reporter.cpp
     hids/test_hids_engine.cpp
     hids/test_file_integrity_monitor.cpp
     hids/test_log_analyzer.cpp
@@ -147,6 +159,12 @@ set(TEST_SOURCES
     monitor/test_health_checker.cpp
     monitor/test_service_watcher.cpp
     telemetry/test_telemetry_manager.cpp
+    telemetry/test_metrics_collector.cpp
+    telemetry/test_crash_reporter.cpp
+    telemetry/test_usage_analytics.cpp
+    telemetry/test_diagnostics_engine.cpp
+    telemetry/test_telemetry_transport.cpp
+    telemetry/test_privacy_filter.cpp
 )
 
 # Create the test executable

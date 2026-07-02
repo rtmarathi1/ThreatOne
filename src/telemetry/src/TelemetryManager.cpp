@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <memory>
 #include <sstream>
 #include <cstdint>
 #include <mutex>
@@ -14,7 +15,13 @@ namespace ThreatOne::Telemetry {
 
 TelemetryManager::TelemetryManager()
     : logger_("TelemetryManager")
-    , startTime_(std::chrono::steady_clock::now()) {
+    , startTime_(std::chrono::steady_clock::now())
+    , metricsCollector_(std::make_shared<MetricsCollector>())
+    , crashReporter_(std::make_shared<CrashReporter>())
+    , usageAnalytics_(std::make_shared<UsageAnalytics>())
+    , diagnosticsEngine_(std::make_shared<DiagnosticsEngine>())
+    , telemetryTransport_(std::make_shared<TelemetryTransport>())
+    , privacyFilter_(std::make_shared<PrivacyFilter>()) {
     logger_.info("TelemetryManager initialized");
 }
 
