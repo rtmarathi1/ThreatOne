@@ -90,6 +90,14 @@ set(TEST_SOURCES
     vulnerability/test_asset_vulnerability_map.cpp
     vulnerability/test_vulnerability_trends.cpp
     xdr/test_xdr_engine.cpp
+    xdr/test_endpoint_correlation.cpp
+    xdr/test_network_correlation.cpp
+    xdr/test_email_correlation.cpp
+    xdr/test_cloud_correlation.cpp
+    xdr/test_identity_correlation.cpp
+    xdr/test_automated_investigation.cpp
+    xdr/test_threat_hunting.cpp
+    xdr/test_response_orchestrator.cpp
     siem/test_siem_engine.cpp
     siem/test_log_collector.cpp
     siem/test_log_parser.cpp

@@ -1,10 +1,19 @@
 #pragma once
 
 #include "xdr/IXDREngine.h"
+#include "xdr/EndpointCorrelation.h"
+#include "xdr/NetworkCorrelation.h"
+#include "xdr/EmailCorrelation.h"
+#include "xdr/CloudCorrelation.h"
+#include "xdr/IdentityCorrelation.h"
+#include "xdr/AutomatedInvestigation.h"
+#include "xdr/ThreatHunting.h"
+#include "xdr/ResponseOrchestrator.h"
 #include "core/Logger.h"
 
 #include <mutex>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -30,27 +39,38 @@ public:
     [[nodiscard]] std::vector<ResponseAction> getResponseActions() override;
     [[nodiscard]] std::vector<Investigation> getActiveInvestigations() override;
 
+    // Access to sub-components for advanced usage
+    [[nodiscard]] EndpointCorrelation& getEndpointCorrelation() { return *endpointCorrelation_; }
+    [[nodiscard]] NetworkCorrelation& getNetworkCorrelation() { return *networkCorrelation_; }
+    [[nodiscard]] EmailCorrelation& getEmailCorrelation() { return *emailCorrelation_; }
+    [[nodiscard]] CloudCorrelation& getCloudCorrelation() { return *cloudCorrelation_; }
+    [[nodiscard]] IdentityCorrelation& getIdentityCorrelation() { return *identityCorrelation_; }
+    [[nodiscard]] AutomatedInvestigation& getAutomatedInvestigation() { return *automatedInvestigation_; }
+    [[nodiscard]] ThreatHunting& getThreatHunting() { return *threatHunting_; }
+    [[nodiscard]] ResponseOrchestrator& getResponseOrchestrator() { return *responseOrchestrator_; }
+
 private:
-    std::string generateEventId();
     std::string generateCorrelationId();
-    std::string generateInvestigationId();
-    std::string generateActionId();
     std::string generateIncidentId();
 
-    bool eventsWithinTimeWindow(const EndpointEvent& a, const EndpointEvent& b, int windowSeconds = 300) const;
     int severityToInt(const std::string& severity) const;
 
+    // Sub-components
+    std::shared_ptr<EndpointCorrelation> endpointCorrelation_;
+    std::shared_ptr<NetworkCorrelation> networkCorrelation_;
+    std::shared_ptr<EmailCorrelation> emailCorrelation_;
+    std::shared_ptr<CloudCorrelation> cloudCorrelation_;
+    std::shared_ptr<IdentityCorrelation> identityCorrelation_;
+    std::shared_ptr<AutomatedInvestigation> automatedInvestigation_;
+    std::shared_ptr<ThreatHunting> threatHunting_;
+    std::shared_ptr<ResponseOrchestrator> responseOrchestrator_;
+
+    // Orchestrator-level state
     mutable std::mutex mutex_;
-    int nextEventId_ = 1;
     int nextCorrelationId_ = 1;
-    int nextInvestigationId_ = 1;
-    int nextActionId_ = 1;
     int nextIncidentId_ = 1;
 
-    std::map<std::string, EndpointEvent> events_;
     std::map<std::string, Correlation> correlations_;
-    std::map<std::string, Investigation> investigations_;
-    std::map<std::string, ResponseAction> responseActions_;
     std::map<std::string, Incident> incidents_;
 
     ThreatOne::Core::ModuleLogger logger_;
