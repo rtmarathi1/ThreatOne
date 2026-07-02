@@ -1,0 +1,91 @@
+name: Build ThreatOne
+
+# Builds ThreatOne Enterprise on Windows and Linux, runs the test suite,
+# and uploads the compiled binaries as downloadable artifacts.
+#
+# After a run completes, download the ".exe" from:
+#   GitHub repo -> Actions tab -> select the workflow run -> Artifacts section
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:   # allows manual "Run workflow" button in the Actions tab
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Windows build (produces threatone.exe)
+  # ---------------------------------------------------------------------------
+  build-windows:
+    name: Build Windows (MSVC)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Configure (CMake + Visual Studio 2022)
+        run: cmake -B build -G "Visual Studio 17 2022" -A x64 -DENABLE_QT=OFF
+
+      - name: Build (Release)
+        run: cmake --build build --config Release
+
+      - name: Run tests
+        working-directory: build
+        run: ctest --output-on-failure -C Release
+
+      - name: Locate built executable
+        shell: pwsh
+        run: |
+          Write-Host "Searching for threatone.exe..."
+          Get-ChildItem -Recurse build -Filter "threatone.exe" | ForEach-Object { Write-Host $_.FullName }
+
+      - name: Stage artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          $exe = Get-ChildItem -Recurse build -Filter "threatone.exe" | Select-Object -First 1
+          if ($null -eq $exe) { Write-Error "threatone.exe not found"; exit 1 }
+          Copy-Item $exe.FullName -Destination dist\threatone.exe
+          Write-Host "Copied $($exe.FullName) -> dist\threatone.exe"
+
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: threatone-windows-x64
+          path: dist/threatone.exe
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------------
+  # Linux build (produces threatone ELF binary)
+  # ---------------------------------------------------------------------------
+  build-linux:
+    name: Build Linux (GCC)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Configure (CMake)
+        run: cmake -B build -DENABLE_QT=OFF -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      - name: Run tests
+        working-directory: build
+        run: ctest --output-on-failure
+
+      - name: Stage artifact
+        run: |
+          mkdir -p dist
+          cp build/bin/threatone dist/threatone
+
+      - name: Upload Linux binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: threatone-linux-x64
+          path: dist/threatone
+          if-no-files-found: error
