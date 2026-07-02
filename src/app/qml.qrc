@@ -1,0 +1,51 @@
+<!DOCTYPE RCC>
+<!--
+  ThreatOne Enterprise - QML resource bundle.
+
+  This file lives in src/app, while the QML sources live in the repository-root
+  qml/ directory (../../qml relative to this file). Each entry uses an "alias" so
+  that at runtime the files are exposed under exactly "qrc:/qml/..." which is the
+  path QQmlApplicationEngine loads in main.cpp (qrc:/qml/main.qml) and the path
+  the relative directory imports ("themes", "components", "../themes", ...)
+  resolve against. The qmldir files are included so the ThemeManager singleton
+  and widget types resolve correctly.
+-->
+<RCC>
+    <qresource prefix="/">
+        <file alias="qml/App.qml">../../qml/App.qml</file>
+        <file alias="qml/main.qml">../../qml/main.qml</file>
+
+        <file alias="qml/components/NavigationSidebar.qml">../../qml/components/NavigationSidebar.qml</file>
+        <file alias="qml/components/StatusBar.qml">../../qml/components/StatusBar.qml</file>
+        <file alias="qml/components/TopBar.qml">../../qml/components/TopBar.qml</file>
+
+        <file alias="qml/pages/assets/AssetsPage.qml">../../qml/pages/assets/AssetsPage.qml</file>
+        <file alias="qml/pages/dashboard/DashboardPage.qml">../../qml/pages/dashboard/DashboardPage.qml</file>
+        <file alias="qml/pages/edr/EDRPage.qml">../../qml/pages/edr/EDRPage.qml</file>
+        <file alias="qml/pages/firewall/FirewallPage.qml">../../qml/pages/firewall/FirewallPage.qml</file>
+        <file alias="qml/pages/incidents/IncidentsPage.qml">../../qml/pages/incidents/IncidentsPage.qml</file>
+        <file alias="qml/pages/reports/ReportsPage.qml">../../qml/pages/reports/ReportsPage.qml</file>
+        <file alias="qml/pages/scanner/ScannerPage.qml">../../qml/pages/scanner/ScannerPage.qml</file>
+        <file alias="qml/pages/settings/SettingsPage.qml">../../qml/pages/settings/SettingsPage.qml</file>
+        <file alias="qml/pages/threat_intel/ThreatIntelPage.qml">../../qml/pages/threat_intel/ThreatIntelPage.qml</file>
+        <file alias="qml/pages/users/UsersPage.qml">../../qml/pages/users/UsersPage.qml</file>
+
+        <file alias="qml/themes/qmldir">../../qml/themes/qmldir</file>
+        <file alias="qml/themes/ThemeManager.qml">../../qml/themes/ThemeManager.qml</file>
+        <file alias="qml/themes/DarkTheme.qml">../../qml/themes/DarkTheme.qml</file>
+        <file alias="qml/themes/LightTheme.qml">../../qml/themes/LightTheme.qml</file>
+
+        <file alias="qml/widgets/qmldir">../../qml/widgets/qmldir</file>
+        <file alias="qml/widgets/AlertCard.qml">../../qml/widgets/AlertCard.qml</file>
+        <file alias="qml/widgets/AlertsWidget.qml">../../qml/widgets/AlertsWidget.qml</file>
+        <file alias="qml/widgets/DataTable.qml">../../qml/widgets/DataTable.qml</file>
+        <file alias="qml/widgets/ProgressRing.qml">../../qml/widgets/ProgressRing.qml</file>
+        <file alias="qml/widgets/SearchBar.qml">../../qml/widgets/SearchBar.qml</file>
+        <file alias="qml/widgets/SecurityScoreGauge.qml">../../qml/widgets/SecurityScoreGauge.qml</file>
+        <file alias="qml/widgets/SecurityScoreWidget.qml">../../qml/widgets/SecurityScoreWidget.qml</file>
+        <file alias="qml/widgets/StatCard.qml">../../qml/widgets/StatCard.qml</file>
+        <file alias="qml/widgets/ThreatChart.qml">../../qml/widgets/ThreatChart.qml</file>
+        <file alias="qml/widgets/ThreatMapWidget.qml">../../qml/widgets/ThreatMapWidget.qml</file>
+        <file alias="qml/widgets/TimelineView.qml">../../qml/widgets/TimelineView.qml</file>
+    </qresource>
+</RCC>

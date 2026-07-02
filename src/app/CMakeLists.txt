@@ -60,14 +60,27 @@ if(ENABLE_QT)
 
     target_compile_definitions(threatone_app PRIVATE ENABLE_QT_BUILD)
 
-    # Collect QML files for the module
-    file(GLOB_RECURSE QML_FILES "${CMAKE_SOURCE_DIR}/qml/*.qml")
+    # QML is bundled via a classic Qt resource (qml.qrc). Every .qml file (and the
+    # themes/widgets qmldir files) is aliased under "qml/..." so the runtime paths
+    # are exactly "qrc:/qml/main.qml" etc. - matching the URL loaded by
+    # QQmlApplicationEngine in main.cpp and the relative directory imports used by
+    # the QML files. AUTORCC compiles the .qrc into the target automatically.
+    #
+    # NOTE: we deliberately do NOT use qt_add_qml_module here. That macro exposes
+    # resources under "qrc:/<URI>/..." (e.g. qrc:/ThreatOne/...), which would not
+    # match the "qrc:/qml/..." URL the engine loads, so the window would never
+    # appear. The classic .qrc approach guarantees the paths line up. The C++
+    # ViewModel types are still registered via qmlRegisterType() in main.cpp under
+    # the "ThreatOne.ViewModels" URI, independent of this file resource.
+    set(CMAKE_AUTORCC ON)
+    target_sources(threatone_app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/qml.qrc)
+endif()
 
-    qt_add_qml_module(threatone_app
-        URI ThreatOne
-        VERSION 1.0
-        QML_FILES ${QML_FILES}
-    )
+# Windows version resource: populates the executable's file properties
+# (Details tab). Handled automatically by the RC compiler under MSVC/Ninja and
+# has no effect on non-Windows builds.
+if(WIN32)
+    target_sources(threatone_app PRIVATE resources/threatone.rc)
 endif()
 
 set_target_properties(threatone_app PROPERTIES

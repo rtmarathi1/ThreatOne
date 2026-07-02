@@ -33,7 +33,18 @@ jobs:
         with:
           arch: x64
 
-      - name: Configure (CMake + Ninja + MSVC)
+      - name: Install Qt 6.8.1 (MSVC 2022 64-bit)
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.1'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2022_64'
+          # qtbase (Core/Gui/Widgets/Network/Sql) and qtdeclarative (Quick/Qml)
+          # come by default. The extra modules used by ThreatOne are added here.
+          modules: 'qtcharts qtquick3d qtwebsockets qtshadertools'
+
+      - name: Configure (CMake + Ninja + MSVC, Qt GUI)
         run: cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DENABLE_QT=ON
 
       - name: Build (Release) and report errors
@@ -63,25 +74,34 @@ jobs:
         working-directory: build
         run: ctest --output-on-failure
 
-      - name: Stage executable
+      - name: Stage GUI app and bundle Qt runtime (windeployqt)
         if: always()
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path dist | Out-Null
           $exe = Get-ChildItem -Recurse build -Filter "threatone.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
           if ($null -eq $exe) {
             Write-Warning "threatone.exe not produced - build failed. See error lines above / windows-build-log artifact."
           } else {
-            Copy-Item $exe.FullName -Destination dist\threatone.exe
+            New-Item -ItemType Directory -Force -Path dist\ThreatOne | Out-Null
+            Copy-Item $exe.FullName -Destination dist\ThreatOne\threatone.exe
             Write-Host "Staged: $($exe.FullName)"
+
+            # Locate windeployqt: it is on PATH after install-qt-action, but fall
+            # back to the Qt bin directory if necessary.
+            $windeployqt = "windeployqt"
+            if (-not (Get-Command $windeployqt -ErrorAction SilentlyContinue)) {
+              $windeployqt = Join-Path $env:QT_ROOT_DIR "bin\windeployqt.exe"
+            }
+            Write-Host "Using windeployqt: $windeployqt"
+            & $windeployqt --qmldir "$env:GITHUB_WORKSPACE\qml" --release --no-translations dist\ThreatOne\threatone.exe
           }
 
-      - name: Upload Windows executable
+      - name: Upload Windows GUI application
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: threatone-windows-x64
-          path: dist/threatone.exe
+          name: threatone-windows-gui
+          path: dist/ThreatOne
           if-no-files-found: warn
 
   # ---------------------------------------------------------------------------
@@ -96,7 +116,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure (CMake)
-        run: cmake -B build -DENABLE_QT=ON -DCMAKE_BUILD_TYPE=Release
+        run: cmake -B build -DENABLE_QT=OFF -DCMAKE_BUILD_TYPE=Release
 
       - name: Build and report errors
         continue-on-error: true
