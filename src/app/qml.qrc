@@ -42,6 +42,7 @@
         <file alias="qml/widgets/AlertCard.qml">../../qml/widgets/AlertCard.qml</file>
         <file alias="qml/widgets/AlertsWidget.qml">../../qml/widgets/AlertsWidget.qml</file>
         <file alias="qml/widgets/DataTable.qml">../../qml/widgets/DataTable.qml</file>
+        <file alias="qml/widgets/GlassCard.qml">../../qml/widgets/GlassCard.qml</file>
         <file alias="qml/widgets/ProgressRing.qml">../../qml/widgets/ProgressRing.qml</file>
         <file alias="qml/widgets/SearchBar.qml">../../qml/widgets/SearchBar.qml</file>
         <file alias="qml/widgets/SecurityScoreGauge.qml">../../qml/widgets/SecurityScoreGauge.qml</file>

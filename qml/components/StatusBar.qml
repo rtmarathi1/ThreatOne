@@ -18,6 +18,24 @@ Rectangle {
     property real memoryUsage: 0.45
     property bool updateAvailable: true
 
+    Behavior on cpuUsage { NumberAnimation { duration: 600; easing.type: Easing.OutCubic } }
+    Behavior on memoryUsage { NumberAnimation { duration: 600; easing.type: Easing.OutCubic } }
+
+    // Real-time resource fluctuation timer
+    Timer {
+        interval: 2000
+        running: true
+        repeat: true
+        onTriggered: {
+            statusBar.cpuUsage = statusBar.cpuUsage + (Math.random() * 0.06 - 0.03)
+            if (statusBar.cpuUsage < 0.15) statusBar.cpuUsage = 0.15
+            if (statusBar.cpuUsage > 0.95) statusBar.cpuUsage = 0.95
+            statusBar.memoryUsage = statusBar.memoryUsage + (Math.random() * 0.04 - 0.02)
+            if (statusBar.memoryUsage < 0.15) statusBar.memoryUsage = 0.15
+            if (statusBar.memoryUsage > 0.95) statusBar.memoryUsage = 0.95
+        }
+    }
+
     // Top border
     Rectangle {
         anchors.left: parent.left
@@ -42,6 +60,12 @@ Rectangle {
                 width: 6; height: 6; radius: 3
                 color: statusBar.connected ? ThemeManager.successColor : ThemeManager.errorColor
                 anchors.verticalCenter: parent.verticalCenter
+
+                SequentialAnimation on opacity {
+                    loops: Animation.Infinite
+                    NumberAnimation { to: 0.5; duration: 1500; easing.type: Easing.InOutQuad }
+                    NumberAnimation { to: 1.0; duration: 1500; easing.type: Easing.InOutQuad }
+                }
             }
 
             Text {

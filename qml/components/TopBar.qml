@@ -72,6 +72,18 @@ Rectangle {
             border.color: globalSearch.activeFocus ? ThemeManager.primaryColor : ThemeManager.borderColor
             border.width: 1
 
+            // Subtle gradient overlay on focus
+            Rectangle {
+                anchors.fill: parent
+                radius: parent.radius
+                opacity: globalSearch.activeFocus ? 1.0 : 0.0
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: Qt.rgba(ThemeManager.primaryColor.r, ThemeManager.primaryColor.g, ThemeManager.primaryColor.b, 0.05) }
+                    GradientStop { position: 1.0; color: "transparent" }
+                }
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+            }
+
             RowLayout {
                 anchors.fill: parent
                 anchors.leftMargin: 14
@@ -247,11 +259,13 @@ Rectangle {
 
     // Notification dropdown panel
     Rectangle {
-        visible: topBar.notificationPanelOpen
+        id: notificationPanel
+        visible: opacity > 0
+        opacity: topBar.notificationPanelOpen ? 1.0 : 0.0
         anchors.right: parent.right
         anchors.top: parent.bottom
         anchors.rightMargin: 80
-        anchors.topMargin: 4
+        anchors.topMargin: topBar.notificationPanelOpen ? 4 : -10
         width: 320
         height: notifContent.implicitHeight + ThemeManager.spacingLarge * 2
         radius: ThemeManager.radiusLarge
@@ -259,6 +273,9 @@ Rectangle {
         border.color: ThemeManager.borderColor
         border.width: 1
         z: 1000
+
+        Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+        Behavior on anchors.topMargin { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
         ColumnLayout {
             id: notifContent
@@ -347,11 +364,13 @@ Rectangle {
 
     // User menu dropdown
     Rectangle {
-        visible: topBar.userMenuOpen
+        id: userMenuPanel
+        visible: opacity > 0
+        opacity: topBar.userMenuOpen ? 1.0 : 0.0
         anchors.right: parent.right
         anchors.top: parent.bottom
         anchors.rightMargin: 20
-        anchors.topMargin: 4
+        anchors.topMargin: topBar.userMenuOpen ? 4 : -10
         width: 180
         height: userMenuCol.implicitHeight + ThemeManager.spacingMedium * 2
         radius: ThemeManager.radiusLarge
@@ -359,6 +378,9 @@ Rectangle {
         border.color: ThemeManager.borderColor
         border.width: 1
         z: 1000
+
+        Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+        Behavior on anchors.topMargin { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
         Column {
             id: userMenuCol

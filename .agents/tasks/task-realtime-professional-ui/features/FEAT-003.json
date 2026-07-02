@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Add professional visual polish across all existing pages and components - glassmorphism card styling, gradient backgrounds, glow effects on interactive elements, smooth hover animations, and ensure all interactive buttons/elements have visual feedback. Make the overall app look like a premium enterprise security product rather than a prototype.",
+  "status": "in_progress",
+  "steps": [
+    "1. GLASSMORPHISM WIDGET (qml/widgets/GlassCard.qml): Create a new reusable GlassCard widget that provides: semi-transparent background (surfaceColor with 0.85 opacity in dark mode), subtle inner gradient (from transparent to rgba white 0.02), softened border (1px with glassBorder color from ThemeManager), and a subtle top highlight line (1px gradient from transparent-white-transparent at 5% opacity). Register it in qml/widgets/qmldir and src/app/qml.qrc.",
+    "2. ENHANCED STAT CARD VISUALS (qml/widgets/StatCard.qml): Add hover animation that slightly lifts the card (scale 1.02 with Behavior). Add a subtle animated gradient shimmer that moves across the top border on hover. Ensure the accent bar from FEAT-001 glows slightly when hovered.",
+    "3. TIMELINE VIEW ENHANCEMENT (qml/widgets/TimelineView.qml): Add smooth entry animations for new timeline events (NumberAnimation on opacity and x offset). Add a subtle pulse animation on the most recent timeline dot to indicate 'live'. Add a gradient fade at the bottom to indicate scrollable content.",
+    "4. ALERT CARD POLISH (qml/widgets/AlertCard.qml): Add a subtle animated glow on the left severity bar for critical alerts (SequentialAnimation cycling opacity). Add smooth hover transitions (color change animates over 200ms using Behavior on color). Ensure the severity dot pulses for critical severity.",
+    "5. EXISTING PAGES INTERACTIVE POLISH (qml/pages/firewall/FirewallPage.qml, qml/pages/edr/EDRPage.qml, qml/pages/incidents/IncidentsPage.qml): Add Timer-based real-time data updates to these pages similar to the dashboard pattern - values should shift slightly every 2-3 seconds. Add Behavior animations on their viewModel numeric properties.",
+    "6. STATUS BAR REAL-TIME (qml/components/StatusBar.qml): Add a Timer (2000ms) that updates cpuUsage and memoryUsage with small fluctuations. Add Behavior animations on the progress bar widths so they animate smoothly. Add a subtle pulsing animation on the connection status dot.",
+    "7. TOP BAR POLISH (qml/components/TopBar.qml): Add a subtle gradient to the search bar on focus. Add smooth transition animations to dropdown panels (opacity + translateY animation instead of instant show/hide)."
+  ],
+  "acceptance_criteria": [
+    "New GlassCard.qml widget exists in qml/widgets/ and is registered in qmldir and qml.qrc",
+    "StatCards have hover scale animation",
+    "Timeline events have entry animations and the latest dot pulses",
+    "Critical AlertCards have glowing severity bars",
+    "Firewall, EDR, and Incidents pages update their data values in real-time",
+    "Status bar CPU/memory values fluctuate with smooth bar animations",
+    "All hover interactions provide visual feedback with smooth transitions",
+    "Non-Qt Linux build still succeeds",
+    "All 1618 existing tests still pass"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ./tests/threatone_tests"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

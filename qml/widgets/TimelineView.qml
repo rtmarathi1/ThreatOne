@@ -58,6 +58,7 @@ Rectangle {
 
         // Timeline list
         ListView {
+            id: timelineListView
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
@@ -67,6 +68,11 @@ Rectangle {
             delegate: Item {
                 width: ListView.view.width
                 height: eventContent.implicitHeight + ThemeManager.spacingMedium
+
+                // Entry animation: fade in and slide from left
+                opacity: 0
+                Component.onCompleted: opacity = 1
+                Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
 
                 // Vertical connector line
                 Rectangle {
@@ -91,6 +97,14 @@ Rectangle {
                                           root.severityColor(modelData.severity).g,
                                           root.severityColor(modelData.severity).b, 0.3)
                     border.width: 3
+
+                    // Pulse animation on the first (most recent) timeline dot to indicate "live"
+                    SequentialAnimation on scale {
+                        running: index === 0
+                        loops: Animation.Infinite
+                        NumberAnimation { to: 1.3; duration: 800; easing.type: Easing.InOutQuad }
+                        NumberAnimation { to: 1.0; duration: 800; easing.type: Easing.InOutQuad }
+                    }
                 }
 
                 // Timestamp on the left
@@ -132,6 +146,22 @@ Rectangle {
                     }
                 }
             }
+        }
+    }
+
+    // Gradient fade at the bottom to indicate scrollable content
+    Rectangle {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 1
+        anchors.leftMargin: 1
+        anchors.rightMargin: 1
+        height: 40
+        radius: ThemeManager.radiusLarge
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: "transparent" }
+            GradientStop { position: 1.0; color: ThemeManager.surfaceColor }
         }
     }
 }

@@ -1,6 +1,7 @@
 module ThreatOne.Widgets
 AlertCard 1.0 AlertCard.qml
 DataTable 1.0 DataTable.qml
+GlassCard 1.0 GlassCard.qml
 ProgressRing 1.0 ProgressRing.qml
 SearchBar 1.0 SearchBar.qml
 SecurityScoreGauge 1.0 SecurityScoreGauge.qml

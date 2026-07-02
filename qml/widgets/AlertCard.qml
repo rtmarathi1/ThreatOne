@@ -38,13 +38,25 @@ Rectangle {
 
     // Left severity accent bar
     Rectangle {
+        id: severityBar
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         width: 4
         radius: 2
         color: root.severityColor
+
+        // Pulsing glow animation for critical alerts
+        SequentialAnimation on opacity {
+            running: root.severity === "critical"
+            loops: Animation.Infinite
+            NumberAnimation { to: 0.6; duration: 800; easing.type: Easing.InOutQuad }
+            NumberAnimation { to: 1.0; duration: 800; easing.type: Easing.InOutQuad }
+        }
     }
+
+    // Smooth hover color transition
+    Behavior on color { ColorAnimation { duration: 200 } }
 
     ColumnLayout {
         id: contentColumn

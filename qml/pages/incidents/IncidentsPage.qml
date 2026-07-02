@@ -19,6 +19,29 @@ Rectangle {
         property int investigatingCount: 6
         property int resolvedCount: 7
         property int closedCount: 3
+
+        Behavior on totalIncidents { NumberAnimation { duration: 600 } }
+        Behavior on criticalCount { NumberAnimation { duration: 600 } }
+        Behavior on openCount { NumberAnimation { duration: 600 } }
+        Behavior on investigatingCount { NumberAnimation { duration: 600 } }
+    }
+
+    // Real-time data update timer
+    Timer {
+        interval: 2500
+        running: true
+        repeat: true
+        onTriggered: {
+            incidentViewModel.totalIncidents = incidentViewModel.totalIncidents + Math.floor(Math.random() * 3) - 1
+            if (incidentViewModel.totalIncidents < 20) incidentViewModel.totalIncidents = 20
+            if (incidentViewModel.totalIncidents > 35) incidentViewModel.totalIncidents = 35
+            incidentViewModel.criticalCount = incidentViewModel.criticalCount + Math.floor(Math.random() * 3) - 1
+            if (incidentViewModel.criticalCount < 1) incidentViewModel.criticalCount = 1
+            if (incidentViewModel.criticalCount > 6) incidentViewModel.criticalCount = 6
+            incidentViewModel.investigatingCount = incidentViewModel.investigatingCount + Math.floor(Math.random() * 3) - 1
+            if (incidentViewModel.investigatingCount < 3) incidentViewModel.investigatingCount = 3
+            if (incidentViewModel.investigatingCount > 10) incidentViewModel.investigatingCount = 10
+        }
     }
 
     property bool showDetail: false

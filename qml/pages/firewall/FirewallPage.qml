@@ -15,6 +15,26 @@ Rectangle {
         property int rulesActive: 23
         property real bandwidth: 45.2
         property int totalRules: 28
+
+        Behavior on activeConnections { NumberAnimation { duration: 600 } }
+        Behavior on blockedToday { NumberAnimation { duration: 600 } }
+        Behavior on bandwidth { NumberAnimation { duration: 600 } }
+    }
+
+    // Real-time data update timer
+    Timer {
+        interval: 2500
+        running: true
+        repeat: true
+        onTriggered: {
+            firewallViewModel.activeConnections = firewallViewModel.activeConnections + Math.floor(Math.random() * 5) - 2
+            if (firewallViewModel.activeConnections < 120) firewallViewModel.activeConnections = 120
+            if (firewallViewModel.activeConnections > 180) firewallViewModel.activeConnections = 180
+            firewallViewModel.blockedToday = firewallViewModel.blockedToday + Math.floor(Math.random() * 3) + 1
+            firewallViewModel.bandwidth = firewallViewModel.bandwidth + (Math.random() * 4 - 2)
+            if (firewallViewModel.bandwidth < 20) firewallViewModel.bandwidth = 20
+            if (firewallViewModel.bandwidth > 80) firewallViewModel.bandwidth = 80
+        }
     }
 
     property int currentTab: 0

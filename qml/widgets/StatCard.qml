@@ -11,6 +11,10 @@ Rectangle {
     border.width: 1
     implicitHeight: 120
 
+    // Hover scale animation
+    scale: hoverArea.containsMouse ? 1.02 : 1.0
+    Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+
     property string title: "Metric"
     property string value: "0"
     property string subtitle: ""
@@ -21,6 +25,14 @@ Rectangle {
     property string icon: ""
     property color iconColor: ThemeManager.primaryColor
     property var sparklineData: []
+
+    // Hover detection MouseArea
+    MouseArea {
+        id: hoverArea
+        anchors.fill: parent
+        hoverEnabled: true
+        acceptedButtons: Qt.NoButton
+    }
 
     // Gradient background
     Rectangle {
@@ -43,7 +55,8 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         radius: 2
         color: root.iconColor
-        opacity: 0.8
+        opacity: hoverArea.containsMouse ? 1.0 : 0.8
+        Behavior on opacity { NumberAnimation { duration: 200 } }
     }
 
     ColumnLayout {

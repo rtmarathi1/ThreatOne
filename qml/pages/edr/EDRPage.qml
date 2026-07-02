@@ -15,6 +15,26 @@ Rectangle {
         property int fileEvents: 1523
         property int activeAlerts: 12
         property int behaviorDetections: 3
+
+        Behavior on totalProcesses { NumberAnimation { duration: 600 } }
+        Behavior on fileEvents { NumberAnimation { duration: 600 } }
+        Behavior on activeAlerts { NumberAnimation { duration: 600 } }
+    }
+
+    // Real-time data update timer
+    Timer {
+        interval: 2500
+        running: true
+        repeat: true
+        onTriggered: {
+            edrViewModel.totalProcesses = edrViewModel.totalProcesses + Math.floor(Math.random() * 5) - 2
+            if (edrViewModel.totalProcesses < 260) edrViewModel.totalProcesses = 260
+            if (edrViewModel.totalProcesses > 320) edrViewModel.totalProcesses = 320
+            edrViewModel.fileEvents = edrViewModel.fileEvents + Math.floor(Math.random() * 30) + 5
+            edrViewModel.activeAlerts = edrViewModel.activeAlerts + Math.floor(Math.random() * 3) - 1
+            if (edrViewModel.activeAlerts < 5) edrViewModel.activeAlerts = 5
+            if (edrViewModel.activeAlerts > 20) edrViewModel.activeAlerts = 20
+        }
     }
 
     property int currentTab: 0
