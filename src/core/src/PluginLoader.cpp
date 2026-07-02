@@ -1,7 +1,11 @@
 #include "core/PluginLoader.h"
 #include "core/Logger.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
 #include <algorithm>
 #include <queue>
 #include <set>
@@ -88,6 +92,39 @@ Result<void> PluginLoader::load(const std::string& pluginName) {
     }
 
     // Load the shared library
+#ifdef _WIN32
+    void* handle = reinterpret_cast<void*>(LoadLibraryA(pluginPath.string().c_str()));
+    if (!handle) {
+        return Result<void>::err(
+            Error("Failed to load plugin: " + pluginName + " (error " + std::to_string(GetLastError()) + ")",
+                  ErrorCategory::Plugin,
+                  ErrorSeverity::Error));
+    }
+
+    // Look up factory function
+    auto createFn = reinterpret_cast<PluginCreateFn>(
+        GetProcAddress(reinterpret_cast<HMODULE>(handle), "threatone_plugin_create"));
+    auto destroyFn = reinterpret_cast<PluginDestroyFn>(
+        GetProcAddress(reinterpret_cast<HMODULE>(handle), "threatone_plugin_destroy"));
+
+    if (!createFn || !destroyFn) {
+        FreeLibrary(reinterpret_cast<HMODULE>(handle));
+        return Result<void>::err(
+            Error("Plugin missing entry points: " + pluginName,
+                  ErrorCategory::Plugin,
+                  ErrorSeverity::Error));
+    }
+
+    // Create plugin instance
+    IPlugin* rawPlugin = createFn();
+    if (!rawPlugin) {
+        FreeLibrary(reinterpret_cast<HMODULE>(handle));
+        return Result<void>::err(
+            Error("Plugin factory returned null: " + pluginName,
+                  ErrorCategory::Plugin,
+                  ErrorSeverity::Error));
+    }
+#else
     void* handle = dlopen(pluginPath.c_str(), RTLD_NOW | RTLD_LOCAL);
     if (!handle) {
         return Result<void>::err(
@@ -117,6 +154,7 @@ Result<void> PluginLoader::load(const std::string& pluginName) {
                   ErrorCategory::Plugin,
                   ErrorSeverity::Error));
     }
+#endif
 
     auto loaded = std::make_unique<LoadedPlugin>();
     loaded->name = rawPlugin->name();
@@ -140,6 +178,37 @@ Result<void> PluginLoader::loadFromPath(const std::filesystem::path& path) {
                   ErrorSeverity::Error));
     }
 
+#ifdef _WIN32
+    void* handle = reinterpret_cast<void*>(LoadLibraryA(path.string().c_str()));
+    if (!handle) {
+        return Result<void>::err(
+            Error("Failed to load plugin: " + path.string() + " (error " + std::to_string(GetLastError()) + ")",
+                  ErrorCategory::Plugin,
+                  ErrorSeverity::Error));
+    }
+
+    auto createFn = reinterpret_cast<PluginCreateFn>(
+        GetProcAddress(reinterpret_cast<HMODULE>(handle), "threatone_plugin_create"));
+    auto destroyFn = reinterpret_cast<PluginDestroyFn>(
+        GetProcAddress(reinterpret_cast<HMODULE>(handle), "threatone_plugin_destroy"));
+
+    if (!createFn || !destroyFn) {
+        FreeLibrary(reinterpret_cast<HMODULE>(handle));
+        return Result<void>::err(
+            Error("Plugin missing entry points: " + path.string(),
+                  ErrorCategory::Plugin,
+                  ErrorSeverity::Error));
+    }
+
+    IPlugin* rawPlugin = createFn();
+    if (!rawPlugin) {
+        FreeLibrary(reinterpret_cast<HMODULE>(handle));
+        return Result<void>::err(
+            Error("Plugin factory returned null: " + path.string(),
+                  ErrorCategory::Plugin,
+                  ErrorSeverity::Error));
+    }
+#else
     void* handle = dlopen(path.c_str(), RTLD_NOW | RTLD_LOCAL);
     if (!handle) {
         return Result<void>::err(
@@ -167,6 +236,7 @@ Result<void> PluginLoader::loadFromPath(const std::filesystem::path& path) {
                   ErrorCategory::Plugin,
                   ErrorSeverity::Error));
     }
+#endif
 
     auto loaded = std::make_unique<LoadedPlugin>();
     loaded->name = rawPlugin->name();
@@ -177,7 +247,11 @@ Result<void> PluginLoader::loadFromPath(const std::filesystem::path& path) {
     loaded->metadata = rawPlugin->metadata();
 
     if (plugins_.find(loaded->name) != plugins_.end()) {
+#ifdef _WIN32
+        FreeLibrary(reinterpret_cast<HMODULE>(handle));
+#else
         dlclose(handle);
+#endif
         return Result<void>::err(
             Error("Plugin already loaded: " + loaded->name,
                   ErrorCategory::Plugin,
@@ -210,7 +284,11 @@ Result<void> PluginLoader::unload(const std::string& pluginName) {
     // Close the shared library
     if (plugin->handle) {
         plugin->instance.reset();
+#ifdef _WIN32
+        FreeLibrary(reinterpret_cast<HMODULE>(plugin->handle));
+#else
         dlclose(plugin->handle);
+#endif
     }
 
     plugins_.erase(it);
@@ -282,7 +360,11 @@ void PluginLoader::shutdownAll() {
     for (auto& [name, plugin] : plugins_) {
         if (plugin->handle) {
             plugin->instance.reset();
+#ifdef _WIN32
+            FreeLibrary(reinterpret_cast<HMODULE>(plugin->handle));
+#else
             dlclose(plugin->handle);
+#endif
             plugin->handle = nullptr;
         }
     }

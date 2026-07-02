@@ -1,7 +1,12 @@
 #include <doctest/doctest.h>
 #include <edr/MemoryMonitor.h>
 
+#ifdef _WIN32
+#include <process.h>
+#define getpid _getpid
+#else
 #include <unistd.h>
+#endif
 
 using namespace ThreatOne::EDR;
 
