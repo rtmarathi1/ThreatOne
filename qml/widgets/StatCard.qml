@@ -6,8 +6,8 @@ import "../themes"
 Rectangle {
     id: root
     radius: ThemeManager.radiusLarge
-    color: ThemeManager.surfaceColor
-    border.color: ThemeManager.borderColor
+    color: "transparent"
+    border.color: ThemeManager.glassBorder
     border.width: 1
     implicitHeight: 120
 
@@ -22,9 +22,34 @@ Rectangle {
     property color iconColor: ThemeManager.primaryColor
     property var sparklineData: []
 
+    // Gradient background
+    Rectangle {
+        anchors.fill: parent
+        radius: parent.radius
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: ThemeManager.gradientStart }
+            GradientStop { position: 1.0; color: ThemeManager.gradientEnd }
+        }
+        opacity: 0.9
+    }
+
+    // Left accent strip
+    Rectangle {
+        id: accentStrip
+        width: 4
+        height: parent.height - 16
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+        anchors.verticalCenter: parent.verticalCenter
+        radius: 2
+        color: root.iconColor
+        opacity: 0.8
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: ThemeManager.spacingLarge
+        anchors.leftMargin: ThemeManager.spacingLarge + 8
         spacing: ThemeManager.spacingSmall
 
         // Title row with icon
@@ -68,13 +93,14 @@ Rectangle {
             }
         }
 
-        // Large value
+        // Large value with smooth opacity transition
         Text {
             text: root.value
             font.pixelSize: ThemeManager.fontSizeHeading
             font.weight: Font.Bold
             font.family: ThemeManager.fontFamily
             color: ThemeManager.textPrimary
+            Behavior on opacity { NumberAnimation { duration: ThemeManager.animNormal } }
         }
 
         // Subtitle
@@ -90,6 +116,7 @@ Rectangle {
 
         // Sparkline
         Canvas {
+            id: sparklineCanvas
             Layout.fillWidth: true
             height: 24
             visible: root.sparklineData.length > 1
@@ -116,8 +143,8 @@ Rectangle {
                 }
                 ctx.lineTo(width, height)
                 ctx.closePath()
-                ctx.fillStyle = ThemeManager.primaryColor
-                ctx.globalAlpha = 0.08
+                ctx.fillStyle = root.iconColor
+                ctx.globalAlpha = 0.12
                 ctx.fill()
                 ctx.globalAlpha = 1.0
 
@@ -128,9 +155,14 @@ Rectangle {
                     if (j === 0) ctx.moveTo(0, yy)
                     else ctx.lineTo(j * stepX, yy)
                 }
-                ctx.strokeStyle = ThemeManager.primaryColor
+                ctx.strokeStyle = root.iconColor
                 ctx.lineWidth = 1.5
                 ctx.stroke()
+            }
+
+            Connections {
+                target: root
+                function onSparklineDataChanged() { sparklineCanvas.requestPaint() }
             }
 
             Component.onCompleted: requestPaint()

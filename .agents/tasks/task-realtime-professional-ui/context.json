@@ -1,0 +1,33 @@
+{
+  "project_type": "C++ Qt6/QML desktop cybersecurity application",
+  "language": "C++ (engine) + QML (UI)",
+  "build_system": "CMake with ENABLE_QT option. Linux builds with ENABLE_QT=OFF (no Qt available), Windows CI builds with ENABLE_QT=ON + Qt 6.8.1",
+  "test_framework": "doctest (C++ unit tests, 1618 tests)",
+  "build_command": "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+  "test_command": "cd build && ./tests/threatone_tests",
+  "verification_instructions": "1. Run cmake build with ENABLE_QT=OFF. 2. Run all 1618 tests. 3. Verify QML files have valid syntax (no broken imports or references).",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+  "environment_constraints": "INTEGRATIONS_ONLY network - no external packages. Qt is NOT available on the sandbox. QML changes are validated syntactically only. C++ build must stay green with ENABLE_QT=OFF.",
+  "contribution_requirements": "Must not break non-Qt Linux build. Must not change C++ technology stack. Must work with Qt 6.8.1. All 1618 tests must pass.",
+  "key_patterns": "QML pages import '../../themes' and '../../widgets'. ThemeManager is a pragma Singleton. Pages use local QtObject for ViewModel placeholder data. StackView navigation uses page path strings relative to qml/. Widgets registered in qml/widgets/qmldir. New QML files must be added to src/app/qml.qrc with alias paths.",
+  "relevant_files": [
+    "qml/pages/dashboard/DashboardPage.qml",
+    "qml/components/NavigationSidebar.qml",
+    "qml/pages/scanner/ScannerPage.qml",
+    "qml/widgets/StatCard.qml",
+    "qml/widgets/ThreatChart.qml",
+    "qml/widgets/SecurityScoreGauge.qml",
+    "qml/widgets/ProgressRing.qml",
+    "qml/widgets/TimelineView.qml",
+    "qml/themes/ThemeManager.qml",
+    "qml/main.qml",
+    "qml/App.qml",
+    "qml/components/TopBar.qml",
+    "qml/components/StatusBar.qml",
+    "qml/widgets/qmldir",
+    "qml/themes/qmldir",
+    "src/app/qml.qrc"
+  ],
+  "directory_structure": "qml/ - all QML UI files. qml/pages/<module>/<Module>Page.qml - page components. qml/widgets/ - reusable widgets with qmldir. qml/themes/ - ThemeManager singleton + theme definitions. qml/components/ - NavigationSidebar, TopBar, StatusBar. src/app/qml.qrc - Qt resource file mapping all QML. src/app/include/app/viewmodels/ - C++ ViewModel headers. tests/ - C++ unit tests."
+}

@@ -116,6 +116,14 @@ QtObject {
     property int elevationLarge: 8
     property int elevationXL: 16
 
+    // --- Glassmorphism & Glow Tokens ---
+    property color glassBackground: darkMode ? Qt.rgba(1.0, 1.0, 1.0, 0.05) : Qt.rgba(1.0, 1.0, 1.0, 0.7)
+    property color glassBorder: darkMode ? Qt.rgba(1.0, 1.0, 1.0, 0.1) : Qt.rgba(0.0, 0.0, 0.0, 0.1)
+    property color glowColor: Qt.rgba(primaryColor.r, primaryColor.g, primaryColor.b, 0.4)
+    property color gradientStart: darkMode ? "#1a1a2e" : "#ffffff"
+    property color gradientEnd: darkMode ? "#0f1629" : "#f8fafc"
+    property color accentGlow: Qt.rgba(secondaryColor.r, secondaryColor.g, secondaryColor.b, 0.3)
+
     // --- Animation Durations (ms) ---
     property int animFast: 100
     property int animNormal: 200

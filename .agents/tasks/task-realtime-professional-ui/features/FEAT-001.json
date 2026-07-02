@@ -1,0 +1,35 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Add real-time data simulation and professional visual enhancements to the Dashboard, Scanner, and core widgets. Make the app feel alive with Timer-based data updates, animated transitions, glassmorphism cards, gradient backgrounds, glowing active elements, and pulsing indicators.",
+  "status": "in_progress",
+  "steps": [
+    "1. DASHBOARD REAL-TIME (qml/pages/dashboard/DashboardPage.qml): Add a Timer with 2000ms interval that randomizes dashboardViewModel properties within realistic ranges (securityScore 82-95, threatsBlocked incrementing by 1-5, activeScans 1-5, openIncidents 3-12, cpuUsage 30-80, memUsage 55-85, diskUsage 40-70). Add Behavior animations on all numeric properties so value changes animate smoothly. Update the 'Last updated' timestamp text with a Timer that refreshes every second.",
+    "2. DASHBOARD LIVE CHART (qml/pages/dashboard/DashboardPage.qml): Add a Timer (3000ms) that shifts chartData array left and appends a new random value (20-80), causing the ThreatChart to re-render with animated data. The chart should show 'rolling' live data.",
+    "3. DASHBOARD VISUAL UPGRADE (qml/pages/dashboard/DashboardPage.qml): Replace the plain Rectangle background of the security score, compliance, endpoint health, and system performance cards with glassmorphism style: semi-transparent background (opacity 0.7), subtle gradient overlay using a child Rectangle with gradient, and a subtle border glow (border.color with rgba of primaryColor at 0.3). Add a subtle pulsing animation (SequentialAnimation on opacity) to the network status indicator dot and critical alerts badge.",
+    "4. STAT CARD ENHANCEMENT (qml/widgets/StatCard.qml): Add Behavior on the value text opacity for smooth number transitions. Add a subtle gradient background to the card (from surfaceColor to slightly lighter variant). Add a left-side colored accent strip (4px wide) matching iconColor. Make the sparkline redraw when data changes by connecting to a timer.",
+    "5. THREAT CHART ANIMATION (qml/widgets/ThreatChart.qml): Add smooth transitions when chartData changes - use a property animation that interpolates between old and new values. Add a subtle glow effect to the line by drawing it twice (once with larger lineWidth and lower opacity as glow).",
+    "6. SECURITY SCORE GAUGE ENHANCEMENT (qml/widgets/SecurityScoreGauge.qml): Add a pulsing glow effect around the arc endpoint. Add a gradient-like effect on the score arc by drawing multiple concentric arcs with decreasing opacity. Add a rotating shimmer animation on the background track.",
+    "7. SCANNER REAL-TIME (qml/pages/scanner/ScannerPage.qml): When user clicks 'Start Scan', set scannerViewModel.scanning=true and start a Timer that increments progress by 0.005-0.02 every 200ms, increments filesScanned by 50-200, occasionally adds threats (1% chance per tick), updates elapsed time string, and updates currentFile with cycling realistic file paths. When progress reaches 1.0, stop the timer and mark scan complete. Add visual feedback: pulsing glow on the ProgressRing during scan, animated file path text that fades in/out.",
+    "8. PROGRESS RING ENHANCEMENT (qml/widgets/ProgressRing.qml): Add a glowing halo effect behind the progress arc (draw arc with larger lineWidth and lower opacity). Add a particle-like dot that travels along the arc ahead of the progress point. Ensure the ring animates smoothly during real-time scan updates.",
+    "9. THEME MANAGER ENHANCEMENTS (qml/themes/ThemeManager.qml): Add new color tokens for glassmorphism: glassBackground (rgba white 0.05 dark / rgba white 0.7 light), glassBorder (rgba white 0.1 dark / rgba black 0.1 light), glowColor (primaryColor with 0.4 alpha). Add gradientStart and gradientEnd colors for card backgrounds. Add accentGlow color property."
+  ],
+  "acceptance_criteria": [
+    "Dashboard data values change automatically every 2-3 seconds without user interaction",
+    "Threat chart shows rolling live data with new points appearing",
+    "Security score gauge arc animates smoothly when score value changes",
+    "Scanner 'Start Scan' button triggers a realistic scan simulation with progress advancing",
+    "StatCards have gradient backgrounds and accent strips",
+    "Pulsing indicators visible on network status dot and critical alerts",
+    "All number transitions use Behavior animations for smooth changes",
+    "ThemeManager has new glass/glow color tokens",
+    "Non-Qt Linux build (cmake -B build -DENABLE_QT=OFF && cmake --build build) still succeeds",
+    "All 1618 existing tests still pass"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ./tests/threatone_tests"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

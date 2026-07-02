@@ -25,6 +25,85 @@ Rectangle {
         property real memUsage: 67.0
         property real diskUsage: 54.0
         property bool networkUp: true
+
+        Behavior on securityScore { NumberAnimation { duration: 800; easing.type: Easing.OutCubic } }
+        Behavior on threatsBlocked { NumberAnimation { duration: 600; easing.type: Easing.OutCubic } }
+        Behavior on activeScans { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
+        Behavior on openIncidents { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
+        Behavior on cpuUsage { NumberAnimation { duration: 1000; easing.type: Easing.OutCubic } }
+        Behavior on memUsage { NumberAnimation { duration: 1000; easing.type: Easing.OutCubic } }
+        Behavior on diskUsage { NumberAnimation { duration: 1000; easing.type: Easing.OutCubic } }
+    }
+
+    // Real-time data simulation timer (2s interval)
+    Timer {
+        id: dataSimTimer
+        interval: 2000
+        running: true
+        repeat: true
+        onTriggered: {
+            dashboardViewModel.securityScore = 82 + Math.random() * 13
+            dashboardViewModel.threatsBlocked += Math.floor(1 + Math.random() * 5)
+            dashboardViewModel.activeScans = Math.floor(1 + Math.random() * 5)
+            dashboardViewModel.openIncidents = Math.floor(3 + Math.random() * 10)
+            dashboardViewModel.cpuUsage = 30 + Math.random() * 50
+            dashboardViewModel.memUsage = 55 + Math.random() * 30
+            dashboardViewModel.diskUsage = 40 + Math.random() * 30
+        }
+    }
+
+    // Last updated timestamp refresh (1s interval)
+    property string lastUpdatedTime: Qt.formatDateTime(new Date(), "hh:mm:ss AP")
+    Timer {
+        id: timestampTimer
+        interval: 1000
+        running: true
+        repeat: true
+        onTriggered: dashboardPage.lastUpdatedTime = Qt.formatDateTime(new Date(), "hh:mm:ss AP")
+    }
+
+    // Live chart data
+    property var liveChartData: [
+        { label: "Mon", value: 45 },
+        { label: "Tue", value: 62 },
+        { label: "Wed", value: 38 },
+        { label: "Thu", value: 71 },
+        { label: "Fri", value: 55 },
+        { label: "Sat", value: 29 },
+        { label: "Sun", value: 33 }
+    ]
+
+    // Chart data update timer (3s interval)
+    Timer {
+        id: chartUpdateTimer
+        interval: 3000
+        running: true
+        repeat: true
+        onTriggered: {
+            var newData = []
+            for (var i = 1; i < dashboardPage.liveChartData.length; i++) {
+                newData.push(dashboardPage.liveChartData[i])
+            }
+            var labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            newData.push({ label: labels[Math.floor(Math.random() * 7)], value: Math.floor(20 + Math.random() * 60) })
+            dashboardPage.liveChartData = newData
+        }
+    }
+
+    // Network status dot pulsing
+    property real networkDotOpacity: 1.0
+    SequentialAnimation on networkDotOpacity {
+        loops: Animation.Infinite
+        NumberAnimation { from: 1.0; to: 0.4; duration: 1000; easing.type: Easing.InOutSine }
+        NumberAnimation { from: 0.4; to: 1.0; duration: 1000; easing.type: Easing.InOutSine }
+    }
+
+    // Critical alerts badge pulsing
+    property real alertBadgePulse: 1.0
+    SequentialAnimation on alertBadgePulse {
+        loops: Animation.Infinite
+        NumberAnimation { from: 1.0; to: 0.6; duration: 800; easing.type: Easing.InOutSine }
+        NumberAnimation { from: 0.6; to: 1.0; duration: 800; easing.type: Easing.InOutSine }
     }
 
     ScrollView {
@@ -58,7 +137,7 @@ Rectangle {
                 }
                 Item { Layout.fillWidth: true }
                 Text {
-                    text: "Last updated: " + Qt.formatDateTime(new Date(), "hh:mm:ss AP")
+                    text: "Last updated: " + dashboardPage.lastUpdatedTime
                     font.pixelSize: ThemeManager.fontSizeSmall
                     font.family: ThemeManager.fontFamily
                     color: ThemeManager.textMuted
@@ -126,17 +205,9 @@ Rectangle {
                 ThreatChart {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 300
-                    title: "Threat Activity (7 days)"
+                    title: "Threat Activity (Live)"
                     chartType: "line"
-                    chartData: [
-                        { label: "Mon", value: 45 },
-                        { label: "Tue", value: 62 },
-                        { label: "Wed", value: 38 },
-                        { label: "Thu", value: 71 },
-                        { label: "Fri", value: 55 },
-                        { label: "Sat", value: 29 },
-                        { label: "Sun", value: 33 }
-                    ]
+                    chartData: dashboardPage.liveChartData
                 }
 
                 // Compliance Score Card
@@ -144,9 +215,19 @@ Rectangle {
                     Layout.preferredWidth: 220
                     Layout.preferredHeight: 300
                     radius: ThemeManager.radiusLarge
-                    color: ThemeManager.surfaceColor
-                    border.color: ThemeManager.borderColor
+                    color: ThemeManager.glassBackground
+                    border.color: Qt.rgba(ThemeManager.primaryColor.r, ThemeManager.primaryColor.g, ThemeManager.primaryColor.b, 0.3)
                     border.width: 1
+
+                    // Gradient overlay
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: parent.radius
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: Qt.rgba(ThemeManager.surfaceColor.r, ThemeManager.surfaceColor.g, ThemeManager.surfaceColor.b, 0.7) }
+                            GradientStop { position: 1.0; color: Qt.rgba(ThemeManager.cardColor.r, ThemeManager.cardColor.g, ThemeManager.cardColor.b, 0.7) }
+                        }
+                    }
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -279,9 +360,19 @@ Rectangle {
                     Layout.preferredWidth: 260
                     Layout.preferredHeight: 260
                     radius: ThemeManager.radiusLarge
-                    color: ThemeManager.surfaceColor
-                    border.color: ThemeManager.borderColor
+                    color: ThemeManager.glassBackground
+                    border.color: Qt.rgba(ThemeManager.primaryColor.r, ThemeManager.primaryColor.g, ThemeManager.primaryColor.b, 0.3)
                     border.width: 1
+
+                    // Gradient overlay
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: parent.radius
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: Qt.rgba(ThemeManager.surfaceColor.r, ThemeManager.surfaceColor.g, ThemeManager.surfaceColor.b, 0.7) }
+                            GradientStop { position: 1.0; color: Qt.rgba(ThemeManager.cardColor.r, ThemeManager.cardColor.g, ThemeManager.cardColor.b, 0.7) }
+                        }
+                    }
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -350,9 +441,19 @@ Rectangle {
                     Layout.preferredWidth: 260
                     Layout.preferredHeight: 260
                     radius: ThemeManager.radiusLarge
-                    color: ThemeManager.surfaceColor
-                    border.color: ThemeManager.borderColor
+                    color: ThemeManager.glassBackground
+                    border.color: Qt.rgba(ThemeManager.primaryColor.r, ThemeManager.primaryColor.g, ThemeManager.primaryColor.b, 0.3)
                     border.width: 1
+
+                    // Gradient overlay
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: parent.radius
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: Qt.rgba(ThemeManager.surfaceColor.r, ThemeManager.surfaceColor.g, ThemeManager.surfaceColor.b, 0.7) }
+                            GradientStop { position: 1.0; color: Qt.rgba(ThemeManager.cardColor.r, ThemeManager.cardColor.g, ThemeManager.cardColor.b, 0.7) }
+                        }
+                    }
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -405,7 +506,7 @@ Rectangle {
                         RowLayout {
                             Layout.fillWidth: true
                             spacing: ThemeManager.spacingSmall
-                            Rectangle { width: 8; height: 8; radius: 4; color: dashboardViewModel.networkUp ? ThemeManager.successColor : ThemeManager.errorColor }
+                            Rectangle { width: 8; height: 8; radius: 4; color: dashboardViewModel.networkUp ? ThemeManager.successColor : ThemeManager.errorColor; opacity: dashboardPage.networkDotOpacity }
                             Text { text: "Network: " + (dashboardViewModel.networkUp ? "Online" : "Offline"); font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.textSecondary; font.family: ThemeManager.fontFamily }
                             Item { Layout.fillWidth: true }
                             Text { text: "45.2 MB/s"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.textMuted; font.family: ThemeManager.fontFamily }
@@ -460,6 +561,7 @@ Rectangle {
                                 Rectangle {
                                     width: 24; height: 20; radius: ThemeManager.radiusSmall
                                     color: Qt.rgba(ThemeManager.errorColor.r, ThemeManager.errorColor.g, ThemeManager.errorColor.b, 0.15)
+                                    opacity: dashboardPage.alertBadgePulse
                                     Text { anchors.centerIn: parent; text: dashboardViewModel.criticalAlerts.toString(); font.pixelSize: ThemeManager.fontSizeXS; font.weight: Font.Bold; color: ThemeManager.errorColor; font.family: ThemeManager.fontFamily }
                                 }
                             }

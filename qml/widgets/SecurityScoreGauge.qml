@@ -28,6 +28,23 @@ Rectangle {
     Component.onCompleted: animatedScore = score
     onScoreChanged: animatedScore = score
 
+    // Pulsing glow opacity for the arc endpoint
+    property real glowPulse: 0.3
+    SequentialAnimation on glowPulse {
+        loops: Animation.Infinite
+        NumberAnimation { from: 0.3; to: 0.7; duration: 1200; easing.type: Easing.InOutSine }
+        NumberAnimation { from: 0.7; to: 0.3; duration: 1200; easing.type: Easing.InOutSine }
+    }
+
+    // Rotating shimmer angle for background track
+    property real shimmerAngle: 0
+    NumberAnimation on shimmerAngle {
+        from: 0
+        to: 360
+        duration: 6000
+        loops: Animation.Infinite
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: ThemeManager.spacingLarge
@@ -72,8 +89,34 @@ Rectangle {
                     ctx.lineCap = "round"
                     ctx.stroke()
 
-                    // Score arc (filled portion)
+                    // Shimmer on background track
+                    var shimmerRad = root.shimmerAngle * Math.PI / 180
+                    var shimmerStart = startAngle + shimmerRad % (endAngle - startAngle)
+                    var shimmerEnd = shimmerStart + 0.3
+                    if (shimmerEnd <= endAngle) {
+                        ctx.beginPath()
+                        ctx.arc(cx, cy, outerRadius, shimmerStart, shimmerEnd)
+                        ctx.strokeStyle = ThemeManager.textMuted
+                        ctx.lineWidth = lineWidth
+                        ctx.lineCap = "round"
+                        ctx.globalAlpha = 0.15
+                        ctx.stroke()
+                        ctx.globalAlpha = 1.0
+                    }
+
+                    // Score arc with multi-layer glow effect
                     if (root.animatedScore > 0) {
+                        // Outer glow arc
+                        ctx.beginPath()
+                        ctx.arc(cx, cy, outerRadius, startAngle, scoreAngle)
+                        ctx.strokeStyle = root.scoreColor
+                        ctx.lineWidth = lineWidth + 6
+                        ctx.lineCap = "round"
+                        ctx.globalAlpha = 0.15
+                        ctx.stroke()
+                        ctx.globalAlpha = 1.0
+
+                        // Main score arc
                         ctx.beginPath()
                         ctx.arc(cx, cy, outerRadius, startAngle, scoreAngle)
                         ctx.strokeStyle = root.scoreColor
@@ -82,14 +125,24 @@ Rectangle {
                         ctx.stroke()
                     }
 
-                    // Glow effect on score arc end
+                    // Pulsing glow effect on score arc endpoint
                     if (root.animatedScore > 5) {
                         var glowX = cx + outerRadius * Math.cos(scoreAngle)
                         var glowY = cy + outerRadius * Math.sin(scoreAngle)
+
+                        // Outer pulse glow
+                        ctx.beginPath()
+                        ctx.arc(glowX, glowY, lineWidth / 2 + 6, 0, Math.PI * 2)
+                        ctx.fillStyle = root.scoreColor
+                        ctx.globalAlpha = root.glowPulse * 0.5
+                        ctx.fill()
+                        ctx.globalAlpha = 1.0
+
+                        // Inner glow
                         ctx.beginPath()
                         ctx.arc(glowX, glowY, lineWidth / 2 + 2, 0, Math.PI * 2)
                         ctx.fillStyle = root.scoreColor
-                        ctx.globalAlpha = 0.3
+                        ctx.globalAlpha = root.glowPulse
                         ctx.fill()
                         ctx.globalAlpha = 1.0
                     }
@@ -100,6 +153,8 @@ Rectangle {
                     target: root
                     function onAnimatedScoreChanged() { gaugeCanvas.requestPaint() }
                     function onScoreColorChanged() { gaugeCanvas.requestPaint() }
+                    function onGlowPulseChanged() { gaugeCanvas.requestPaint() }
+                    function onShimmerAngleChanged() { gaugeCanvas.requestPaint() }
                 }
             }
 

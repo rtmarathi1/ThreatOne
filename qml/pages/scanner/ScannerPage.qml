@@ -12,12 +12,109 @@ Rectangle {
     property var scannerViewModel: QtObject {
         property bool scanning: false
         property real progress: 0.0
-        property int filesScanned: 12847
-        property int threatsFound: 2
-        property string elapsed: "00:03:27"
-        property string eta: "00:12:15"
-        property string currentFile: "/usr/lib/libc.so.6"
+        property int filesScanned: 0
+        property int threatsFound: 0
+        property string elapsed: "00:00:00"
+        property string eta: "--:--:--"
+        property string currentFile: ""
         property string scanType: "Full Scan"
+    }
+
+    // Realistic file paths for scan simulation
+    property var scanFilePaths: [
+        "/usr/lib/x86_64-linux-gnu/libc.so.6",
+        "/usr/bin/systemctl",
+        "/etc/shadow",
+        "/home/user/.ssh/authorized_keys",
+        "/var/log/auth.log",
+        "/usr/share/applications/firefox.desktop",
+        "/opt/threatone/bin/engine",
+        "/tmp/.cache/session_data",
+        "/proc/self/maps",
+        "/sys/kernel/security/apparmor/profiles",
+        "/usr/lib/python3/dist-packages/pip/__init__.py",
+        "/var/lib/docker/overlay2/layer/diff",
+        "/etc/systemd/system/multi-user.target.wants",
+        "/usr/local/share/ca-certificates/corp.crt",
+        "/home/user/Documents/report_q4.xlsx",
+        "/dev/shm/.hidden_proc",
+        "/usr/lib/modules/5.15.0/kernel/drivers/net",
+        "/boot/vmlinuz-5.15.0-generic",
+        "/run/user/1000/dbus-session",
+        "/snap/core22/current/usr/lib/snapd"
+    ]
+
+    // Scan elapsed time tracking
+    property int scanElapsedSeconds: 0
+
+    // Scan simulation timer
+    Timer {
+        id: scanTimer
+        interval: 200
+        running: scannerViewModel.scanning
+        repeat: true
+        onTriggered: {
+            // Increment progress by random amount
+            var increment = 0.005 + Math.random() * 0.015
+            scannerViewModel.progress = Math.min(scannerViewModel.progress + increment, 1.0)
+
+            // Increment files scanned
+            scannerViewModel.filesScanned += Math.floor(50 + Math.random() * 150)
+
+            // 1% chance to find a threat
+            if (Math.random() < 0.01) {
+                scannerViewModel.threatsFound += 1
+            }
+
+            // Cycle current file path
+            var fileIdx = Math.floor(Math.random() * scannerPage.scanFilePaths.length)
+            scannerViewModel.currentFile = scannerPage.scanFilePaths[fileIdx]
+
+            // Check if scan complete
+            if (scannerViewModel.progress >= 1.0) {
+                scannerViewModel.progress = 1.0
+                scannerViewModel.scanning = false
+                scannerViewModel.currentFile = "Scan complete"
+            }
+        }
+    }
+
+    // Elapsed time update timer
+    Timer {
+        id: elapsedTimer
+        interval: 1000
+        running: scannerViewModel.scanning
+        repeat: true
+        onTriggered: {
+            scannerPage.scanElapsedSeconds += 1
+            var h = Math.floor(scannerPage.scanElapsedSeconds / 3600)
+            var m = Math.floor((scannerPage.scanElapsedSeconds % 3600) / 60)
+            var s = scannerPage.scanElapsedSeconds % 60
+            scannerViewModel.elapsed = (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s
+
+            // Calculate ETA based on progress
+            if (scannerViewModel.progress > 0.01) {
+                var totalEstimate = scannerPage.scanElapsedSeconds / scannerViewModel.progress
+                var remaining = Math.floor(totalEstimate - scannerPage.scanElapsedSeconds)
+                var eh = Math.floor(remaining / 3600)
+                var em = Math.floor((remaining % 3600) / 60)
+                var es = remaining % 60
+                scannerViewModel.eta = (eh < 10 ? "0" : "") + eh + ":" + (em < 10 ? "0" : "") + em + ":" + (es < 10 ? "0" : "") + es
+            }
+        }
+    }
+
+    // Function to start a scan
+    function startScan() {
+        scannerViewModel.scanning = true
+        scannerViewModel.progress = 0.0
+        scannerViewModel.filesScanned = 0
+        scannerViewModel.threatsFound = 0
+        scannerViewModel.elapsed = "00:00:00"
+        scannerViewModel.eta = "--:--:--"
+        scannerViewModel.currentFile = "/usr/lib/x86_64-linux-gnu/libc.so.6"
+        scannerPage.scanElapsedSeconds = 0
+        scannerPage.currentTab = 1
     }
 
     property int currentTab: 0 // 0=launcher, 1=progress, 2=history, 3=results
@@ -121,7 +218,7 @@ Rectangle {
                             Layout.fillWidth: true; height: 32; radius: ThemeManager.radiusMedium
                             color: ThemeManager.primaryColor
                             Text { anchors.centerIn: parent; text: "Start Scan"; font.pixelSize: ThemeManager.fontSizeSmall; font.weight: Font.Medium; font.family: ThemeManager.fontFamily; color: ThemeManager.textOnPrimary }
-                            MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: { scannerPage.currentTab = 1 } }
+                            MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: { scannerPage.startScan() } }
                         }
                     }
 

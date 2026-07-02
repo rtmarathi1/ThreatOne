@@ -172,7 +172,20 @@ Rectangle {
                         ctx.fill()
                         ctx.globalAlpha = 1.0
 
-                        // Draw line
+                        // Draw glow line (larger, lower opacity)
+                        ctx.beginPath()
+                        ctx.moveTo(points[0].x, points[0].y)
+                        for (var lg = 1; lg < points.length; lg++) {
+                            ctx.lineTo(points[lg].x, points[lg].y)
+                        }
+                        ctx.strokeStyle = root.lineColor
+                        ctx.lineWidth = 6
+                        ctx.lineJoin = "round"
+                        ctx.globalAlpha = 0.2
+                        ctx.stroke()
+                        ctx.globalAlpha = 1.0
+
+                        // Draw main line
                         ctx.beginPath()
                         ctx.moveTo(points[0].x, points[0].y)
                         for (var l = 1; l < points.length; l++) {
@@ -183,8 +196,16 @@ Rectangle {
                         ctx.lineJoin = "round"
                         ctx.stroke()
 
-                        // Draw dots
+                        // Draw dots with glow
                         for (var m = 0; m < points.length; m++) {
+                            // Dot glow
+                            ctx.beginPath()
+                            ctx.arc(points[m].x, points[m].y, 7, 0, Math.PI * 2)
+                            ctx.fillStyle = root.lineColor
+                            ctx.globalAlpha = 0.15
+                            ctx.fill()
+                            ctx.globalAlpha = 1.0
+                            // Dot
                             ctx.beginPath()
                             ctx.arc(points[m].x, points[m].y, 4, 0, Math.PI * 2)
                             ctx.fillStyle = root.lineColor

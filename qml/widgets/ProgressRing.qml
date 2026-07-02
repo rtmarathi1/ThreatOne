@@ -34,6 +34,25 @@ Rectangle {
         running: root.running && root.progress <= 0
     }
 
+    // Pulsing glow for running state
+    property real pulseOpacity: 0.0
+    SequentialAnimation on pulseOpacity {
+        loops: Animation.Infinite
+        running: root.running
+        NumberAnimation { from: 0.0; to: 0.4; duration: 1000; easing.type: Easing.InOutSine }
+        NumberAnimation { from: 0.4; to: 0.0; duration: 1000; easing.type: Easing.InOutSine }
+    }
+
+    // Traveling dot angle offset (runs ahead of progress)
+    property real dotAngle: 0
+    NumberAnimation on dotAngle {
+        from: 0
+        to: 360
+        duration: 2000
+        loops: Animation.Infinite
+        running: root.running
+    }
+
     Canvas {
         id: ringCanvas
         anchors.centerIn: parent
@@ -47,6 +66,20 @@ Rectangle {
             var cx = width / 2
             var cy = height / 2
             var radius = (width - root.ringWidth) / 2 - 4
+
+            // Glowing halo behind progress arc
+            if (root.running && root.animatedProgress > 0) {
+                var haloStartAngle = -Math.PI / 2
+                var haloEndAngle = haloStartAngle + Math.PI * 2 * root.animatedProgress
+                ctx.beginPath()
+                ctx.arc(cx, cy, radius, haloStartAngle, haloEndAngle)
+                ctx.strokeStyle = root.ringColor
+                ctx.lineWidth = root.ringWidth + 8
+                ctx.lineCap = "round"
+                ctx.globalAlpha = root.pulseOpacity
+                ctx.stroke()
+                ctx.globalAlpha = 1.0
+            }
 
             // Track circle
             ctx.beginPath()
@@ -75,6 +108,29 @@ Rectangle {
                 ctx.lineWidth = root.ringWidth
                 ctx.lineCap = "round"
                 ctx.stroke()
+
+                // Traveling dot ahead of progress
+                if (root.running) {
+                    var dotOffset = root.dotAngle * Math.PI / 180
+                    var dotPos = startAngle + Math.PI * 2 * Math.min(root.animatedProgress + 0.05, 1.0)
+                    var effectiveDotAngle = startAngle + ((dotOffset) % (Math.PI * 2 * root.animatedProgress))
+                    var dotX = cx + radius * Math.cos(effectiveDotAngle)
+                    var dotY = cy + radius * Math.sin(effectiveDotAngle)
+
+                    // Dot glow
+                    ctx.beginPath()
+                    ctx.arc(dotX, dotY, 6, 0, Math.PI * 2)
+                    ctx.fillStyle = root.ringColor
+                    ctx.globalAlpha = 0.3
+                    ctx.fill()
+                    ctx.globalAlpha = 1.0
+
+                    // Dot
+                    ctx.beginPath()
+                    ctx.arc(dotX, dotY, 3, 0, Math.PI * 2)
+                    ctx.fillStyle = root.ringColor
+                    ctx.fill()
+                }
             }
         }
 
@@ -82,6 +138,8 @@ Rectangle {
             target: root
             function onAnimatedProgressChanged() { ringCanvas.requestPaint() }
             function onSpinAngleChanged() { ringCanvas.requestPaint() }
+            function onPulseOpacityChanged() { ringCanvas.requestPaint() }
+            function onDotAngleChanged() { ringCanvas.requestPaint() }
         }
 
         Component.onCompleted: requestPaint()
