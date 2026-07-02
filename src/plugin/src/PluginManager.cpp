@@ -458,14 +458,17 @@ std::vector<MarketplaceEntry> PluginManager::searchMarketplace(const std::string
     }
 
     std::string lowerQuery = query;
-    std::transform(lowerQuery.begin(), lowerQuery.end(), lowerQuery.begin(), ::tolower);
+    std::transform(lowerQuery.begin(), lowerQuery.end(), lowerQuery.begin(),
+        [](char c) { return static_cast<char>(std::tolower(static_cast<unsigned char>(c))); });
 
     std::vector<MarketplaceEntry> results;
     for (const auto& entry : marketplace_) {
         std::string lowerName = entry.name;
-        std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), ::tolower);
+        std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(),
+            [](char c) { return static_cast<char>(std::tolower(static_cast<unsigned char>(c))); });
         std::string lowerDesc = entry.description;
-        std::transform(lowerDesc.begin(), lowerDesc.end(), lowerDesc.begin(), ::tolower);
+        std::transform(lowerDesc.begin(), lowerDesc.end(), lowerDesc.begin(),
+            [](char c) { return static_cast<char>(std::tolower(static_cast<unsigned char>(c))); });
 
         if (lowerName.find(lowerQuery) != std::string::npos ||
             lowerDesc.find(lowerQuery) != std::string::npos) {

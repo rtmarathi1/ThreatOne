@@ -120,7 +120,12 @@ void WindowsDriver::watchDirectory(MonitorHandle* handle, const std::string& pat
             auto* info = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(ptr);
 
             std::wstring wFileName(info->FileName, info->FileNameLength / sizeof(WCHAR));
-            std::string fileName(wFileName.begin(), wFileName.end());
+            // Convert wstring to string (ASCII-safe for file paths)
+            std::string fileName;
+            fileName.reserve(wFileName.size());
+            for (wchar_t wc : wFileName) {
+                fileName.push_back(static_cast<char>(wc));
+            }
 
             FileEvent event;
             event.path = path + "\\" + fileName;

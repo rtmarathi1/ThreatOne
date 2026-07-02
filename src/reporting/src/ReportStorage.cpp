@@ -74,8 +74,10 @@ std::vector<ReportMetadata> ReportStorage::searchReports(const ReportFilter& fil
         if (!filter.titleContains.empty()) {
             std::string lowerTitle = meta.title;
             std::string lowerFilter = filter.titleContains;
-            std::transform(lowerTitle.begin(), lowerTitle.end(), lowerTitle.begin(), ::tolower);
-            std::transform(lowerFilter.begin(), lowerFilter.end(), lowerFilter.begin(), ::tolower);
+            std::transform(lowerTitle.begin(), lowerTitle.end(), lowerTitle.begin(),
+                [](char c) { return static_cast<char>(std::tolower(static_cast<unsigned char>(c))); });
+            std::transform(lowerFilter.begin(), lowerFilter.end(), lowerFilter.begin(),
+                [](char c) { return static_cast<char>(std::tolower(static_cast<unsigned char>(c))); });
             if (lowerTitle.find(lowerFilter) == std::string::npos) {
                 matches = false;
             }

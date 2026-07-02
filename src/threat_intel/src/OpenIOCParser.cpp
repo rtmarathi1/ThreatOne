@@ -104,7 +104,7 @@ Core::Result<std::vector<IOC>> OpenIOCParser::parse(const std::string& data) {
         // Determine type from Context search attribute
         std::string lowerType = typeHint;
         std::transform(lowerType.begin(), lowerType.end(), lowerType.begin(),
-                       [](unsigned char c) { return std::tolower(c); });
+                       [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
         if (lowerType.find("ip") != std::string::npos ||
             lowerType.find("address") != std::string::npos) {

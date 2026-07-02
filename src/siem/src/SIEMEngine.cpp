@@ -252,8 +252,12 @@ std::vector<SIEMAlert> SIEMEngine::evaluateRules() {
                     if (ss.fail()) {
                         return 0;
                     }
-                    // Use timegm for thread-safe UTC conversion (avoids locale issues)
+                    // Use timegm/_mkgmtime for thread-safe UTC conversion
+#ifdef _WIN32
+                    return _mkgmtime(&tm);
+#else
                     return timegm(&tm);
+#endif
                 };
 
                 std::time_t recentTime = parseTimestamp(mostRecent);

@@ -47,7 +47,7 @@ bool XDREngine::eventsWithinTimeWindow(const EndpointEvent& a, const EndpointEve
     }
 
     // Parse timestamps: expected format "YYYY-MM-DDTHH:MM:SS"
-    // Use timegm instead of std::mktime for thread safety and UTC correctness
+    // Use timegm/_mkgmtime for thread-safe UTC conversion
     auto parseTimestamp = [](const std::string& ts) -> std::time_t {
         std::tm tm = {};
         std::istringstream ss(ts);
@@ -55,7 +55,11 @@ bool XDREngine::eventsWithinTimeWindow(const EndpointEvent& a, const EndpointEve
         if (ss.fail()) {
             return 0;
         }
+#ifdef _WIN32
+        return _mkgmtime(&tm);
+#else
         return timegm(&tm);
+#endif
     };
 
     std::time_t timeA = parseTimestamp(a.timestamp);

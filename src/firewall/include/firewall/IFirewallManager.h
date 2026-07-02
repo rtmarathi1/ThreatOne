@@ -40,8 +40,8 @@ struct FirewallRule {
     // Extended fields
     int priority = 0;
     std::string applicationPath;
-    std::pair<uint16_t, uint16_t> sourcePortRange{0, 0};
-    std::pair<uint16_t, uint16_t> destPortRange{0, 0};
+    std::pair<uint16_t, uint16_t> sourcePortRange{uint16_t(0), uint16_t(0)};
+    std::pair<uint16_t, uint16_t> destPortRange{uint16_t(0), uint16_t(0)};
     int sourceCidrPrefix = 0;
     int destCidrPrefix = 0;
 };
