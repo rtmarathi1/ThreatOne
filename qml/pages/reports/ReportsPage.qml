@@ -162,7 +162,7 @@ Rectangle {
                         Layout.fillWidth: true; height: 90; radius: ThemeManager.radiusMedium; color: ThemeManager.cardColor; border.color: ThemeManager.borderColor; border.width: 1
                         ColumnLayout {
                             anchors.fill: parent; anchors.margins: ThemeManager.spacingMedium; spacing: ThemeManager.spacingXS
-                            RowLayout { Text { text: model.typeIcon; font.pixelSize: 16 }; Text { text: model.typeName; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.DemiBold; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily } }
+                            RowLayout { Text { text: model.typeIcon; font.pixelSize: 16 } Text { text: model.typeName; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.DemiBold; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily } }
                             Text { text: model.typeDesc; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.textSecondary; font.family: ThemeManager.fontFamily; wrapMode: Text.WordWrap; Layout.fillWidth: true }
                         }
                         MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; hoverEnabled: true; onEntered: parent.border.color = ThemeManager.primaryColor; onExited: parent.border.color = ThemeManager.borderColor }
@@ -216,7 +216,7 @@ Rectangle {
                     width: ListView.view.width; height: 36; radius: ThemeManager.radiusSmall; color: "transparent"
                     RowLayout {
                         anchors.fill: parent; anchors.margins: ThemeManager.spacingSmall; spacing: ThemeManager.spacingSmall
-                        Rectangle { width: 20; height: 20; radius: 4; color: model.included ? ThemeManager.primaryColor : "transparent"; border.color: model.included ? ThemeManager.primaryColor : ThemeManager.borderColor; border.width: 1; Text { anchors.centerIn: parent; text: model.included ? "\u2713" : ""; font.pixelSize: 12; color: "#ffffff" } ; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
+                        Rectangle { width: 20; height: 20; radius: 4; color: model.included ? ThemeManager.primaryColor : "transparent"; border.color: model.included ? ThemeManager.primaryColor : ThemeManager.borderColor; border.width: 1; Text { anchors.centerIn: parent; text: model.included ? "\u2713" : ""; font.pixelSize: 12; color: "#ffffff" } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
                         Text { text: model.section; font.pixelSize: ThemeManager.fontSizeBody; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily; Layout.fillWidth: true }
                     }
                 }

@@ -158,10 +158,10 @@ Rectangle {
                 Layout.fillWidth: true; height: 140; radius: ThemeManager.radiusLarge; color: ThemeManager.surfaceColor; border.color: ThemeManager.borderColor; border.width: 1
                 ColumnLayout {
                     anchors.fill: parent; anchors.margins: ThemeManager.spacingLarge; spacing: ThemeManager.spacingSmall
-                    RowLayout { Layout.fillWidth: true; Text { text: "IP Whitelist"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.DemiBold; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily }; Item { Layout.fillWidth: true }; Text { text: "+ Add IP"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.primaryColor; font.family: ThemeManager.fontFamily; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } } }
+                    RowLayout { Layout.fillWidth: true; Text { text: "IP Whitelist"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.DemiBold; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily } Item { Layout.fillWidth: true } Text { text: "+ Add IP"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.primaryColor; font.family: ThemeManager.fontFamily; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } } }
                     Repeater {
                         model: ["10.0.0.0/8 (Internal Network)", "192.168.1.0/24 (VPN Pool)", "203.0.113.10 (Admin Home)"]
-                        RowLayout { spacing: ThemeManager.spacingSmall; Text { text: "\u2022"; color: ThemeManager.successColor }; Text { text: modelData; font.pixelSize: ThemeManager.fontSizeSmall; font.family: ThemeManager.fontFamilyMono; color: ThemeManager.textSecondary } }
+                        RowLayout { spacing: ThemeManager.spacingSmall; Text { text: "\u2022"; color: ThemeManager.successColor } Text { text: modelData; font.pixelSize: ThemeManager.fontSizeSmall; font.family: ThemeManager.fontFamilyMono; color: ThemeManager.textSecondary } }
                     }
                 }
             }

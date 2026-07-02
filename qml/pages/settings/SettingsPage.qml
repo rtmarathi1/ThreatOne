@@ -151,8 +151,8 @@ Rectangle {
         }
     }
 
-    Component { id: toggleControl; Rectangle { width: 42; height: 22; radius: 11; color: ThemeManager.successColor; Rectangle { x: 22; y: 2; width: 18; height: 18; radius: 9; color: "#ffffff" } ; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } } }
-    Component { id: dropdownControl; Rectangle { width: 120; height: 32; radius: ThemeManager.radiusMedium; color: ThemeManager.inputColor; border.color: ThemeManager.borderColor; border.width: 1; Text { anchors.centerIn: parent; text: "English \u25BE"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily } ; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } } }
+    Component { id: toggleControl; Rectangle { width: 42; height: 22; radius: 11; color: ThemeManager.successColor; Rectangle { x: 22; y: 2; width: 18; height: 18; radius: 9; color: "#ffffff" } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } } }
+    Component { id: dropdownControl; Rectangle { width: 120; height: 32; radius: ThemeManager.radiusMedium; color: ThemeManager.inputColor; border.color: ThemeManager.borderColor; border.width: 1; Text { anchors.centerIn: parent; text: "English \u25BE"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } } }
     Component { id: valueControl; Rectangle { width: 160; height: 32; radius: ThemeManager.radiusMedium; color: ThemeManager.inputColor; border.color: ThemeManager.borderColor; border.width: 1; Text { anchors.left: parent.left; anchors.leftMargin: 8; anchors.verticalCenter: parent.verticalCenter; text: "5 minutes"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily } } }
 
     // Scan Settings
@@ -187,7 +187,7 @@ Rectangle {
                 Layout.fillWidth: true; Layout.leftMargin: ThemeManager.spacingXL; Layout.rightMargin: ThemeManager.spacingXL; Layout.preferredHeight: 120; radius: ThemeManager.radiusMedium; color: ThemeManager.cardColor; border.color: ThemeManager.borderColor; border.width: 1
                 ColumnLayout {
                     anchors.fill: parent; anchors.margins: ThemeManager.spacingMedium; spacing: ThemeManager.spacingSmall
-                    RowLayout { Layout.fillWidth: true; Text { text: "Scan Exclusions"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.Medium; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily }; Item { Layout.fillWidth: true }; Text { text: "+ Add"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.primaryColor; font.family: ThemeManager.fontFamily; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } } }
+                    RowLayout { Layout.fillWidth: true; Text { text: "Scan Exclusions"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.Medium; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily } Item { Layout.fillWidth: true } Text { text: "+ Add"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.primaryColor; font.family: ThemeManager.fontFamily; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } } }
                     Text { text: "/var/lib/docker/**\n/tmp/build-*\n*.iso"; font.pixelSize: ThemeManager.fontSizeSmall; font.family: ThemeManager.fontFamilyMono; color: ThemeManager.textSecondary; lineHeight: 1.4 }
                 }
             }
@@ -242,7 +242,7 @@ Rectangle {
                     RowLayout {
                         anchors.fill: parent
                         Text { text: model.settingName; font.pixelSize: ThemeManager.fontSizeBody; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily; Layout.fillWidth: true }
-                        Rectangle { width: 42; height: 22; radius: 11; color: model.enabled ? ThemeManager.successColor : ThemeManager.borderColor; Rectangle { x: model.enabled ? 22 : 2; y: 2; width: 18; height: 18; radius: 9; color: "#ffffff" } ; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
+                        Rectangle { width: 42; height: 22; radius: 11; color: model.enabled ? ThemeManager.successColor : ThemeManager.borderColor; Rectangle { x: model.enabled ? 22 : 2; y: 2; width: 18; height: 18; radius: 9; color: "#ffffff" } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
                     }
                     Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: ThemeManager.dividerColor }
                 }
@@ -305,7 +305,7 @@ Rectangle {
                         Text { text: "Last Updated: December 15, 2024 at 14:30"; font.pixelSize: ThemeManager.fontSizeBody; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily }
                         Text { text: "Signature version: 2024.12.15.002 | Engine: 4.2.1"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.textMuted; font.family: ThemeManager.fontFamily }
                     }
-                    Rectangle { width: 120; height: ThemeManager.buttonHeight; radius: ThemeManager.radiusMedium; color: ThemeManager.primaryColor; Text { anchors.centerIn: parent; text: "Check Now"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.Medium; color: ThemeManager.textOnPrimary; font.family: ThemeManager.fontFamily }; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
+                    Rectangle { width: 120; height: ThemeManager.buttonHeight; radius: ThemeManager.radiusMedium; color: ThemeManager.primaryColor; Text { anchors.centerIn: parent; text: "Check Now"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.Medium; color: ThemeManager.textOnPrimary; font.family: ThemeManager.fontFamily } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
                 }
             }
         }
@@ -321,7 +321,7 @@ Rectangle {
                 Layout.fillWidth: true; Layout.leftMargin: ThemeManager.spacingXL; Layout.rightMargin: ThemeManager.spacingXL; height: 160; radius: ThemeManager.radiusLarge; color: ThemeManager.surfaceColor; border.color: ThemeManager.successColor; border.width: 1
                 ColumnLayout {
                     anchors.fill: parent; anchors.margins: ThemeManager.spacingLarge; spacing: ThemeManager.spacingSmall
-                    RowLayout { Text { text: "ThreatOne Enterprise"; font.pixelSize: ThemeManager.fontSizeLarge; font.weight: Font.Bold; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily }; Item { Layout.fillWidth: true }; Rectangle { width: actLabel.implicitWidth + 16; height: 24; radius: 12; color: Qt.rgba(ThemeManager.successColor.r, ThemeManager.successColor.g, ThemeManager.successColor.b, 0.15); Text { id: actLabel; anchors.centerIn: parent; text: "Active"; font.pixelSize: ThemeManager.fontSizeSmall; font.weight: Font.Medium; color: ThemeManager.successColor; font.family: ThemeManager.fontFamily } } }
+                    RowLayout { Text { text: "ThreatOne Enterprise"; font.pixelSize: ThemeManager.fontSizeLarge; font.weight: Font.Bold; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily } Item { Layout.fillWidth: true } Rectangle { width: actLabel.implicitWidth + 16; height: 24; radius: 12; color: Qt.rgba(ThemeManager.successColor.r, ThemeManager.successColor.g, ThemeManager.successColor.b, 0.15); Text { id: actLabel; anchors.centerIn: parent; text: "Active"; font.pixelSize: ThemeManager.fontSizeSmall; font.weight: Font.Medium; color: ThemeManager.successColor; font.family: ThemeManager.fontFamily } } }
                     GridLayout { columns: 2; rowSpacing: ThemeManager.spacingSmall; columnSpacing: ThemeManager.spacingXXL
                         Text { text: "License Key:"; font.pixelSize: ThemeManager.fontSizeBody; color: ThemeManager.textSecondary; font.family: ThemeManager.fontFamily }
                         Text { text: settingsViewModel.licenseKey; font.pixelSize: ThemeManager.fontSizeBody; font.family: ThemeManager.fontFamilyMono; color: ThemeManager.textPrimary }
@@ -340,7 +340,7 @@ Rectangle {
                     Text { text: "Licensed Features"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.DemiBold; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily }
                     Repeater {
                         model: ["Real-time Protection", "EDR Module", "Firewall Management", "Threat Intelligence", "AI/ML Engine", "Vulnerability Scanner", "Compliance Reporting", "24/7 Support"]
-                        RowLayout { spacing: ThemeManager.spacingSmall; Text { text: "\u2713"; color: ThemeManager.successColor; font.pixelSize: 12 }; Text { text: modelData; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.textSecondary; font.family: ThemeManager.fontFamily } }
+                        RowLayout { spacing: ThemeManager.spacingSmall; Text { text: "\u2713"; color: ThemeManager.successColor; font.pixelSize: 12 } Text { text: modelData; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.textSecondary; font.family: ThemeManager.fontFamily } }
                     }
                 }
             }

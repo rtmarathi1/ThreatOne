@@ -185,8 +185,8 @@ Rectangle {
 
                         RowLayout {
                             spacing: ThemeManager.spacingSmall
-                            Rectangle { width: 90; height: ThemeManager.buttonHeight; radius: ThemeManager.radiusMedium; color: ThemeManager.warningColor; Text { anchors.centerIn: parent; text: "Pause"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.Medium; color: "#000000"; font.family: ThemeManager.fontFamily } ; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
-                            Rectangle { width: 90; height: ThemeManager.buttonHeight; radius: ThemeManager.radiusMedium; color: ThemeManager.errorColor; Text { anchors.centerIn: parent; text: "Stop"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.Medium; color: "#ffffff"; font.family: ThemeManager.fontFamily } ; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
+                            Rectangle { width: 90; height: ThemeManager.buttonHeight; radius: ThemeManager.radiusMedium; color: ThemeManager.warningColor; Text { anchors.centerIn: parent; text: "Pause"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.Medium; color: "#000000"; font.family: ThemeManager.fontFamily } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
+                            Rectangle { width: 90; height: ThemeManager.buttonHeight; radius: ThemeManager.radiusMedium; color: ThemeManager.errorColor; Text { anchors.centerIn: parent; text: "Stop"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.Medium; color: "#ffffff"; font.family: ThemeManager.fontFamily } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
                         }
                     }
                 }

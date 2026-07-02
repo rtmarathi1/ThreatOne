@@ -96,7 +96,7 @@ Rectangle {
                     TextInput { Layout.fillWidth: true; font.pixelSize: ThemeManager.fontSizeNormal; font.family: ThemeManager.fontFamily; color: ThemeManager.textPrimary; clip: true
                         Text { anchors.fill: parent; text: "Search IOCs (IP, domain, hash, URL)..."; font.pixelSize: ThemeManager.fontSizeNormal; font.family: ThemeManager.fontFamily; color: ThemeManager.textMuted; visible: !parent.text && !parent.activeFocus; verticalAlignment: Text.AlignVCenter }
                     }
-                    Rectangle { width: 70; height: 30; radius: ThemeManager.radiusMedium; color: ThemeManager.primaryColor; Text { anchors.centerIn: parent; text: "Search"; font.pixelSize: ThemeManager.fontSizeSmall; font.weight: Font.Medium; color: ThemeManager.textOnPrimary; font.family: ThemeManager.fontFamily } ; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
+                    Rectangle { width: 70; height: 30; radius: ThemeManager.radiusMedium; color: ThemeManager.primaryColor; Text { anchors.centerIn: parent; text: "Search"; font.pixelSize: ThemeManager.fontSizeSmall; font.weight: Font.Medium; color: ThemeManager.textOnPrimary; font.family: ThemeManager.fontFamily } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
                 }
             }
 

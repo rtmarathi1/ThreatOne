@@ -152,8 +152,8 @@ Rectangle {
                 Layout.fillWidth: true
                 Text { text: "Blocked IP Addresses"; font.pixelSize: ThemeManager.fontSizeMedium; font.weight: Font.DemiBold; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily }
                 Item { Layout.fillWidth: true }
-                Rectangle { width: impLabel.implicitWidth + 24; height: 32; radius: ThemeManager.radiusMedium; color: ThemeManager.cardColor; border.color: ThemeManager.borderColor; border.width: 1; Text { id: impLabel; anchors.centerIn: parent; text: "Import List"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.primaryColor; font.family: ThemeManager.fontFamily } ; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
-                Rectangle { width: expLabel.implicitWidth + 24; height: 32; radius: ThemeManager.radiusMedium; color: ThemeManager.cardColor; border.color: ThemeManager.borderColor; border.width: 1; Text { id: expLabel; anchors.centerIn: parent; text: "Export"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.primaryColor; font.family: ThemeManager.fontFamily } ; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
+                Rectangle { width: impLabel.implicitWidth + 24; height: 32; radius: ThemeManager.radiusMedium; color: ThemeManager.cardColor; border.color: ThemeManager.borderColor; border.width: 1; Text { id: impLabel; anchors.centerIn: parent; text: "Import List"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.primaryColor; font.family: ThemeManager.fontFamily } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
+                Rectangle { width: expLabel.implicitWidth + 24; height: 32; radius: ThemeManager.radiusMedium; color: ThemeManager.cardColor; border.color: ThemeManager.borderColor; border.width: 1; Text { id: expLabel; anchors.centerIn: parent; text: "Export"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.primaryColor; font.family: ThemeManager.fontFamily } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
             }
 
             DataTable {
@@ -220,7 +220,7 @@ Rectangle {
                             RowLayout {
                                 anchors.fill: parent
                                 anchors.margins: ThemeManager.spacingSmall
-                                Rectangle { width: 36; height: 20; radius: 10; color: model.enabled ? ThemeManager.successColor : ThemeManager.borderColor; Rectangle { x: model.enabled ? 18 : 2; y: 2; width: 16; height: 16; radius: 8; color: "#ffffff" } ; MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
+                                Rectangle { width: 36; height: 20; radius: 10; color: model.enabled ? ThemeManager.successColor : ThemeManager.borderColor; Rectangle { x: model.enabled ? 18 : 2; y: 2; width: 16; height: 16; radius: 8; color: "#ffffff" } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
                                 Text { text: model.category; font.pixelSize: ThemeManager.fontSizeBody; color: ThemeManager.textPrimary; font.family: ThemeManager.fontFamily; Layout.fillWidth: true }
                                 Text { text: model.count + " domains"; font.pixelSize: ThemeManager.fontSizeSmall; color: ThemeManager.textMuted; font.family: ThemeManager.fontFamily }
                             }
