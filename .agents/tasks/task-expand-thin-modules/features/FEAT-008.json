@@ -2,7 +2,7 @@
   "id": "FEAT-008",
   "type": "fix",
   "description": "Address semantic review issues: fix SecurityEngine data race on nextThreatId_, remove stale idIndex_ from LogStorage, and add EventBus/ServiceLocator integration to key sub-components",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Make SecurityEngine::nextThreatId_ std::atomic<uint64_t> to fix data race in generateThreatId()",
     "Remove dead idIndex_ from LogStorage since getById already does linear scan and the index is stale after eviction",
@@ -28,5 +28,5 @@
     "cd build && ./tests/threatone_tests"
   ],
   "blocked_reason": null,
-  "findings": null
+  "findings": "All 3 priority review issues fixed successfully. (1) SecurityEngine::nextThreatId_ is now std::atomic<uint64_t>, eliminating the data race in generateThreatId(). (2) LogStorage::idIndex_ removed entirely - it was dead code that would mislead future developers since getById already does linear scan and the index became stale after any eviction. (3) EventBus integration added to AlertEngine (publishes SecurityEvent::ThreatDetected on alert creation), CorrelationEngine (publishes SecurityEvent::Anomaly when correlations trigger), LogCollector (publishes SecurityEvent::ScanStarted on ingestion), and CaseManager (publishes SecurityEvent::Anomaly on case creation, SecurityEvent::PolicyViolation on escalation). Key sub-components registered with ServiceLocator in SIEMEngine and SOCManager constructors. All 1618 tests continue to pass."
 }
