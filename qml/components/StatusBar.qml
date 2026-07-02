@@ -24,7 +24,7 @@ Rectangle {
     // Real-time resource fluctuation timer
     Timer {
         interval: 2000
-        running: true
+        running: statusBar.visible
         repeat: true
         onTriggered: {
             statusBar.cpuUsage = statusBar.cpuUsage + (Math.random() * 0.06 - 0.03)

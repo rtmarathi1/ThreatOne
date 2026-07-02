@@ -45,6 +45,15 @@ Rectangle {
         loops: Animation.Infinite
     }
 
+    // Throttled repaint timer for shimmer effect (~15fps)
+    Timer {
+        id: shimmerRepaintTimer
+        interval: 67
+        running: root.visible
+        repeat: true
+        onTriggered: gaugeCanvas.requestPaint()
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: ThemeManager.spacingLarge
@@ -153,8 +162,6 @@ Rectangle {
                     target: root
                     function onAnimatedScoreChanged() { gaugeCanvas.requestPaint() }
                     function onScoreColorChanged() { gaugeCanvas.requestPaint() }
-                    function onGlowPulseChanged() { gaugeCanvas.requestPaint() }
-                    function onShimmerAngleChanged() { gaugeCanvas.requestPaint() }
                 }
             }
 

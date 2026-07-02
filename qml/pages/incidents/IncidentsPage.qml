@@ -29,7 +29,7 @@ Rectangle {
     // Real-time data update timer
     Timer {
         interval: 2500
-        running: true
+        running: incidentsPage.visible
         repeat: true
         onTriggered: {
             incidentViewModel.totalIncidents = incidentViewModel.totalIncidents + Math.floor(Math.random() * 3) - 1

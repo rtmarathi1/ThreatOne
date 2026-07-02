@@ -44,7 +44,7 @@ Rectangle {
             items: [
                 { title: "Assets", icon: "\u2316", page: "pages/assets/AssetsPage.qml", badge: 0 },
                 { title: "Users", icon: "\u263A", page: "pages/users/UsersPage.qml", badge: 0 },
-                { title: "Monitor", icon: "\u2316", page: "pages/monitor/MonitorPage.qml", badge: 0 },
+                { title: "Monitor", icon: "\u2328", page: "pages/monitor/MonitorPage.qml", badge: 0 },
                 { title: "Settings", icon: "\u2699", page: "pages/settings/SettingsPage.qml", badge: 0 }
             ]
         }

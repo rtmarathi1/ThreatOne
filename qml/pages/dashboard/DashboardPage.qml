@@ -39,7 +39,7 @@ Rectangle {
     Timer {
         id: dataSimTimer
         interval: 2000
-        running: true
+        running: dashboardPage.visible
         repeat: true
         onTriggered: {
             dashboardViewModel.securityScore = 82 + Math.random() * 13
@@ -57,7 +57,7 @@ Rectangle {
     Timer {
         id: timestampTimer
         interval: 1000
-        running: true
+        running: dashboardPage.visible
         repeat: true
         onTriggered: dashboardPage.lastUpdatedTime = Qt.formatDateTime(new Date(), "hh:mm:ss AP")
     }
@@ -77,7 +77,7 @@ Rectangle {
     Timer {
         id: chartUpdateTimer
         interval: 3000
-        running: true
+        running: dashboardPage.visible
         repeat: true
         onTriggered: {
             var newData = []

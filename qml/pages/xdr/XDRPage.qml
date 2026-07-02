@@ -37,7 +37,7 @@ Rectangle {
     Timer {
         id: xdrUpdateTimer
         interval: 3000
-        running: true
+        running: xdrPage.visible
         repeat: true
         onTriggered: {
             xdrViewModel.activeInvestigations = 12 + Math.floor(Math.random() * 6)
@@ -46,11 +46,14 @@ Rectangle {
         }
     }
 
+    // Monotonically incrementing investigation ID counter
+    property int nextInvestigationId: 2848
+
     // New investigation timer
     Timer {
         id: newInvestigationTimer
         interval: 8000
-        running: true
+        running: xdrPage.visible
         repeat: true
         onTriggered: {
             var severities = ["Critical", "High", "Medium", "Low"]
@@ -58,7 +61,8 @@ Rectangle {
             var analysts = ["J. Morrison", "S. Chen", "M. Johnson", "A. Patel"]
             var assets = ["WS-" + Math.floor(1000 + Math.random() * 9000), "SRV-" + Math.floor(10 + Math.random() * 90)]
 
-            var invNum = 2848 + Math.floor(Math.random() * 100)
+            var invNum = xdrPage.nextInvestigationId
+            xdrPage.nextInvestigationId += 1
             investigationModel.insert(0, {
                 invId: "INV-" + invNum,
                 invTitle: titles[Math.floor(Math.random() * titles.length)],

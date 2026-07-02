@@ -282,6 +282,7 @@ Rectangle {
             anchors.fill: parent
             anchors.margins: ThemeManager.spacingLarge
             spacing: ThemeManager.spacingMedium
+            enabled: topBar.notificationPanelOpen
 
             RowLayout {
                 Layout.fillWidth: true
@@ -387,6 +388,7 @@ Rectangle {
             anchors.fill: parent
             anchors.margins: ThemeManager.spacingMedium
             spacing: 2
+            enabled: topBar.userMenuOpen
 
             Repeater {
                 model: [

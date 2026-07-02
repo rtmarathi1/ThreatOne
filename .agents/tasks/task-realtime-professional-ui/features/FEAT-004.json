@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-004",
+  "type": "fix",
+  "description": "Address all 7 issues from the semantic review (2025-07-02-review-v1.md): off-screen Timer accumulation, SecurityScoreGauge 60fps repaint, Scanner Pause/Stop buttons, Monitor/Assets icon collision, XDR ID collisions, Monitor critical state, TopBar dropdown click interception.",
+  "status": "in_progress",
+  "steps": [
+    "1. Bind all Timer 'running' properties to page visibility across Dashboard, SIEM, XDR, Monitor, Firewall, EDR, Incidents, StatusBar pages",
+    "2. Throttle SecurityScoreGauge shimmer repaint from 60fps to 15fps using a dedicated Timer",
+    "3. Wire Scanner Pause and Stop buttons with proper click handlers and paused state",
+    "4. Change Monitor sidebar icon to a distinct Unicode codepoint",
+    "5. Replace XDR investigation ID Math.random with a monotonically incrementing counter",
+    "6. Add low-probability path to 'critical' in Monitor service health flicker logic",
+    "7. Add enabled guard to TopBar dropdown panel content during close animation"
+  ],
+  "acceptance_criteria": [
+    "All page Timers are gated on visibility (running: visible && ...)",
+    "SecurityScoreGauge Canvas repaints at ~15fps max for shimmer effect",
+    "Scanner Stop button sets scanning=false, Pause button toggles a paused state",
+    "Monitor and Assets have different sidebar icons",
+    "XDR investigation IDs never collide (use incrementing counter)",
+    "Monitor service health can reach 'critical' state",
+    "TopBar dropdown panels do not intercept clicks while fading out",
+    "Non-Qt Linux build still succeeds",
+    "All 1618 existing tests still pass"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ./tests/threatone_tests"
+  ],
+  "blocked_reason": null,
+  "findings": null
+}

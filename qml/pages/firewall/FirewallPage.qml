@@ -24,7 +24,7 @@ Rectangle {
     // Real-time data update timer
     Timer {
         interval: 2500
-        running: true
+        running: firewallPage.visible
         repeat: true
         onTriggered: {
             firewallViewModel.activeConnections = firewallViewModel.activeConnections + Math.floor(Math.random() * 5) - 2

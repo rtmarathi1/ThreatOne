@@ -25,7 +25,7 @@ Rectangle {
     Timer {
         id: eventsTimer
         interval: 1500
-        running: true
+        running: siemPage.visible
         repeat: true
         onTriggered: {
             siemViewModel.eventsPerSec = Math.floor(1200 + Math.random() * 2300)
@@ -63,7 +63,7 @@ Rectangle {
     Timer {
         id: logTimer
         interval: 1000
-        running: true
+        running: siemPage.visible
         repeat: true
         onTriggered: {
             var severity = siemPage.logSeverities[Math.floor(Math.random() * siemPage.logSeverities.length)]
@@ -102,7 +102,7 @@ Rectangle {
     Timer {
         id: chartTimer
         interval: 2000
-        running: true
+        running: siemPage.visible
         repeat: true
         onTriggered: {
             var newData = []

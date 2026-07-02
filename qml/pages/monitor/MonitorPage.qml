@@ -30,7 +30,7 @@ Rectangle {
     Timer {
         id: resourceTimer
         interval: 1500
-        running: true
+        running: monitorPage.visible
         repeat: true
         onTriggered: {
             monitorViewModel.cpuUsage = 25 + Math.random() * 55
@@ -57,7 +57,7 @@ Rectangle {
     Timer {
         id: networkChartTimer
         interval: 2000
-        running: true
+        running: monitorPage.visible
         repeat: true
         onTriggered: {
             var newData = []
@@ -89,7 +89,7 @@ Rectangle {
     Timer {
         id: serviceFlickerTimer
         interval: 4000
-        running: true
+        running: monitorPage.visible
         repeat: true
         onTriggered: {
             var newServices = []
@@ -99,9 +99,20 @@ Rectangle {
                 // 10% chance of status flicker
                 if (Math.random() < 0.1) {
                     if (s.status === "healthy") {
-                        newStatus = Math.random() < 0.7 ? "healthy" : "warning"
+                        var rand = Math.random()
+                        if (rand < 0.65) newStatus = "healthy"
+                        else if (rand < 0.95) newStatus = "warning"
+                        else newStatus = "critical"
                     } else if (s.status === "warning") {
-                        newStatus = Math.random() < 0.5 ? "healthy" : "warning"
+                        var rand2 = Math.random()
+                        if (rand2 < 0.4) newStatus = "healthy"
+                        else if (rand2 < 0.9) newStatus = "warning"
+                        else newStatus = "critical"
+                    } else if (s.status === "critical") {
+                        var rand3 = Math.random()
+                        if (rand3 < 0.3) newStatus = "healthy"
+                        else if (rand3 < 0.6) newStatus = "warning"
+                        else newStatus = "critical"
                     }
                 }
                 newServices.push({ name: s.name, status: newStatus, uptime: s.uptime })

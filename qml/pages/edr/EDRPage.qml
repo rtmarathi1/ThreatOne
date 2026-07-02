@@ -24,7 +24,7 @@ Rectangle {
     // Real-time data update timer
     Timer {
         interval: 2500
-        running: true
+        running: edrPage.visible
         repeat: true
         onTriggered: {
             edrViewModel.totalProcesses = edrViewModel.totalProcesses + Math.floor(Math.random() * 5) - 2

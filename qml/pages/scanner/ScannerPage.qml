@@ -11,6 +11,7 @@ Rectangle {
 
     property var scannerViewModel: QtObject {
         property bool scanning: false
+        property bool paused: false
         property real progress: 0.0
         property int filesScanned: 0
         property int threatsFound: 0
@@ -51,7 +52,7 @@ Rectangle {
     Timer {
         id: scanTimer
         interval: 200
-        running: scannerViewModel.scanning
+        running: scannerViewModel.scanning && !scannerViewModel.paused
         repeat: true
         onTriggered: {
             // Increment progress by random amount
@@ -83,7 +84,7 @@ Rectangle {
     Timer {
         id: elapsedTimer
         interval: 1000
-        running: scannerViewModel.scanning
+        running: scannerViewModel.scanning && !scannerViewModel.paused
         repeat: true
         onTriggered: {
             scannerPage.scanElapsedSeconds += 1
@@ -282,8 +283,8 @@ Rectangle {
 
                         RowLayout {
                             spacing: ThemeManager.spacingSmall
-                            Rectangle { width: 90; height: ThemeManager.buttonHeight; radius: ThemeManager.radiusMedium; color: ThemeManager.warningColor; Text { anchors.centerIn: parent; text: "Pause"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.Medium; color: "#000000"; font.family: ThemeManager.fontFamily } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
-                            Rectangle { width: 90; height: ThemeManager.buttonHeight; radius: ThemeManager.radiusMedium; color: ThemeManager.errorColor; Text { anchors.centerIn: parent; text: "Stop"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.Medium; color: "#ffffff"; font.family: ThemeManager.fontFamily } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor } }
+                            Rectangle { width: 90; height: ThemeManager.buttonHeight; radius: ThemeManager.radiusMedium; color: scannerViewModel.paused ? ThemeManager.successColor : ThemeManager.warningColor; Text { anchors.centerIn: parent; text: scannerViewModel.paused ? "Resume" : "Pause"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.Medium; color: "#000000"; font.family: ThemeManager.fontFamily } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: scannerViewModel.paused = !scannerViewModel.paused } }
+                            Rectangle { width: 90; height: ThemeManager.buttonHeight; radius: ThemeManager.radiusMedium; color: ThemeManager.errorColor; Text { anchors.centerIn: parent; text: "Stop"; font.pixelSize: ThemeManager.fontSizeBody; font.weight: Font.Medium; color: "#ffffff"; font.family: ThemeManager.fontFamily } MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: { scannerViewModel.scanning = false; scannerViewModel.paused = false; scannerViewModel.currentFile = "Scan stopped" } } }
                         }
                     }
                 }
