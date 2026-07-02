@@ -20,3 +20,8 @@ target_link_libraries(threatone_firewall
         threatone_database
         nlohmann_json
 )
+
+# Windows needs Ws2_32 for inet_pton, ntohl
+if(WIN32)
+    target_link_libraries(threatone_firewall PUBLIC Ws2_32)
+endif()
