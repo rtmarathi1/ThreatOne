@@ -5,9 +5,6 @@ name: Build ThreatOne
 #
 # After a run completes, download the ".exe" from:
 #   GitHub repo -> Actions tab -> select the workflow run -> Artifacts section
-#
-# The full compiler output is also uploaded as a "*-build-log" artifact so any
-# build errors can be inspected without re-running.
 
 on:
   push:
@@ -31,21 +28,18 @@ jobs:
       - name: Configure (CMake + Visual Studio 2022)
         run: cmake -B build -G "Visual Studio 17 2022" -A x64 -DENABLE_QT=OFF
 
-      - name: Build (Release)
-        id: build
+      - name: Build (Release) and report errors
         continue-on-error: true
         shell: pwsh
         run: |
           cmake --build build --config Release 2>&1 | Tee-Object -FilePath build_output.log
-          exit $LASTEXITCODE
-
-      - name: Show build errors (if any)
-        if: always()
-        shell: pwsh
-        run: |
-          Write-Host "===== Lines containing 'error' ====="
-          Select-String -Path build_output.log -Pattern "error C","error LNK","error MSB",": error" |
-            ForEach-Object { $_.Line } | Select-Object -First 80
+          $code = $LASTEXITCODE
+          Write-Host "`n===== COMPILER/LINKER ERROR LINES ====="
+          if (Test-Path build_output.log) {
+            Select-String -Path build_output.log -Pattern ": error","error C","error LNK","fatal error" |
+              ForEach-Object { $_.Line.Trim() } | Select-Object -Unique -First 80
+          }
+          Write-Host "===== END ERRORS (build exit code = $code) ====="
 
       - name: Upload build log
         if: always()
@@ -68,7 +62,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path dist | Out-Null
           $exe = Get-ChildItem -Recurse build -Filter "threatone.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
           if ($null -eq $exe) {
-            Write-Warning "threatone.exe was not produced (build likely failed). Check the windows-build-log artifact."
+            Write-Warning "threatone.exe not produced - build failed. See error lines above / windows-build-log artifact."
           } else {
             Copy-Item $exe.FullName -Destination dist\threatone.exe
             Write-Host "Staged: $($exe.FullName)"
@@ -96,16 +90,16 @@ jobs:
       - name: Configure (CMake)
         run: cmake -B build -DENABLE_QT=OFF -DCMAKE_BUILD_TYPE=Release
 
-      - name: Build
-        id: build
+      - name: Build and report errors
         continue-on-error: true
-        run: cmake --build build -j$(nproc) 2>&1 | tee build_output.log
-
-      - name: Show build errors (if any)
-        if: always()
         run: |
-          echo "===== Lines containing 'error:' ====="
-          grep -E "error:|Error" build_output.log | head -80 || echo "No compiler 'error:' lines found (failure may be in tests)."
+          set +e
+          cmake --build build -j$(nproc) 2>&1 | tee build_output.log
+          code=${PIPESTATUS[0]}
+          echo ""
+          echo "===== COMPILER ERROR LINES ====="
+          grep -E ": error:|error:|fatal error" build_output.log | sort -u | head -80 || true
+          echo "===== END ERRORS (build exit code = $code) ====="
 
       - name: Upload build log
         if: always()
@@ -129,7 +123,7 @@ jobs:
             cp build/bin/threatone dist/threatone
             echo "Staged build/bin/threatone"
           else
-            echo "::warning::threatone binary not produced (build likely failed). Check the linux-build-log artifact."
+            echo "::warning::threatone binary not produced - build failed. See error lines above / linux-build-log artifact."
           fi
 
       - name: Upload Linux binary
