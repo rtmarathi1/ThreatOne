@@ -11,6 +11,20 @@ add_executable(threatone_app
     src/viewmodels/ReportViewModel.cpp
     src/viewmodels/SettingsViewModel.cpp
     src/viewmodels/UsersViewModel.cpp
+    # ViewModel headers are listed explicitly so Qt's AUTOMOC processes their
+    # Q_OBJECT macros. They live in a different directory tree than the .cpp
+    # files, so AUTOMOC's same-basename heuristic would otherwise miss them,
+    # causing unresolved metaObject/qt_metacast/staticMetaObject/signal symbols.
+    include/app/viewmodels/DashboardViewModel.h
+    include/app/viewmodels/ScannerViewModel.h
+    include/app/viewmodels/FirewallViewModel.h
+    include/app/viewmodels/EDRViewModel.h
+    include/app/viewmodels/IncidentViewModel.h
+    include/app/viewmodels/AssetViewModel.h
+    include/app/viewmodels/ThreatIntelViewModel.h
+    include/app/viewmodels/ReportViewModel.h
+    include/app/viewmodels/SettingsViewModel.h
+    include/app/viewmodels/UsersViewModel.h
 )
 
 target_include_directories(threatone_app
