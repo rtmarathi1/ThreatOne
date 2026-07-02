@@ -1,10 +1,16 @@
 #pragma once
 
 #include "cloud/ICloudManager.h"
+#include "cloud/CloudSyncService.h"
+#include "cloud/BackupManager.h"
+#include "cloud/CloudPolicyManager.h"
+#include "cloud/DeviceManager.h"
+#include "cloud/RemoteScanService.h"
+#include "cloud/CloudAssetDiscovery.h"
 #include "core/Logger.h"
 
 #include <mutex>
-#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -40,19 +46,22 @@ public:
     bool uploadThreatIntel(const std::string& data) override;
     std::string downloadPolicies() override;
 
+    // Access to sub-components
+    [[nodiscard]] CloudSyncService& getSyncService() { return *syncService_; }
+    [[nodiscard]] CloudBackupManager& getBackupManager() { return *backupManager_; }
+    [[nodiscard]] CloudPolicyManager& getPolicyManager() { return *policyManager_; }
+    [[nodiscard]] DeviceManager& getDeviceManager() { return *deviceManager_; }
+    [[nodiscard]] RemoteScanService& getRemoteScanService() { return *remoteScanService_; }
+    [[nodiscard]] CloudAssetDiscovery& getAssetDiscovery() { return *assetDiscovery_; }
+
 private:
-    mutable std::mutex mutex_;
-    SyncStatus syncStatus_ = SyncStatus::Idle;
-    int totalItemsSynced_ = 0;
-    std::string lastSyncTime_;
-
-    std::map<std::string, BackupInfo> backups_;
-    std::map<std::string, PolicyInfo> policies_;
-    std::map<std::string, BackupSchedule> backupSchedules_;
-
-    int nextBackupId_ = 1;
-    int nextPolicyId_ = 1;
-    int nextScheduleId_ = 1;
+    // Sub-components
+    std::shared_ptr<CloudSyncService> syncService_;
+    std::shared_ptr<CloudBackupManager> backupManager_;
+    std::shared_ptr<CloudPolicyManager> policyManager_;
+    std::shared_ptr<DeviceManager> deviceManager_;
+    std::shared_ptr<RemoteScanService> remoteScanService_;
+    std::shared_ptr<CloudAssetDiscovery> assetDiscovery_;
 
     ThreatOne::Core::ModuleLogger logger_;
 };

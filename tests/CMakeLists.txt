@@ -118,7 +118,19 @@ set(TEST_SOURCES
     soc/test_soc_dashboard.cpp
     soc/test_alert_triage.cpp
     cloud/test_cloud_manager.cpp
+    cloud/test_cloud_sync.cpp
+    cloud/test_backup_manager.cpp
+    cloud/test_cloud_policy.cpp
+    cloud/test_device_manager.cpp
+    cloud/test_remote_scan.cpp
+    cloud/test_asset_discovery.cpp
     plugin/test_plugin_manager.cpp
+    plugin/test_plugin_sdk.cpp
+    plugin/test_plugin_sandbox.cpp
+    plugin/test_plugin_marketplace.cpp
+    plugin/test_dependency_resolver.cpp
+    plugin/test_plugin_permissions.cpp
+    plugin/test_plugin_version_manager.cpp
     updates/test_update_manager.cpp
     sandbox/test_sandbox_engine.cpp
     hids/test_hids_engine.cpp

@@ -16,7 +16,15 @@ namespace ThreatOne::Plugin {
 
 PluginManager::PluginManager()
     : logger_("PluginManager") {
-    logger_.info("Plugin Manager initialized");
+    // Initialize sub-components
+    sdk_ = std::make_shared<PluginSDK>();
+    sandbox_ = std::make_shared<PluginSandbox>();
+    marketplace_ = std::make_shared<PluginMarketplace>();
+    dependencyResolver_ = std::make_shared<DependencyResolver>();
+    permissions_ = std::make_shared<PluginPermissions>();
+    versionManager_ = std::make_shared<PluginVersionManager>();
+
+    logger_.info("Plugin Manager initialized with all sub-components");
 }
 
 std::string PluginManager::generateId() {
@@ -293,7 +301,7 @@ std::optional<PluginState> PluginManager::getPluginState(const std::string& plug
 }
 
 bool PluginManager::setPluginPermissions(const std::string& pluginId,
-                                          const std::vector<PluginPermission>& permissions) {
+                                          const std::vector<PluginPermission>& perms) {
     std::lock_guard<std::mutex> lock(mutex_);
 
     auto it = plugins_.find(pluginId);
@@ -302,16 +310,16 @@ bool PluginManager::setPluginPermissions(const std::string& pluginId,
         return false;
     }
 
-    permissions_[pluginId] = std::set<PluginPermission>(permissions.begin(), permissions.end());
-    logger_.info("Set {} permissions for plugin {}", permissions.size(), pluginId);
+    permissionSets_[pluginId] = std::set<PluginPermission>(perms.begin(), perms.end());
+    logger_.info("Set {} permissions for plugin {}", perms.size(), pluginId);
     return true;
 }
 
 std::vector<PluginPermission> PluginManager::getPluginPermissions(const std::string& pluginId) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    auto it = permissions_.find(pluginId);
-    if (it == permissions_.end()) {
+    auto it = permissionSets_.find(pluginId);
+    if (it == permissionSets_.end()) {
         return {};
     }
     return std::vector<PluginPermission>(it->second.begin(), it->second.end());
@@ -320,8 +328,8 @@ std::vector<PluginPermission> PluginManager::getPluginPermissions(const std::str
 bool PluginManager::checkPermission(const std::string& pluginId, PluginPermission permission) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    auto it = permissions_.find(pluginId);
-    if (it == permissions_.end()) {
+    auto it = permissionSets_.find(pluginId);
+    if (it == permissionSets_.end()) {
         return false;
     }
     return it->second.count(permission) > 0;
@@ -453,86 +461,26 @@ std::vector<PluginHook> PluginManager::getPluginHooks(const std::string& eventTy
 }
 
 std::vector<MarketplaceEntry> PluginManager::getMarketplace() {
-    std::lock_guard<std::mutex> lock(mutex_);
-    return marketplace_;
+    return marketplace_->getEntries();
 }
 
 std::vector<MarketplaceEntry> PluginManager::searchMarketplace(const std::string& query) {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    if (query.empty()) {
-        return marketplace_;
-    }
-
-    std::string lowerQuery = query;
-    std::transform(lowerQuery.begin(), lowerQuery.end(), lowerQuery.begin(),
-        [](char c) { return static_cast<char>(std::tolower(static_cast<unsigned char>(c))); });
-
-    std::vector<MarketplaceEntry> results;
-    for (const auto& entry : marketplace_) {
-        std::string lowerName = entry.name;
-        std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(),
-            [](char c) { return static_cast<char>(std::tolower(static_cast<unsigned char>(c))); });
-        std::string lowerDesc = entry.description;
-        std::transform(lowerDesc.begin(), lowerDesc.end(), lowerDesc.begin(),
-            [](char c) { return static_cast<char>(std::tolower(static_cast<unsigned char>(c))); });
-
-        if (lowerName.find(lowerQuery) != std::string::npos ||
-            lowerDesc.find(lowerQuery) != std::string::npos) {
-            results.push_back(entry);
-        }
-    }
-    return results;
+    return marketplace_->search(query);
 }
 
 std::optional<MarketplaceEntry> PluginManager::getMarketplaceEntry(const std::string& pluginId) {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    for (const auto& entry : marketplace_) {
-        if (entry.id == pluginId) {
-            return entry;
-        }
-    }
-    return std::nullopt;
+    return marketplace_->getEntry(pluginId);
 }
 
 bool PluginManager::checkCompatibility(const std::string& pluginId, const std::string& version) {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    for (const auto& entry : marketplace_) {
-        if (entry.id == pluginId) {
-            // Check if the version is in compatible versions list
-            if (entry.compatibleVersions.empty()) {
-                return true;  // No restrictions means compatible
-            }
-            for (const auto& v : entry.compatibleVersions) {
-                if (v == version) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-    return false;
+    return marketplace_->checkCompatibility(pluginId, version);
 }
 
 bool PluginManager::installFromMarketplace(const std::string& pluginId) {
-    // Check marketplace entry exists (without holding lock for loadPlugin)
-    {
-        std::lock_guard<std::mutex> lock(mutex_);
-
-        bool found = false;
-        for (const auto& entry : marketplace_) {
-            if (entry.id == pluginId) {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            logger_.error("Plugin {} not found in marketplace", pluginId);
-            return false;
-        }
+    // Check marketplace entry exists
+    if (!marketplace_->hasEntry(pluginId)) {
+        logger_.error("Plugin {} not found in marketplace", pluginId);
+        return false;
     }
 
     // Load the plugin using its ID as path
@@ -546,9 +494,7 @@ bool PluginManager::installFromMarketplace(const std::string& pluginId) {
 }
 
 void PluginManager::addMarketplaceEntry(const MarketplaceEntry& entry) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    marketplace_.push_back(entry);
-    logger_.info("Added marketplace entry: {}", entry.id);
+    marketplace_->addEntry(entry);
 }
 
 void PluginManager::registerManifest(const PluginManifest& manifest) {

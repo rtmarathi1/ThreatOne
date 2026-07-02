@@ -4,6 +4,12 @@
 // Full lifecycle, dependency resolution, permissions, marketplace
 
 #include "plugin/IPluginManager.h"
+#include "plugin/PluginSDK.h"
+#include "plugin/PluginSandbox.h"
+#include "plugin/PluginMarketplace.h"
+#include "plugin/DependencyResolver.h"
+#include "plugin/PluginPermissions.h"
+#include "plugin/PluginVersionManager.h"
 #include "core/Logger.h"
 
 #include <mutex>
@@ -11,6 +17,7 @@
 #include <map>
 #include <set>
 #include <optional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -53,14 +60,29 @@ public:
     void addMarketplaceEntry(const MarketplaceEntry& entry);
     void registerManifest(const PluginManifest& manifest);
 
+    // Access to sub-components
+    [[nodiscard]] PluginSDK& getSDK() { return *sdk_; }
+    [[nodiscard]] PluginSandbox& getSandbox() { return *sandbox_; }
+    [[nodiscard]] PluginMarketplace& getMarketplaceManager() { return *marketplace_; }
+    [[nodiscard]] DependencyResolver& getDependencyResolver() { return *dependencyResolver_; }
+    [[nodiscard]] PluginPermissions& getPermissionsManager() { return *permissions_; }
+    [[nodiscard]] PluginVersionManager& getVersionManager() { return *versionManager_; }
+
 private:
     std::string generateId();
 
+    // Sub-components
+    std::shared_ptr<PluginSDK> sdk_;
+    std::shared_ptr<PluginSandbox> sandbox_;
+    std::shared_ptr<PluginMarketplace> marketplace_;
+    std::shared_ptr<DependencyResolver> dependencyResolver_;
+    std::shared_ptr<PluginPermissions> permissions_;
+    std::shared_ptr<PluginVersionManager> versionManager_;
+
     mutable std::mutex mutex_;
     std::unordered_map<std::string, PluginInfo> plugins_;
-    std::unordered_map<std::string, std::set<PluginPermission>> permissions_;
+    std::unordered_map<std::string, std::set<PluginPermission>> permissionSets_;
     std::unordered_map<std::string, PluginManifest> manifests_;
-    std::vector<MarketplaceEntry> marketplace_;
     std::multimap<std::string, PluginHook> hooks_;  // eventType -> hook
     int nextId_ = 1;
     ThreatOne::Core::ModuleLogger logger_;
