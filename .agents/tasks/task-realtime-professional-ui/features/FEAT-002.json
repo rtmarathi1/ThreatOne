@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Add the missing SIEM, XDR, and Monitor pages with real-time data simulation and professional visuals, update the NavigationSidebar to include all new sections, and register new files in qml.qrc.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "1. CREATE SIEM PAGE (qml/pages/siem/SIEMPage.qml): Create a professional SIEM page following the existing page pattern (import themes, widgets, use Rectangle root with objectName, local QtObject viewModel). Include: (a) Header with title 'SIEM Analytics' and subtitle. (b) Real-time stats row with StatCards for Events/sec (updating via Timer every 1.5s, range 1200-3500), Alerts Generated, Correlation Rules Active, Log Sources. (c) A live event log section using ListView with a Timer (1000ms) that prepends new simulated log events (varying severities, sources like 'Firewall', 'Endpoint', 'DNS', 'Auth', random IPs). (d) A correlation rules status section. (e) A ThreatChart showing events-per-minute with rolling data (Timer 2000ms).",
     "2. CREATE XDR PAGE (qml/pages/xdr/XDRPage.qml): Create a professional XDR (Extended Detection & Response) page. Include: (a) Header with title 'XDR Platform'. (b) Stats row: Active Investigations, Automated Responses, Data Sources Connected, Mean Time to Respond. (c) Investigation queue using a DataTable or custom ListView showing active investigations with severity, status, affected assets, analyst assigned. (d) A kill chain visualization showing stages (Reconnaissance through Impact) with colored indicators showing detections at each stage. (e) Timer-based updates: new investigations appearing, status changes, response time counter ticking.",
@@ -24,5 +24,5 @@
     "cd build && ./tests/threatone_tests"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All 1618 tests pass. Build succeeds with ENABLE_QT=OFF. Created SIEMPage.qml with live event stream, events/sec Timer, correlation rules section, and events-per-minute ThreatChart. Created XDRPage.qml with investigation queue (ListView with new entries via Timer), kill chain visualization, and stats. Created MonitorPage.qml with CPU/Memory/Disk/Network gauges updating via Timer 1500ms, live network traffic chart, and service health grid with status flicker. Updated NavigationSidebar with SIEM and XDR in Security section after EDR, and Monitor in Management before Settings. Added all three pages to qml.qrc."
 }
