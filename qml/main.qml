@@ -49,7 +49,7 @@ ApplicationWindow {
                 onPageSelected: function(page) {
                     if (mainWindow.currentPagePath === page)
                         return
-                    contentStack.replace(page, {}, StackView.Transition)
+                    contentStack.replace(page, {}, StackView.ReplaceTransition)
                     mainWindow.currentPagePath = page
                     var idx = sidebar.currentIndex
                     if (idx >= 0 && idx < sidebar.flatItems.length) {

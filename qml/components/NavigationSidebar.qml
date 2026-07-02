@@ -162,7 +162,7 @@ Rectangle {
                                 font.weight: Font.DemiBold
                                 font.family: ThemeManager.fontFamily
                                 color: ThemeManager.textMuted
-                                letterSpacing: 1.2
+                                font.letterSpacing: 1.2
                             }
                         }
 
