@@ -11,6 +11,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Suppress MSVC CRT security warnings (C4996) for portable POSIX-style calls
+if(MSVC)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+endif()
+
 # Export compile_commands.json for tooling
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

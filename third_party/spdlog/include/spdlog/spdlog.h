@@ -108,7 +108,11 @@ inline std::string format_log_msg(const log_msg& msg, const std::string& pattern
 
     auto tt = std::chrono::system_clock::to_time_t(msg.time_point);
     std::tm tm_buf{};
+#ifdef _WIN32
+    localtime_s(&tm_buf, &tt);
+#else
     localtime_r(&tt, &tm_buf);
+#endif
 
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
         msg.time_point.time_since_epoch()) % 1000;

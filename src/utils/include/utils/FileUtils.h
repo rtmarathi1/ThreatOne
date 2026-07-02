@@ -7,6 +7,7 @@
 #include <sstream>
 #include <optional>
 #include <cstdint>
+#include <cinttypes>
 
 namespace ThreatOne::Utils {
 
@@ -61,7 +62,7 @@ public:
             h *= 0x100000001b3ULL; // FNV-1a prime
         }
         char buf[17];
-        std::snprintf(buf, sizeof(buf), "%016lx", h);
+        std::snprintf(buf, sizeof(buf), "%016" PRIx64, h);
         return std::string(buf);
     }
 

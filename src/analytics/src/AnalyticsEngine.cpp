@@ -263,7 +263,11 @@ std::string AnalyticsEngine::getCurrentTimestamp() const {
     auto now = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(now);
     struct tm tm_buf{};
+#ifdef _WIN32
+    gmtime_s(&tm_buf, &time);
+#else
     gmtime_r(&time, &tm_buf);
+#endif
 
     char buf[64];
     std::strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &tm_buf);

@@ -306,7 +306,11 @@ double BehaviorAnalyticsEngine::computeZScore(double value, double mean, double 
 int BehaviorAnalyticsEngine::extractHour(std::chrono::system_clock::time_point tp) const {
     auto timeT = std::chrono::system_clock::to_time_t(tp);
     std::tm tm{};
+#ifdef _WIN32
+    gmtime_s(&tm, &timeT);
+#else
     gmtime_r(&timeT, &tm);
+#endif
     return tm.tm_hour;
 }
 

@@ -5,6 +5,13 @@
 
 #include "sqlite3.h"
 
+#ifdef _WIN32
+#include <string.h>
+#ifndef strcasecmp
+#define strcasecmp _stricmp
+#endif
+#endif
+
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>

@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include <cctype>
 
 namespace ThreatOne::Utils {
 
@@ -39,14 +40,14 @@ public:
     static std::string toLower(const std::string& str) {
         std::string result = str;
         std::transform(result.begin(), result.end(), result.begin(),
-                       [](unsigned char c) { return std::tolower(c); });
+                       [](unsigned char c) { return static_cast<char>(std::tolower(static_cast<unsigned char>(c))); });
         return result;
     }
 
     static std::string toUpper(const std::string& str) {
         std::string result = str;
         std::transform(result.begin(), result.end(), result.begin(),
-                       [](unsigned char c) { return std::toupper(c); });
+                       [](unsigned char c) { return static_cast<char>(std::toupper(static_cast<unsigned char>(c))); });
         return result;
     }
 
