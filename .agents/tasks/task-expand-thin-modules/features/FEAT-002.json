@@ -1,0 +1,45 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Expand SIEM module from single SIEMEngine.cpp into multi-file architecture with LogCollector, LogParser, CorrelationEngine, DetectionRules, AlertEngine, SearchEngine, LogStorage, EventNormalizer, SigmaRuleEngine - each as separate .cpp/.h files with proper separation of concerns",
+  "status": "completed",
+  "steps": [
+    "Create src/siem/include/siem/LogCollector.h - collects logs from multiple sources (file, syslog, network), buffering and batching. Interface: addSource(), removeSource(), startCollection(), stopCollection(), getBuffer(). Uses EventBus to publish LogIngested events.",
+    "Create src/siem/src/LogCollector.cpp with full implementation",
+    "Create src/siem/include/siem/LogParser.h - parses raw log strings into structured LogEntry objects. Supports Syslog, JSON, CEF, LEEF, WindowsEventLog formats. Extract the parsing logic currently in SIEMEngine::parseLog/parseSyslog/parseJSON/parseCEF/parseLEEF/parseWindowsEventLog into this class.",
+    "Create src/siem/src/LogParser.cpp with full implementation extracted from SIEMEngine",
+    "Create src/siem/include/siem/EventNormalizer.h - normalizes parsed log entries to a common schema (maps disparate field names to canonical names like src_ip, dst_ip, user, action, severity).",
+    "Create src/siem/src/EventNormalizer.cpp with full implementation",
+    "Create src/siem/include/siem/LogStorage.h - stores normalized log entries with indexing for fast search. Supports time-range queries, field-value filters, full-text search. Manages retention policies.",
+    "Create src/siem/src/LogStorage.cpp with full implementation (in-memory indexed storage with configurable max size and time-based eviction)",
+    "Create src/siem/include/siem/SearchEngine.h - advanced search over LogStorage with boolean queries, field filters, aggregations, time bucketing.",
+    "Create src/siem/src/SearchEngine.cpp with full implementation",
+    "Create src/siem/include/siem/DetectionRules.h - manages detection rules with conditions, thresholds, and actions. Rules can be simple (single-event match) or complex (sequence of events).",
+    "Create src/siem/src/DetectionRules.cpp with full implementation",
+    "Create src/siem/include/siem/SigmaRuleEngine.h - evaluates Sigma-style detection rules (condition DSL with keywords, field matching, aggregation). Parse subset of Sigma YAML-style rule definitions.",
+    "Create src/siem/src/SigmaRuleEngine.cpp with full implementation",
+    "Create src/siem/include/siem/CorrelationEngine.h - correlates events across time windows. Extract and enhance correlation logic from SIEMEngine::evaluateRules(). Supports multi-stage correlation chains.",
+    "Create src/siem/src/CorrelationEngine.cpp with full implementation",
+    "Create src/siem/include/siem/AlertEngine.h - generates, prioritizes, deduplicates, and manages alerts. Integrates with EventBus to publish SecurityEvent alerts.",
+    "Create src/siem/src/AlertEngine.cpp with full implementation",
+    "Refactor src/siem/src/SIEMEngine.cpp to delegate to the new sub-components instead of having all logic inline. SIEMEngine becomes an orchestrator that wires together LogCollector, LogParser, EventNormalizer, LogStorage, SearchEngine, DetectionRules, SigmaRuleEngine, CorrelationEngine, and AlertEngine.",
+    "Update src/siem/include/siem/SIEMEngine.h to hold shared_ptrs to sub-components",
+    "Update src/siem/CMakeLists.txt to add all new .cpp files",
+    "Add comprehensive unit tests in tests/siem/ for new components: test_log_collector.cpp, test_log_parser.cpp, test_event_normalizer.cpp, test_log_storage.cpp, test_search_engine.cpp, test_detection_rules.cpp, test_sigma_rule_engine.cpp, test_correlation_engine.cpp, test_alert_engine.cpp",
+    "Update tests/CMakeLists.txt to include new test files",
+    "Rebuild and run all tests"
+  ],
+  "acceptance_criteria": [
+    "SIEM module has 10 .cpp source files (9 new + 1 refactored SIEMEngine)",
+    "All existing SIEM tests still pass",
+    "New tests exercise each sub-component independently",
+    "SIEMEngine delegates to sub-components rather than containing all logic",
+    "Build succeeds, all tests pass"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ./tests/threatone_tests"
+  ],
+  "blocked_reason": null,
+  "findings": "Successfully expanded SIEM module from 1 .cpp file to 10 .cpp files (9 new sub-components + refactored SIEMEngine orchestrator). All 1053 existing tests continue passing unchanged. Added 55 new unit tests (1108 total). SIEMEngine now delegates to LogCollector, LogParser, EventNormalizer, LogStorage, SearchEngine, DetectionRules, SigmaRuleEngine, CorrelationEngine, and AlertEngine via shared_ptr composition. CMakeLists.txt updated with Threads dependency. No issues encountered."
+}
