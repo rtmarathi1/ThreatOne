@@ -7,9 +7,19 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <mutex>
+#include <unordered_map>
 
 namespace ThreatOne::ThreatIntel {
     class ThreatIntelEngine;
+}
+
+namespace ThreatOne::Scanner {
+    class ScanEngine;
+}
+
+namespace ThreatOne::EDR {
+    class ProcessMonitor;
 }
 
 namespace ThreatOne::Security {
@@ -30,8 +40,22 @@ public:
     bool checkThreatIntel(const std::string& indicator);
 
 private:
+    // Generate a unique threat ID
+    std::string generateThreatId();
+
+    // Add a detected threat to internal tracking
+    void addThreat(const ThreatInfo& threat);
+
     ThreatOne::Core::ModuleLogger logger_;
     std::unique_ptr<ThreatOne::ThreatIntel::ThreatIntelEngine> threatIntelEngine_;
+    std::shared_ptr<ThreatOne::Scanner::ScanEngine> scanEngine_;
+    std::shared_ptr<ThreatOne::EDR::ProcessMonitor> processMonitor_;
+
+    // Thread-safe threat tracking
+    mutable std::mutex threatsMutex_;
+    std::vector<ThreatInfo> detectedThreats_;
+    std::unordered_map<std::string, size_t> threatIndex_; // id -> index in detectedThreats_
+    uint64_t nextThreatId_ = 1;
 };
 
 } // namespace ThreatOne::Security

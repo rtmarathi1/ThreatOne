@@ -1,0 +1,26 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Build baseline verification and cleanup: delete all 4 placeholder.cpp files, remove them from CMakeLists, rewrite SecurityEngine to properly delegate to Scanner and CryptoUtils, confirm build still passes",
+  "status": "in_progress",
+  "steps": [
+    "Delete src/core/src/placeholder.cpp, src/database/src/placeholder.cpp, src/security/src/placeholder.cpp, src/utils/src/placeholder.cpp",
+    "Verify none of these are referenced in their respective CMakeLists.txt files (they should not be listed since they contain empty namespace bodies, but confirm)",
+    "Rewrite src/security/src/SecurityEngine.cpp to properly delegate scanFile() to the Scanner module's ScanEngine (use src/scanner/include/scanner/ScanEngine.h) instead of returning stub true. scanMemory should use ProcessMonitor from EDR. quarantine should use QuarantineManager from scanner. getThreats should maintain an internal threat list. getThreatById should query that list.",
+    "Update src/security/include/security/SecurityEngine.h to add necessary members (shared_ptr to ScanEngine, QuarantineManager, etc.)",
+    "Update src/security/CMakeLists.txt to link against threatone_scanner and threatone_edr",
+    "Rebuild and run all tests to confirm 1053+ tests still pass"
+  ],
+  "acceptance_criteria": [
+    "All 4 placeholder.cpp files are deleted",
+    "Build succeeds with cmake --build build -j$(nproc)",
+    "All existing 1053 tests pass",
+    "SecurityEngine no longer returns hardcoded stubs - it delegates to real Scanner/EDR modules"
+  ],
+  "verification": [
+    "cmake -B build -DENABLE_QT=OFF && cmake --build build -j$(nproc)",
+    "cd build && ./tests/threatone_tests"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

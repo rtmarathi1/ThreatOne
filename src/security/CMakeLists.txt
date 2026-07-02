@@ -14,4 +14,6 @@ target_link_libraries(threatone_security
         threatone_compiler_options
         threatone_core
         threatone_threat_intel
+        threatone_scanner
+        threatone_edr
 )
