@@ -34,7 +34,7 @@ jobs:
           arch: x64
 
       - name: Configure (CMake + Ninja + MSVC)
-        run: cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DENABLE_QT=OFF
+        run: cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DENABLE_QT=ON
 
       - name: Build (Release) and report errors
         continue-on-error: true
@@ -96,7 +96,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure (CMake)
-        run: cmake -B build -DENABLE_QT=OFF -DCMAKE_BUILD_TYPE=Release
+        run: cmake -B build -DENABLE_QT=ON -DCMAKE_BUILD_TYPE=Release
 
       - name: Build and report errors
         continue-on-error: true
